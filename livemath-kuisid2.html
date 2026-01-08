@@ -1,0 +1,6719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Math Puzzle Quiz - Soft Frame Backgrounds</title>
+  <style>
+    @font-face {
+      font-family: 'ArialRoundedMTBold';
+      src: url('https://fonts.cdnfonts.com/css/arial-rounded-mt-bold') format('woff2');
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Arial', 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
+      background-color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 90px;
+      transition: background-color 0.4s ease;
+    }
+
+    .frame {
+      width: 90%;
+      max-width: 800px;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.98);
+      background-size: cover;
+      background-position: center;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      text-align: center;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Header Nomor Soal */
+    .quest-header {
+      color: #ffffff;
+      font-size: 5.2rem;
+      font-weight: normal;
+      padding: 8px 15px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 16px;
+      font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+      letter-spacing: 0.5px;
+      /* background and color will be set by JS */
+    }
+
+    .quest-body {
+      text-align: left;
+      font-size: 5.2rem;
+      line-height: 1.2;
+      white-space: pre-line;
+      margin: 0 auto;
+      padding: 15px;
+      color: rgb(0, 0, 0);
+      font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+    }
+
+    #countdown {
+      font-family: 'Courier New', monospace;
+      font-size: 40px;
+      font-weight: bold;
+      color: #0622d9;
+      text-align: right;
+      margin: 0;
+    }
+
+    .progress-container {
+      width: 100%;
+      height: 18px;
+      background-color: rgba(250, 8, 8, 0.4);
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: #00b627;
+      transition: none;
+    }
+
+    .progress-bar.answer-phase {
+      background-color: #68e7f0;
+    }
+
+    .answer {
+      margin-top: 10px;
+      font-size: 2.2em;
+      font-weight: bold;
+      color: #000000;
+      padding: 15px;
+      background-color: rgba(255, 251, 235, 0.9);
+      border: 1px solid #fcd34d;
+      border-radius: 8px;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .floating-buttons {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: white;
+      padding: 12px 16px;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      display: flex;
+      gap: 10px;
+      z-index: 1000;
+      font-family: 'ArialRoundedMTBold', sans-serif;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .floating-buttons button {
+      padding: 10px 14px;
+      font-size: 0.95em;
+      font-family: inherit;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    #prevBtn, #nextBtn {
+      background-color: #4a5568;
+      color: white;
+    }
+
+    #startBtn {
+      background-color: #10b981;
+      color: white;
+    }
+
+    #pauseBtn {
+      background-color: #ef4444;
+      color: white;
+    }
+
+    #openBtn {
+      background-color: #f59e0b;
+      color: white;
+    }
+
+    #toggleAuto {
+      background-color: #6b7280;
+      color: white;
+    }
+
+    #bgBtn {
+      background-color: #8b5cf6;
+      color: white;
+    }
+
+    #pageBgBtn {
+      background-color: #059669;
+      color: white;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .bg-option {
+      width: 80px;
+      height: 60px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: transform 0.2s;
+    }
+
+    .bg-option:hover {
+      transform: scale(1.1);
+      border-color: #3b82f6;
+    }
+
+    .color-option {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: transform 0.2s;
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+      border-color: #3b82f6;
+    }
+
+    /* Balloon Styles */
+    .balloon {
+      position: absolute;
+      bottom: -100px;
+      width: 40px;
+      height: 50px;
+      border-radius: 50% 50% 50% 0;
+      background: radial-gradient(circle at 30% 30%, white, transparent 40%), var(--balloon-color);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      opacity: 0;
+      animation: floatUp 5s ease-out forwards;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-100vh) rotate(20deg);
+        opacity: 0;
+      }
+    }
+    #bubbleCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1; /* Berada di belakang semua elemen */
+        pointer-events: none; /* Klik akan menembus ke tombol di bawahnya */
+        }
+  </style>
+</head>
+<body id="pageBody">
+<canvas id="bubbleCanvas"></canvas>
+  <!-- Frame Soal -->
+  <div class="frame" id="frame">
+    <div class="quest-header" id="questHeader"></div>
+    <div class="quest-body" id="questBody"></div>
+
+    <div id="countdown" hidden>-</div>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="answer" id="answer">Drop your answer</div>
+  </div>
+
+  <!-- Floating Buttons -->
+  <div class="floating-buttons">
+    <button id="prevBtn" onclick="prevSlide()">Previous</button>
+    <button id="startBtn" onclick="startTimer()">Start</button>
+    <button id="pauseBtn" onclick="pauseTimer()" disabled>Pause</button>
+    <button id="openBtn" onclick="openAnswer()">Show Answer</button>
+    <button id="toggleAuto" onclick="toggleAutoMode()">Auto: ON</button>
+    <button id="nextBtn" onclick="nextSlide()">Next</button>
+    <button id="bgBtn" onclick="openBgModal()">BG Frame</button>
+    <button id="pageBgBtn" onclick="openPageBgModal()">BG Page</button>
+  </div>
+
+  <!-- Modal: Frame Background -->
+  <div class="modal" id="bgModal">
+    <div class="modal-content" id="bgOptions"></div>
+  </div>
+
+  <!-- Modal: Page Background -->
+  <div class="modal" id="pageBgModal">
+    <div class="modal-content" id="pageBgOptions"></div>
+  </div>
+
+  <!-- Audio & Balloons -->
+  <audio id="endSound" src="soundeffect/correct.mp3" preload="auto"></audio>
+  <div id="balloonContainer" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 500;
+  "></div>
+
+  <script>
+// ====== BUBBLE BACKGROUND ANIMATION ======
+const canvas = document.getElementById('bubbleCanvas');
+const ctx = canvas.getContext('2d');
+
+let bubbles = [];
+
+function initCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    bubbles = [];
+    // Membuat 20-30 gelembung
+    for (let i = 0; i < 25; i++) {
+        bubbles.push(new Bubble());
+    }
+}
+
+class Bubble {
+    constructor() {
+        this.reset();
+    }
+
+    reset() {
+        this.radius = Math.random() * 40 + 10;
+        this.x = Math.random() * (canvas.width - this.radius * 2) + this.radius;
+        this.y = Math.random() * (canvas.height - this.radius * 2) + this.radius;
+        this.vx = (Math.random() - 0.5) * 2; // Kecepatan X
+        this.vy = (Math.random() - 0.5) * 2; // Kecepatan Y
+       this.color = `hsl(${Math.random() * 360}, 70%, 70%, ${Math.random() * 0.3 + 0.8})`; // Warna-warni acak dengan transparansi
+    }
+
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        // Efek kilau kecil di dalam bubble
+        ctx.beginPath();
+        ctx.arc(this.x - this.radius * 0.3, this.y - this.radius * 0.3, this.radius * 0.1, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.fill();
+    }
+
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Memantul di kiri/kanan
+        if (this.x + this.radius > canvas.width || this.x - this.radius < 0) {
+            this.vx = -this.vx;
+        }
+        // Memantul di atas/bawah
+        if (this.y + this.radius > canvas.height || this.y - this.radius < 0) {
+            this.vy = -this.vy;
+        }
+    }
+}
+
+function animateBubbles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    bubbles.forEach(bubble => {
+        bubble.update();
+        bubble.draw();
+    });
+    requestAnimationFrame(animateBubbles);
+}
+
+window.addEventListener('resize', initCanvas);
+initCanvas();
+animateBubbles();
+    const questions = [
+
+  
+  {
+    "quest": "Quiz#6564:\n4+2 ⇒ 1\n5+2 ⇒ 2\n7+2 ⇒ 4\n8+2 ⇒ 5\n3+2 ⇒ ?",
+    "answer": 0,
+    "pattern": "a-3b/2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#6565:\n2+3+3 ⇒ 27\n3+2+4 ⇒ 34\n3+3+4 ⇒ 39\n7+6+3 ⇒ 99\n3+7+5 ⇒ ?",
+    "answer": 88,
+    "pattern": "a²+b²+c²+5"
+  },
+  
+  {
+    "quest": "Quiz#6566:\n3+7+6 ⇒ 40\n6+6+6 ⇒ 0\n7+7+5 ⇒ 0\n5+7+7 ⇒ 20\n3+5+2 ⇒ ?",
+    "answer": 20,
+    "pattern": "concat(b,c)-concat(a,c)"
+  },
+  {
+    "quest": "Quiz#6567:\n6+5+2 ⇒ 40\n7+6+3 ⇒ 40\n3+3+3 ⇒ 0\n7+7+5 ⇒ 20\n2+7+2 ⇒ ?",
+    "answer": 0,
+    "pattern": "concat(a,b)-concat(c,b)"
+  },
+  {
+    "quest": "Quiz#6568:\n2+4+6 ⇒ 30\n3+7+3 ⇒ 40\n6+2+7 ⇒ 69\n5+3+2 ⇒ 55\n6+3+3 ⇒ ?",
+    "answer": 66,
+    "pattern": "c+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#6569:\n2+5+6 ⇒ 4\n3+2+2 ⇒ 1\n7+4+2 ⇒ 5\n2+3+5 ⇒ 3\n7+5+7 ⇒ ?",
+    "answer": 4,
+    "pattern": "|a-b|+|b-c|"
+  },
+  {
+    "quest": "Quiz#6570:\n4+3+4 ⇒ 86\n2+4+5 ⇒ 78\n2+3+6 ⇒ 86\n2+7+6 ⇒ 94\n4+2+2 ⇒ ?",
+    "answer": 64,
+    "pattern": "concat(a,b)+concat(c,b)"
+  },
+  {
+    "quest": "Quiz#6571:\n4+5+6 ⇒ 54\n5+4+4 ⇒ 52\n4+2+3 ⇒ 23\n3+3+6 ⇒ 22\n2+5+3 ⇒ ?",
+    "answer": 39,
+    "pattern": "2^a+2^b+c",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#6572:\n4+6+6 ⇒ 30\n6+5+6 ⇒ 34\n6+2+3 ⇒ 25\n4+4+2 ⇒ 22\n3+3+7 ⇒ ?",
+    "answer": 22,
+    "pattern": "3a+2b+c"
+  },
+  {
+    "quest": "Quiz#6573:\n4+2+2 ⇒ 20\n5+6+4 ⇒ 42\n4+3+2 ⇒ 21\n2+3+4 ⇒ 11\n5+4+2 ⇒ ?",
+    "answer": 38,
+    "pattern": "2^a+b+c",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6574:\n5+5 ⇒ 0\n4+3 ⇒ 8\n4+2 ⇒ 12\n5+4 ⇒ 16\n2+2 ⇒ ?",
+    "answer": 0,
+    "pattern": "2^a-2^b",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#6575:\n6+3 ⇒ 15\n2+6 ⇒ 16\n5+3 ⇒ 13\n8+8 ⇒ 64\n2+4 ⇒ ?",
+    "answer": 10,
+    "pattern": "(a×b)−(a−b)"
+  },
+  {
+    "quest": "Quiz#6576:\n4+7+3 ⇒ 84\n4+2+5 ⇒ 40\n5+2+5 ⇒ 50\n4+3+4 ⇒ 48\n2+7+2 ⇒ ?",
+    "answer": 28,
+    "pattern": "a×b×c"
+  },
+  {
+    "quest": "Quiz#6577:\n3+2+3 ⇒ 11\n3+6+3 ⇒ 15\n2+6+4 ⇒ 16\n3+3+4 ⇒ 14\n4+5+5 ⇒ ?",
+    "answer": 19,
+    "pattern": "a+b+c×2"
+  },
+  {
+    "quest": "Quiz#6578:\n2+3+3 ⇒ 1\n7+2+2 ⇒ 25\n5+6+6 ⇒ 1\n4+2+3 ⇒ 5\n5+2+7 ⇒ ?",
+    "answer": 34,
+    "pattern": "(a-b)²+(b-c)²"
+  },
+  {
+    "quest": "Quiz#6579:\n4+4+2 ⇒ 16\n3+7+3 ⇒ 30\n2+6+2 ⇒ 16\n7+5+5 ⇒ 60\n7+4+4 ⇒ ?",
+    "answer": 44,
+    "pattern": "(a+b)×c"
+  },
+  {
+    "quest": "Quiz#6580:\n3+3+3 ⇒ 36\n6+2+2 ⇒ 64\n3+7+7 ⇒ 44\n3+6+4 ⇒ 40\n5+7+5 ⇒ ?",
+    "answer": 62,
+    "pattern": "b+concat(a,c)"
+  },
+  {
+    "quest": "Quiz#6581:\n5+2 ⇒ 9\n6+4 ⇒ 22\n3+3 ⇒ 11\n4+5 ⇒ 36\n8+2 ⇒ ?",
+    "answer": 12,
+    "pattern": "a+2^b",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6582:\n3+3 ⇒ 20\n4+6 ⇒ 92\n4+2 ⇒ 28\n5+2 ⇒ 60\n5+3 ⇒ ?",
+    "answer": 92,
+    "pattern": "2^a*b-4",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6583:\n3+3+3 ⇒ 14\n6+5+3 ⇒ 41\n3+2+3 ⇒ 10\n2+5+4 ⇒ 38\n7+2+3 ⇒ ?",
+    "answer": 14,
+    "pattern": "a+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6584:\n4+3 ⇒ 7\n7+6 ⇒ 13\n3+3 ⇒ 0\n8+2 ⇒ 60\n8+4 ⇒ ?",
+    "answer": 48,
+    "pattern": "a²−b²"
+  },
+  {
+    "quest": "Quiz#6585:\n7+5+5 ⇒ 60\n3+7+2 ⇒ 25\n5+3+3 ⇒ 24\n6+3+2 ⇒ 22\n7+3+3 ⇒ ?",
+    "answer": 30,
+    "pattern": "a×b+c²"
+  },
+  {
+    "quest": "Quiz#6586:\n2+5+4 ⇒ 14\n5+3+5 ⇒ 20\n4+6+2 ⇒ 26\n3+7+6 ⇒ 27\n5+2+4 ⇒ ?",
+    "answer": 14,
+    "pattern": "a×b+c"
+  },
+  {
+    "quest": "Quiz#6587:\n7+2 ⇒ 9\n3+8 ⇒ 19\n8+6 ⇒ 26\n7+8 ⇒ 39\n7+5 ⇒ ?",
+    "answer": 32,
+    "pattern": "a+b*n"
+  },
+  {
+    "quest": "Quiz#6588:\n8+4 ⇒ 82\n4+4 ⇒ 41\n8+8 ⇒ 81\n8+2 ⇒ 84\n4+2 ⇒ ?",
+    "answer": 42,
+    "pattern": "concat(a,a/b)",
+    "condition": "b|a,a//b≤9"
+  },
+  {
+    "quest": "Quiz#6589:\n7+2+7 ⇒ 81\n7+2+2 ⇒ 36\n6+5+3 ⇒ 88\n2+2+4 ⇒ 24\n5+2+4 ⇒ ?",
+    "answer": 42,
+    "pattern": "(a+b)×(b+c)"
+  },
+  {
+    "quest": "Quiz#6590:\n3+5+4 ⇒ 87\n3+3+7 ⇒ 70\n4+3+6 ⇒ 80\n3+4+7 ⇒ 80\n3+2+7 ⇒ ?",
+    "answer": 60,
+    "pattern": "concat(a,c)+concat(b,a)"
+  },
+  {
+    "quest": "Quiz#6591:\n4+8 ⇒ 8\n5+5 ⇒ 27\n5+7 ⇒ 25\n4+6 ⇒ 10\n4+5 ⇒ ?",
+    "answer": 11,
+    "pattern": "2^a−b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6592:\n6+3+4 ⇒ 13\n3+5+6 ⇒ 28\n2+5+6 ⇒ 39\n6+6+2 ⇒ 56\n2+6+2 ⇒ ?",
+    "answer": 50,
+    "pattern": "(a+b+c)×n"
+  },
+  {
+    "quest": "Quiz#6593:\n3+5+2 ⇒ 37\n4+3+3 ⇒ 46\n7+2+6 ⇒ 78\n3+5+3 ⇒ 38\n6+6+4 ⇒ ?",
+    "answer": 70,
+    "pattern": "concat(a,b)+c"
+  },
+  {
+    "quest": "Quiz#6594:\n5+7+4 ⇒ 79\n5+2+5 ⇒ 30\n4+6+4 ⇒ 68\n6+7+5 ⇒ 81\n6+7+6 ⇒ ?",
+    "answer": 82,
+    "pattern": "a+concat(b,c)"
+  },
+  {
+    "quest": "Quiz#6595:\n4+3 ⇒ 32\n2+5 ⇒ 64\n2+4 ⇒ 32\n6+4 ⇒ 96\n3+5 ⇒ ?",
+    "answer": 96,
+    "pattern": "2^b*a",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6596:\n7+3 ⇒ 66\n7+4 ⇒ 67\n6+7 ⇒ 55\n5+5 ⇒ 40\n8+7 ⇒ ?",
+    "answer": 87,
+    "pattern": "a²+2×a+b"
+  },
+  {
+    "quest": "Quiz#6597:\n4+7+5 ⇒ 83\n4+2+6 ⇒ 44\n2+2+7 ⇒ 32\n2+3+7 ⇒ 41\n4+7+6 ⇒ ?",
+    "answer": 94,
+    "pattern": "a×b+b×c+c×a"
+  },
+  {
+    "quest": "Quiz#6598:\n6+7+4 ⇒ 72\n2+2+7 ⇒ 45\n2+2+6 ⇒ 36\n4+5+5 ⇒ 99\n4+4+7 ⇒ ?",
+    "answer": 27,
+    "pattern": "concat(b,c,a)-concat(a,b,c)"
+  },
+  {
+    "quest": "Quiz#6599:\n5+4+4 ⇒ 89\n3+7+3 ⇒ 72\n5+6+3 ⇒ 79\n5+7+3 ⇒ 88\n4+4+3 ⇒ ?",
+    "answer": 52,
+    "pattern": "a²+b×c²"
+  },
+  {
+    "quest": "Quiz#6600:\n3+7+4 ⇒ 68\n6+2+7 ⇒ 59\n6+3+2 ⇒ 19\n5+3+6 ⇒ 50\n2+6+4 ⇒ ?",
+    "answer": 54,
+    "pattern": "a+b²+c²"
+  },
+  {
+    "quest": "Quiz#6601:\n2+3+7 ⇒ 15\n6+3+4 ⇒ 45\n5+7+2 ⇒ 37\n2+7+2 ⇒ 17\n3+2+7 ⇒ ?",
+    "answer": 23,
+    "pattern": "a²+b+c+n"
+  },
+  {
+    "quest": "Quiz#6602:\n5+3+7 ⇒ 22\n7+7+7 ⇒ 0\n7+4+3 ⇒ 26\n3+2+3 ⇒ 10\n4+2+5 ⇒ ?",
+    "answer": 21,
+    "pattern": "concat(a,c)-concat(b,a)"
+  },
+  {
+    "quest": "Quiz#6603:\n8+2 ⇒ 24\n7+8 ⇒ 63\n6+5 ⇒ 36\n4+4 ⇒ 20\n8+3 ⇒ ?",
+    "answer": 32,
+    "pattern": "a×b+a"
+  },
+  {
+    "quest": "Quiz#6604:\n4+4 ⇒ 0\n6+3 ⇒ 27\n6+4 ⇒ 18\n6+2 ⇒ 36\n2+2 ⇒ ?",
+    "answer": 0,
+    "pattern": "concat(a,b)-concat(b,a)"
+  },
+  {
+    "quest": "Quiz#6605:\n4+2 ⇒ 84\n2+4 ⇒ 12\n8+8 ⇒ 88\n3+3 ⇒ 33\n6+6 ⇒ ?",
+    "answer": 66,
+    "pattern": "concat(a,b)×a/b",
+    "condition": "b≠0,hasilbulat"
+  },
+  {
+    "quest": "Quiz#6606:\n5+8 ⇒ 31\n4+7 ⇒ 26\n6+6 ⇒ 30\n8+2 ⇒ 28\n5+7 ⇒ ?",
+    "answer": 29,
+    "pattern": "3a+2b"
+  },
+  {
+    "quest": "Quiz#6607:\n2+3+7 ⇒ 20\n7+2+4 ⇒ 42\n6+6+3 ⇒ 54\n2+4+3 ⇒ 14\n3+7+2 ⇒ ?",
+    "answer": 27,
+    "pattern": "a×(b+c)"
+  },
+  {
+    "quest": "Quiz#6608:\n2+6+7 ⇒ 79\n3+3+3 ⇒ 30\n5+3+2 ⇒ 47\n2+3+5 ⇒ 23\n2+3+7 ⇒ ?",
+    "answer": 25,
+    "pattern": "a×b²+c"
+  },
+  {
+    "quest": "Quiz#6609:\n5+3+3 ⇒ 19\n7+6+7 ⇒ 51\n6+4+6 ⇒ 33\n7+4+7 ⇒ 39\n2+2+5 ⇒ ?",
+    "answer": 14,
+    "pattern": "a×b+c+n"
+  },
+  {
+    "quest": "Quiz#6610:\n2+2+2 ⇒ 13\n2+5+2 ⇒ 20\n6+7+4 ⇒ 35\n4+4+4 ⇒ 28\n7+2+5 ⇒ ?",
+    "answer": 31,
+    "pattern": "a×1+b×2+c×3+n"
+  },
+  {
+    "quest": "Quiz#6611:\n7+7+3 ⇒ 65\n2+6+6 ⇒ 46\n6+6+7 ⇒ 91\n6+3+5 ⇒ 64\n4+4+6 ⇒ ?",
+    "answer": 56,
+    "pattern": "a²+b+c²"
+  },
+  {
+    "quest": "Quiz#6612:\n2+8 ⇒ 33\n3+4 ⇒ 34\n3+8 ⇒ 67\n2+6 ⇒ 28\n5+2 ⇒ ?",
+    "answer": 69,
+    "pattern": "2^a*b+n",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6613:\n4+2 ⇒ 6\n6+2 ⇒ 9\n8+8 ⇒ 9\n6+3 ⇒ 8\n8+4 ⇒ ?",
+    "answer": 10,
+    "pattern": "(a÷b)+a",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#6614:\n3+5 ⇒ 47\n2+8 ⇒ 78\n6+8 ⇒ 74\n7+5 ⇒ 43\n7+7 ⇒ ?",
+    "answer": 63,
+    "pattern": "concat(b,a)-2a"
+  },
+  {
+    "quest": "Quiz#6615:\n7+3+5 ⇒ 26\n7+6+4 ⇒ 46\n2+2+5 ⇒ 9\n3+7+5 ⇒ 26\n7+4+4 ⇒ ?",
+    "answer": 32,
+    "pattern": "a×b+c"
+  },
+  {
+    "quest": "Quiz#6616:\n2+7 ⇒ 45\n6+6 ⇒ 0\n2+5 ⇒ 27\n3+3 ⇒ 0\n4+4 ⇒ ?",
+    "answer": 0,
+    "pattern": "concat(b,a)-concat(a,b)"
+  },
+  {
+    "quest": "Quiz#6617:\n4+7+4 ⇒ 30\n6+7+6 ⇒ 10\n3+6+4 ⇒ 30\n6+7+4 ⇒ 10\n4+4+5 ⇒ ?",
+    "answer": 0,
+    "pattern": "concat(b,c)-concat(a,c)"
+  },
+  {
+    "quest": "Quiz#6618:\n8+4 ⇒ 8\n4+3 ⇒ 2\n8+6 ⇒ 4\n6+6 ⇒ 0\n5+5 ⇒ ?",
+    "answer": 0,
+    "pattern": "2×a−2×b"
+  },
+  {
+    "quest": "Quiz#6619:\n4+5 ⇒ 46\n6+5 ⇒ 64\n3+8 ⇒ 43\n3+6 ⇒ 39\n7+8 ⇒ ?",
+    "answer": 79,
+    "pattern": "concat(a,b)-(a-b)"
+  },
+  {
+    "quest": "Quiz#6620:\n3+7+7 ⇒ 55\n7+7+7 ⇒ 63\n4+4+5 ⇒ 40\n6+7+4 ⇒ 49\n2+3+7 ⇒ ?",
+    "answer": 41,
+    "pattern": "2a+3b+4c"
+  },
+  {
+    "quest": "Quiz#6621:\n3+2+5 ⇒ 1\n7+7+7 ⇒ 42\n6+4+2 ⇒ 22\n4+4+7 ⇒ 9\n5+3+4 ⇒ ?",
+    "answer": 11,
+    "pattern": "a×b-c"
+  },
+  {
+    "quest": "Quiz#6622:\n2+8 ⇒ 22\n5+4 ⇒ 31\n3+6 ⇒ 24\n3+2 ⇒ 18\n6+8 ⇒ ?",
+    "answer": 42,
+    "pattern": "concat(a,b)/2+b",
+    "condition": "concatgenap"
+  },
+  {
+    "quest": "Quiz#6623:\n3+5 ⇒ 18\n8+3 ⇒ 11\n2+5 ⇒ 17\n8+2 ⇒ 8\n6+3 ⇒ ?",
+    "answer": 9,
+    "pattern": "b²−2×b+a"
+  },
+  {
+    "quest": "Quiz#6624:\n5+7 ⇒ 25\n3+2 ⇒ 6\n3+6 ⇒ 2\n3+5 ⇒ 3\n2+3 ⇒ ?",
+    "answer": 1,
+    "pattern": "2^a-b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6625:\n2+4+3 ⇒ 17\n2+6+3 ⇒ 21\n6+2+6 ⇒ 48\n3+2+7 ⇒ 55\n2+3+3 ⇒ ?",
+    "answer": 15,
+    "pattern": "a×b+c²"
+  },
+  {
+    "quest": "Quiz#6626:\n7+4 ⇒ 29\n5+4 ⇒ 22\n3+6 ⇒ 21\n2+3 ⇒ 10\n6+2 ⇒ ?",
+    "answer": 17,
+    "pattern": "a*b+n"
+  },
+  {
+    "quest": "Quiz#6627:\n3+7 ⇒ 28\n4+6 ⇒ 12\n3+5 ⇒ 10\n5+5 ⇒ 0\n8+8 ⇒ ?",
+    "answer": 0,
+    "pattern": "b×(b−a)",
+    "condition": "b>=a"
+  },
+  {
+    "quest": "Quiz#6628:\n2+7+2 ⇒ 29\n5+6+3 ⇒ 59\n4+3+2 ⇒ 45\n3+6+2 ⇒ 38\n3+2+3 ⇒ ?",
+    "answer": 35,
+    "pattern": "concat(a,b)+c"
+  },
+  {
+    "quest": "Quiz#6629:\n3+7+3 ⇒ 30\n4+7+7 ⇒ 39\n6+7+2 ⇒ 31\n6+4+7 ⇒ 32\n2+4+5 ⇒ ?",
+    "answer": 24,
+    "pattern": "a×1+b×3+c×2"
+  },
+  {
+    "quest": "Quiz#6630:\n7+2+5 ⇒ 41\n6+5+4 ⇒ 27\n7+3+4 ⇒ 26\n6+6+4 ⇒ 28\n4+7+3 ⇒ ?",
+    "answer": 19,
+    "pattern": "a+b+2^c",
+    "condition": "c<=5"
+  },
+  {
+    "quest": "Quiz#6631:\n4+7+3 ⇒ 62\n4+7+6 ⇒ 89\n3+6+4 ⇒ 55\n6+4+3 ⇒ 31\n6+7+4 ⇒ ?",
+    "answer": 71,
+    "pattern": "a+b²+c²"
+  },
+  {
+    "quest": "Quiz#6632:\n7+2 ⇒ 14\n6+8 ⇒ 30\n6+6 ⇒ 24\n3+6 ⇒ 12\n8+2 ⇒ ?",
+    "answer": 16,
+    "pattern": "a+(a×b÷2)",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#6633:\n2+8 ⇒ 29\n5+2 ⇒ 54\n8+6 ⇒ 89\n8+7 ⇒ 91\n5+4 ⇒ ?",
+    "answer": 59,
+    "pattern": "concat(a,b)+n"
+  },
+  {
+    "quest": "Quiz#6634:\n7+6+3 ⇒ 94\n2+5+6 ⇒ 65\n5+2+3 ⇒ 38\n3+7+6 ⇒ 94\n3+4+2 ⇒ ?",
+    "answer": 29,
+    "pattern": "a²+b²+c²"
+  },
+  {
+    "quest": "Quiz#6635:\n2+2+7 ⇒ 29\n7+6+2 ⇒ 78\n6+7+4 ⇒ 71\n5+6+7 ⇒ 63\n7+4+5 ⇒ ?",
+    "answer": 79,
+    "pattern": "concat(a,c)+b"
+  },
+  {
+    "quest": "Quiz#6636:\n7+2+2 ⇒ 29\n4+4+4 ⇒ 48\n5+4+2 ⇒ 47\n7+3+2 ⇒ 39\n6+4+2 ⇒ ?",
+    "answer": 48,
+    "pattern": "a+concat(b,c)"
+  },
+  {
+    "quest": "Quiz#6637:\n5+5+5 ⇒ 30\n2+5+2 ⇒ 12\n4+7+6 ⇒ 46\n6+4+2 ⇒ 14\n4+7+7 ⇒ ?",
+    "answer": 53,
+    "pattern": "a+b×c"
+  },
+  {
+    "quest": "Quiz#6638:\n5+4+5 ⇒ 45\n3+5+6 ⇒ 48\n7+4+2 ⇒ 22\n6+4+6 ⇒ 60\n4+5+2 ⇒ ?",
+    "answer": 18,
+    "pattern": "(a+b)×c"
+  },
+  {
+    "quest": "Quiz#6639:\n3+3+2 ⇒ 10\n7+3+5 ⇒ 20\n6+2+3 ⇒ 30\n5+5+3 ⇒ 20\n7+7+4 ⇒ ?",
+    "answer": 30,
+    "pattern": "concat(a,b)-concat(c,b)"
+  },
+  {
+    "quest": "Quiz#6640:\n4+8 ⇒ 14\n2+2 ⇒ 5\n6+3 ⇒ 12\n2+8 ⇒ 11\n4+3 ⇒ ?",
+    "answer": 9,
+    "pattern": "3a/2+b",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#6641:\n3+5+3 ⇒ 23\n3+2+3 ⇒ 18\n2+2+3 ⇒ 18\n2+4+3 ⇒ 23\n6+2+7 ⇒ ?",
+    "answer": 36,
+    "pattern": "a×1+b×2+c×3+n"
+  },
+  {
+    "quest": "Quiz#6642:\n3+4+5 ⇒ 47\n4+4+4 ⇒ 48\n5+6+3 ⇒ 63\n5+5+4 ⇒ 65\n6+4+3 ⇒ ?",
+    "answer": 54,
+    "pattern": "a×(b+c)+b×c"
+  },
+  {
+    "quest": "Quiz#6643:\n7+8 ⇒ 72\n6+2 ⇒ 34\n6+8 ⇒ 40\n2+2 ⇒ 4\n7+5 ⇒ ?",
+    "answer": 69,
+    "pattern": "b+2^(a−1)",
+    "condition": "a>=1"
+  },
+  {
+    "quest": "Quiz#6644:\n5+5+7 ⇒ 48\n4+4+3 ⇒ 41\n7+3+6 ⇒ 67\n3+6+3 ⇒ 33\n2+4+5 ⇒ ?",
+    "answer": 19,
+    "pattern": "concat(a,b)-c"
+  },
+  {
+    "quest": "Quiz#6645:\n4+5+5 ⇒ 26\n5+2+2 ⇒ 14\n2+5+3 ⇒ 16\n7+4+6 ⇒ 38\n4+6+5 ⇒ ?",
+    "answer": 34,
+    "pattern": "a×b+c+n"
+  },
+  {
+    "quest": "Quiz#6646:\n2+2+5 ⇒ 81\n3+4+2 ⇒ 81\n2+2+2 ⇒ 36\n3+3+2 ⇒ 64\n2+5+2 ⇒ ?",
+    "answer": 81,
+    "pattern": "(a+b+c)²"
+  },
+  {
+    "quest": "Quiz#6647:\n6+4 ⇒ 16\n5+8 ⇒ 24\n2+2 ⇒ 0\n5+7 ⇒ 21\n6+3 ⇒ ?",
+    "answer": 12,
+    "pattern": "a×b−2×b"
+  },
+  {
+    "quest": "Quiz#6648:\n4+8 ⇒ 16\n7+2 ⇒ 16\n3+7 ⇒ 13\n2+2 ⇒ 6\n2+4 ⇒ ?",
+    "answer": 8,
+    "pattern": "a*2+b"
+  },
+  {
+    "quest": "Quiz#6649:\n3+2 ⇒ 5\n5+5 ⇒ 0\n7+2 ⇒ 45\n6+6 ⇒ 0\n6+3 ⇒ ?",
+    "answer": 27,
+    "pattern": "(a+b)×(a−b)"
+  },
+  {
+    "quest": "Quiz#6650:\n6+5+6 ⇒ 67\n2+5+7 ⇒ 36\n2+2+5 ⇒ 13\n3+5+6 ⇒ 40\n4+7+4 ⇒ ?",
+    "answer": 69,
+    "pattern": "a²+b²+c"
+  },
+  {
+    "quest": "Quiz#6651:\n4+3+7 ⇒ 26\n6+5+3 ⇒ 34\n6+7+4 ⇒ 45\n2+6+7 ⇒ 39\n3+4+5 ⇒ ?",
+    "answer": 28,
+    "pattern": "a+b×5+c"
+  },
+  {
+    "quest": "Quiz#6652:\n3+2+3 ⇒ 13\n5+7+5 ⇒ 44\n3+6+7 ⇒ 21\n2+7+5 ⇒ 16\n5+4+5 ⇒ ?",
+    "answer": 41,
+    "pattern": "2^a+b+c",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6653:\n5+3+2 ⇒ 42\n2+2+6 ⇒ 14\n5+2+7 ⇒ 43\n2+4+6 ⇒ 26\n3+3+2 ⇒ ?",
+    "answer": 18,
+    "pattern": "2^a+2^b+c",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#6654:\n3+2 ⇒ 5\n7+3 ⇒ 11\n3+5 ⇒ 19\n4+2 ⇒ 6\n8+3 ⇒ ?",
+    "answer": 12,
+    "pattern": "a+2^(b−1)",
+    "condition": "b>=1"
+  },
+  {
+    "quest": "Quiz#6655:\n4+2+2 ⇒ 18\n5+6+2 ⇒ 57\n7+4+6 ⇒ 39\n5+5+2 ⇒ 47\n3+5+4 ⇒ ?",
+    "answer": 51,
+    "pattern": "concat(b,c)-a"
+  },
+  {
+    "quest": "Quiz#6656:\n5+2+5 ⇒ 80\n5+2+6 ⇒ 81\n2+5+6 ⇒ 78\n4+4+3 ⇒ 87\n4+3+4 ⇒ ?",
+    "answer": 78,
+    "pattern": "concat(a,c)+concat(b,a)"
+  },
+  {
+    "quest": "Quiz#6657:\n4+3 ⇒ 55\n3+4 ⇒ 46\n5+8 ⇒ 98\n3+7 ⇒ 58\n6+5 ⇒ ?",
+    "answer": 95,
+    "pattern": "concat(a,b)+(a×b)"
+  },
+  {
+    "quest": "Quiz#6658:\n3+5 ⇒ 40\n3+2 ⇒ 16\n4+2 ⇒ 32\n4+4 ⇒ 64\n3+4 ⇒ ?",
+    "answer": 32,
+    "pattern": "2^a*b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6659:\n2+8 ⇒ 14\n3+6 ⇒ 9\n3+8 ⇒ 13\n8+6 ⇒ 4\n3+3 ⇒ ?",
+    "answer": 3,
+    "pattern": "b*2-a"
+  },
+  {
+    "quest": "Quiz#6660:\n8+2 ⇒ 7\n8+8 ⇒ 4\n2+2 ⇒ 4\n3+3 ⇒ 4\n6+2 ⇒ ?",
+    "answer": 6,
+    "pattern": "a/b+3",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#6661:\n4+5 ⇒ 25\n6+5 ⇒ 47\n2+6 ⇒ 12\n2+3 ⇒ 9\n5+6 ⇒ ?",
+    "answer": 36,
+    "pattern": "(a+b)+a²"
+  },
+  {
+    "quest": "Quiz#6662:\n7+8 ⇒ 71\n2+6 ⇒ 20\n6+8 ⇒ 62\n8+5 ⇒ 53\n3+8 ⇒ ?",
+    "answer": 35,
+    "pattern": "(a+b)+(a×b)"
+  },
+  {
+    "quest": "Quiz#6663:\n6+8 ⇒ 42\n4+2 ⇒ 4\n3+6 ⇒ 15\n8+8 ⇒ 56\n2+2 ⇒ ?",
+    "answer": 2,
+    "pattern": "a×b−a"
+  },
+  {
+    "quest": "Quiz#6664:\n2+8 ⇒ 0\n4+8 ⇒ 4\n6+8 ⇒ 8\n8+2 ⇒ 15\n7+8 ⇒ ?",
+    "answer": 10,
+    "pattern": "2×a−b÷2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#6665:\n4+4 ⇒ 0\n7+4 ⇒ 21\n5+3 ⇒ 10\n8+8 ⇒ 0\n6+6 ⇒ ?",
+    "answer": 0,
+    "pattern": "a×(a−b)"
+  },
+  {
+    "quest": "Quiz#6666:\n2+4 ⇒ 18\n7+4 ⇒ 63\n3+6 ⇒ 27\n8+4 ⇒ 72\n6+4 ⇒ ?",
+    "answer": 54,
+    "pattern": "concat(a,b)-(a+b)"
+  },
+  {
+    "quest": "Quiz#6667:\n2+2+7 ⇒ 45\n5+5+6 ⇒ 9\n5+6+2 ⇒ 63\n4+4+7 ⇒ 27\n6+7+5 ⇒ ?",
+    "answer": 81,
+    "pattern": "concat(b,c,a)-concat(a,b,c)"
+  },
+  {
+    "quest": "Quiz#6668:\n4+2 ⇒ 32\n5+8 ⇒ 95\n2+4 ⇒ 46\n6+5 ⇒ 68\n3+7 ⇒ ?",
+    "answer": 79,
+    "pattern": "concat(b,a)+2a"
+  },
+  {
+    "quest": "Quiz#6669:\n2+5 ⇒ 26\n7+8 ⇒ 82\n8+8 ⇒ 97\n8+2 ⇒ 98\n4+5 ⇒ ?",
+    "answer": 70,
+    "pattern": "concat(a,b)+n²"
+  },
+  {
+    "quest": "Quiz#6670:\n4+8 ⇒ 36\n6+6 ⇒ 24\n3+3 ⇒ 12\n7+7 ⇒ 28\n4+6 ⇒ ?",
+    "answer": 25,
+    "pattern": "(a+b)²÷a",
+    "condition": "a≠0dana|(a+b)²"
+  },
+  {
+    "quest": "Quiz#6671:\n8+5 ⇒ 75\n8+8 ⇒ 72\n2+4 ⇒ 16\n7+5 ⇒ 65\n4+6 ⇒ ?",
+    "answer": 34,
+    "pattern": "concat(a,b)-2*b"
+  },
+  {
+    "quest": "Quiz#6672:\n4+3+3 ⇒ 10\n5+5+3 ⇒ 15\n3+7+6 ⇒ 18\n2+6+2 ⇒ 20\n5+7+3 ⇒ ?",
+    "answer": 25,
+    "pattern": "prev+a",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#6673:\n4+5 ⇒ 2\n7+8 ⇒ 2\n2+6 ⇒ 16\n2+2 ⇒ 1\n2+8 ⇒ ?",
+    "answer": 64,
+    "pattern": "2^(b−a)",
+    "condition": "b>=a"
+  },
+  {
+    "quest": "Quiz#6674:\n3+5 ⇒ 45\n5+5 ⇒ 65\n2+2 ⇒ 26\n2+3 ⇒ 29\n7+6 ⇒ ?",
+    "answer": 88,
+    "pattern": "concat(a,b)+2b"
+  },
+  {
+    "quest": "Quiz#6675:\n3+5 ⇒ 43\n4+8 ⇒ 68\n7+4 ⇒ 39\n5+2 ⇒ 21\n8+2 ⇒ ?",
+    "answer": 24,
+    "pattern": "concat(b,a)-2b"
+  },
+  {
+    "quest": "Quiz#6676:\n2+2+6 ⇒ 12\n7+2+4 ⇒ 15\n5+2+3 ⇒ 12\n4+3+5 ⇒ 17\n3+3+5 ⇒ ?",
+    "answer": 16,
+    "pattern": "a+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6677:\n3+2 ⇒ 2\n4+5 ⇒ 1\n4+2 ⇒ 5\n3+3 ⇒ 4\n2+2 ⇒ ?",
+    "answer": 5,
+    "pattern": "a-b+n"
+  },
+  {
+    "quest": "Quiz#6678:\n6+3 ⇒ 15\n4+4 ⇒ 12\n6+7 ⇒ 27\n2+2 ⇒ 4\n8+4 ⇒ ?",
+    "answer": 24,
+    "pattern": "a+(b×a÷2)",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#6679:\n5+7+2 ⇒ 31\n4+3+6 ⇒ 24\n4+7+4 ⇒ 30\n3+2+7 ⇒ 20\n7+5+4 ⇒ ?",
+    "answer": 35,
+    "pattern": "a×3+b×2+c×1"
+  },
+  {
+    "quest": "Quiz#6680:\n8+3 ⇒ 0\n5+2 ⇒ 1\n8+2 ⇒ 4\n6+2 ⇒ 2\n7+2 ⇒ ?",
+    "answer": 3,
+    "pattern": "a-2^b",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6681:\n3+3 ⇒ 39\n4+3 ⇒ 41\n5+4 ⇒ 54\n2+4 ⇒ 48\n3+7 ⇒ ?",
+    "answer": 83,
+    "pattern": "concat(b,a)+a+b"
+  },
+  {
+    "quest": "Quiz#6682:\n3+4+7 ⇒ 43\n5+2+4 ⇒ 54\n4+5+2 ⇒ 82\n2+6+2 ⇒ 26\n4+6+3 ⇒ ?",
+    "answer": 99,
+    "pattern": "a²×b+c"
+  },
+  {
+    "quest": "Quiz#6683:\n8+5 ⇒ 42\n6+2 ⇒ 15\n5+2 ⇒ 12\n3+3 ⇒ 8\n4+6 ⇒ ?",
+    "answer": 21,
+    "pattern": "(a−1)×(b+1)",
+    "condition": "a>=1"
+  },
+  {
+    "quest": "Quiz#6684:\n4+4 ⇒ 6\n7+6 ⇒ 10\n8+6 ⇒ 11\n4+8 ⇒ 8\n5+2 ⇒ ?",
+    "answer": 6,
+    "pattern": "a+b/2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#6685:\n2+8 ⇒ 18\n7+2 ⇒ 63\n6+6 ⇒ 54\n7+8 ⇒ 63\n8+6 ⇒ ?",
+    "answer": 72,
+    "pattern": "concat(a,b)-a-b"
+  },
+  {
+    "quest": "Quiz#6686:\n8+4 ⇒ 96\n5+8 ⇒ 65\n5+3 ⇒ 40\n4+6 ⇒ 40\n7+2 ⇒ ?",
+    "answer": 63,
+    "pattern": "a²+a×b"
+  },
+  {
+    "quest": "Quiz#6687:\n7+4+3 ⇒ 57\n5+3+4 ⇒ 34\n3+5+5 ⇒ 22\n6+6+4 ⇒ 50\n7+2+3 ⇒ ?",
+    "answer": 59,
+    "pattern": "a²+b+c+n"
+  },
+  {
+    "quest": "Quiz#6688:\n3+2+7 ⇒ 20\n7+2+3 ⇒ 28\n5+3+7 ⇒ 28\n5+5+3 ⇒ 28\n7+5+4 ⇒ ?",
+    "answer": 35,
+    "pattern": "3a+2b+c"
+  },
+  {
+    "quest": "Quiz#6689:\n2+6+2 ⇒ 64\n2+6+5 ⇒ 88\n2+5+3 ⇒ 56\n3+5+6 ⇒ 88\n4+2+7 ⇒ ?",
+    "answer": 54,
+    "pattern": "(a+b)×(b+c)"
+  },
+  {
+    "quest": "Quiz#6690:\n4+7+2 ⇒ 44\n6+3+4 ⇒ 84\n4+4+3 ⇒ 52\n6+6+2 ⇒ 60\n3+4+3 ⇒ ?",
+    "answer": 45,
+    "pattern": "a²+b×c²"
+  },
+  {
+    "quest": "Quiz#6691:\n4+2 ⇒ 58\n2+6 ⇒ 30\n3+5 ⇒ 44\n5+2 ⇒ 77\n3+6 ⇒ ?",
+    "answer": 45,
+    "pattern": "concat(a,b)+(a^2)"
+  },
+  {
+    "quest": "Quiz#6692:\n2+5+3 ⇒ 3\n4+5+6 ⇒ 2\n6+6+7 ⇒ 1\n7+5+7 ⇒ 2\n3+5+2 ⇒ ?",
+    "answer": 3,
+    "pattern": "max(a,b,c)-min(a,b,c)"
+  },
+  {
+    "quest": "Quiz#6693:\n3+4 ⇒ 11\n6+5 ⇒ 19\n3+2 ⇒ 11\n8+5 ⇒ 25\n8+4 ⇒ ?",
+    "answer": 25,
+    "pattern": "2a+b+n"
+  },
+  {
+    "quest": "Quiz#6694:\n6+3 ⇒ 21\n4+5 ⇒ 25\n7+2 ⇒ 16\n5+4 ⇒ 24\n5+8 ⇒ ?",
+    "answer": 48,
+    "pattern": "b×(a+1)"
+  },
+  {
+    "quest": "Quiz#6695:\n7+6+3 ⇒ 28\n4+3+4 ⇒ 22\n7+3+6 ⇒ 31\n5+5+6 ⇒ 33\n4+3+2 ⇒ ?",
+    "answer": 16,
+    "pattern": "a×1+b×2+c×3"
+  },
+  {
+    "quest": "Quiz#6696:\n2+2+3 ⇒ 45\n3+3+7 ⇒ 70\n4+3+4 ⇒ 77\n5+2+2 ⇒ 74\n2+3+4 ⇒ ?",
+    "answer": 57,
+    "pattern": "concat(b,c)+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#6697:\n7+3 ⇒ 37\n8+7 ⇒ 78\n4+2 ⇒ 24\n5+2 ⇒ 25\n6+2 ⇒ ?",
+    "answer": 26,
+    "pattern": "concat(b,a)"
+  },
+  {
+    "quest": "Quiz#6698:\n2+4+4 ⇒ 68\n2+6+3 ⇒ 62\n4+3+5 ⇒ 96\n2+2+4 ⇒ 64\n3+2+6 ⇒ ?",
+    "answer": 94,
+    "pattern": "concat(a,b)+concat(c,b)"
+  },
+  {
+    "quest": "Quiz#6699:\n7+2+2 ⇒ 12\n7+2+4 ⇒ 15\n5+7+5 ⇒ 20\n2+3+7 ⇒ 16\n5+6+4 ⇒ ?",
+    "answer": 20,
+    "pattern": "a+b+c+n"
+  },
+  {
+    "quest": "Quiz#6700:\n4+7 ⇒ 11\n3+6 ⇒ 18\n7+4 ⇒ 33\n7+2 ⇒ 36\n2+8 ⇒ ?",
+    "answer": 50,
+    "pattern": "(a+b)*n"
+  },
+  
+  {
+    "quest": "Quiz#6701:\n2+4 ⇒ 28\n3+3 ⇒ 39\n2+2 ⇒ 24\n3+2 ⇒ 36\n2+3 ⇒ ?",
+    "answer": 26,
+    "pattern": "concat(a,a×b)",
+    "condition": "a×b≤9"
+  },
+  {
+    "quest": "Quiz#6702:\n2+7 ⇒ 8\n4+5 ⇒ 7\n4+7 ⇒ 9\n6+6 ⇒ 9\n8+4 ⇒ ?",
+    "answer": 8,
+    "pattern": "a÷2+b",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#6703:\n6+5+2 ⇒ 10\n4+3+4 ⇒ 2\n3+2+2 ⇒ 1\n6+4+3 ⇒ 5\n5+6+6 ⇒ ?",
+    "answer": 1,
+    "pattern": "(a-b)²+(b-c)²"
+  },
+  {
+    "quest": "Quiz#6704:\n2+6+3 ⇒ 11\n2+7+6 ⇒ 26\n5+7+6 ⇒ 44\n6+5+2 ⇒ 57\n4+7+4 ⇒ ?",
+    "answer": 72,
+    "pattern": "prev+(a+b+c)",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#6705:\n3+2+7 ⇒ 60\n3+2+5 ⇒ 58\n5+2+2 ⇒ 77\n4+3+5 ⇒ 79\n5+3+5 ⇒ ?",
+    "answer": 90,
+    "pattern": "concat(a,c)+concat(b,a)"
+  },
+  {
+    "quest": "Quiz#6706:\n3+3 ⇒ 24\n7+3 ⇒ 56\n2+5 ⇒ 64\n3+5 ⇒ 96\n8+3 ⇒ ?",
+    "answer": 64,
+    "pattern": "2^b*a",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6707:\n3+2+4 ⇒ 21\n2+5+6 ⇒ 54\n2+2+7 ⇒ 25\n7+7+2 ⇒ 65\n2+5+3 ⇒ ?",
+    "answer": 51,
+    "pattern": "concat(b,c)-a"
+  },
+  {
+    "quest": "Quiz#6708:\n2+6 ⇒ 14\n5+5 ⇒ 15\n6+2 ⇒ 10\n7+5 ⇒ 17\n6+3 ⇒ ?",
+    "answer": 12,
+    "pattern": "(a+b)×2−a"
+  },
+  {
+    "quest": "Quiz#6709:\n7+4+7 ⇒ 81\n4+7+3 ⇒ 50\n3+6+2 ⇒ 38\n2+2+4 ⇒ 26\n4+7+5 ⇒ ?",
+    "answer": 52,
+    "pattern": "c+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#6710:\n3+3 ⇒ 0\n4+8 ⇒ 32\n3+7 ⇒ 28\n5+8 ⇒ 24\n8+8 ⇒ ?",
+    "answer": 0,
+    "pattern": "b×(b−a)",
+    "condition": "b>=a"
+  },
+  {
+    "quest": "Quiz#6711:\n3+2+2 ⇒ 15\n3+4+3 ⇒ 20\n7+6+7 ⇒ 40\n3+5+3 ⇒ 22\n4+4+4 ⇒ ?",
+    "answer": 24,
+    "pattern": "a×3+b×2+c×1"
+  },
+  {
+    "quest": "Quiz#6712:\n7+2+4 ⇒ 57\n2+3+5 ⇒ 18\n7+2+3 ⇒ 56\n2+3+3 ⇒ 16\n7+2+2 ⇒ ?",
+    "answer": 55,
+    "pattern": "a²+b²+c"
+  },
+  {
+    "quest": "Quiz#6713:\n4+7 ⇒ 12\n3+5 ⇒ 10\n4+5 ⇒ 12\n3+3 ⇒ 10\n2+8 ⇒ ?",
+    "answer": 15,
+    "pattern": "a+b+n"
+  },
+  {
+    "quest": "Quiz#6714:\n3+4+6 ⇒ 54\n3+3+4 ⇒ 31\n5+2+5 ⇒ 25\n4+4+6 ⇒ 70\n2+2+4 ⇒ ?",
+    "answer": 12,
+    "pattern": "a×b²+c"
+  },
+  {
+    "quest": "Quiz#6715:\n2+6 ⇒ 18\n4+8 ⇒ 40\n6+5 ⇒ 35\n7+2 ⇒ 16\n3+4 ⇒ ?",
+    "answer": 16,
+    "pattern": "a×b+b"
+  },
+  {
+    "quest": "Quiz#6716:\n5+2+3 ⇒ 4\n6+6+7 ⇒ 1\n4+6+6 ⇒ 2\n4+3+2 ⇒ 2\n5+2+5 ⇒ ?",
+    "answer": 6,
+    "pattern": "|a-b|+|b-c|"
+  },
+  {
+    "quest": "Quiz#6717:\n3+3 ⇒ 0\n8+7 ⇒ 8\n8+2 ⇒ 48\n8+4 ⇒ 32\n5+3 ⇒ ?",
+    "answer": 10,
+    "pattern": "a×(a−b)"
+  },
+  {
+    "quest": "Quiz#6718:\n2+5+6 ⇒ 22\n4+4+2 ⇒ 22\n3+5+2 ⇒ 21\n6+5+2 ⇒ 30\n7+3+5 ⇒ ?",
+    "answer": 32,
+    "pattern": "3a+2b+c"
+  },
+  {
+    "quest": "Quiz#6719:\n7+2 ⇒ 73\n2+6 ⇒ 28\n8+3 ⇒ 86\n8+6 ⇒ 90\n3+3 ⇒ ?",
+    "answer": 38,
+    "pattern": "concat(a,b)+n"
+  },
+  {
+    "quest": "Quiz#6720:\n6+4+6 ⇒ 47\n7+4+3 ⇒ 58\n4+6+5 ⇒ 30\n6+7+6 ⇒ 53\n2+4+6 ⇒ ?",
+    "answer": 19,
+    "pattern": "a²+b+c+n"
+  },
+  {
+    "quest": "Quiz#6721:\n3+8 ⇒ 0\n5+7 ⇒ 25\n4+6 ⇒ 10\n2+2 ⇒ 2\n5+8 ⇒ ?",
+    "answer": 24,
+    "pattern": "2^a-b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6722:\n5+6 ⇒ 29\n2+3 ⇒ 5\n7+4 ⇒ 15\n2+5 ⇒ 17\n7+5 ⇒ ?",
+    "answer": 22,
+    "pattern": "b²−2×b+a"
+  },
+  {
+    "quest": "Quiz#6723:\n3+4 ⇒ 1\n6+2 ⇒ 5\n7+6 ⇒ 4\n8+2 ⇒ 7\n3+6 ⇒ ?",
+    "answer": 0,
+    "pattern": "a-b/2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#6724:\n5+3 ⇒ 13\n3+8 ⇒ 14\n6+8 ⇒ 20\n7+5 ⇒ 19\n2+3 ⇒ ?",
+    "answer": 7,
+    "pattern": "a*2+b"
+  },
+  {
+    "quest": "Quiz#6725:\n2+3 ⇒ 11\n7+7 ⇒ 28\n3+7 ⇒ 24\n2+8 ⇒ 26\n3+3 ⇒ ?",
+    "answer": 12,
+    "pattern": "a+3b"
+  },
+  {
+    "quest": "Quiz#6726:\n4+5+4 ⇒ 1\n3+4+7 ⇒ 4\n5+4+4 ⇒ 1\n3+7+5 ⇒ 4\n2+7+2 ⇒ ?",
+    "answer": 5,
+    "pattern": "max(a,b,c)-min(a,b,c)"
+  },
+  {
+    "quest": "Quiz#6727:\n7+6+6 ⇒ 48\n5+5+6 ⇒ 31\n3+4+2 ⇒ 14\n4+7+6 ⇒ 34\n5+5+7 ⇒ ?",
+    "answer": 32,
+    "pattern": "a×b+c"
+  },
+  {
+    "quest": "Quiz#6728:\n6+6 ⇒ 42\n7+6 ⇒ 49\n5+4 ⇒ 25\n4+8 ⇒ 36\n6+2 ⇒ ?",
+    "answer": 18,
+    "pattern": "a×b+a"
+  },
+  {
+    "quest": "Quiz#6729:\n5+2+6 ⇒ 63\n3+4+2 ⇒ 17\n5+5+6 ⇒ 66\n7+2+2 ⇒ 55\n2+2+2 ⇒ ?",
+    "answer": 10,
+    "pattern": "a²+b+c²"
+  },
+  {
+    "quest": "Quiz#6730:\n7+3 ⇒ 19\n4+4 ⇒ 24\n2+8 ⇒ 74\n5+5 ⇒ 35\n8+7 ⇒ ?",
+    "answer": 64,
+    "pattern": "(a+b)+b²"
+  },
+  {
+    "quest": "Quiz#6731:\n2+2 ⇒ 44\n2+7 ⇒ 99\n2+6 ⇒ 88\n6+3 ⇒ 99\n5+3 ⇒ ?",
+    "answer": 88,
+    "pattern": "concat(a,b)+reverse"
+  },
+  {
+    "quest": "Quiz#6732:\n7+3+4 ⇒ 39\n4+7+3 ⇒ 41\n2+7+6 ⇒ 49\n2+3+2 ⇒ 21\n6+3+6 ⇒ ?",
+    "answer": 45,
+    "pattern": "2a+3b+4c"
+  },
+  {
+    "quest": "Quiz#6733:\n7+7 ⇒ 42\n5+8 ⇒ 35\n3+5 ⇒ 12\n3+6 ⇒ 15\n2+5 ⇒ ?",
+    "answer": 8,
+    "pattern": "a×b−a"
+  },
+  {
+    "quest": "Quiz#6734:\n4+6+2 ⇒ 32\n2+5+7 ⇒ 24\n3+5+5 ⇒ 30\n7+2+3 ⇒ 35\n7+6+2 ⇒ ?",
+    "answer": 56,
+    "pattern": "a×(b+c)"
+  },
+  {
+    "quest": "Quiz#6735:\n3+4+4 ⇒ 20\n4+7+7 ⇒ 30\n5+6+5 ⇒ 31\n7+6+4 ⇒ 38\n3+7+5 ⇒ ?",
+    "answer": 24,
+    "pattern": "a×4+b+c"
+  },
+  {
+    "quest": "Quiz#6736:\n7+5 ⇒ 24\n5+4 ⇒ 9\n8+6 ⇒ 28\n8+3 ⇒ 55\n3+2 ⇒ ?",
+    "answer": 5,
+    "pattern": "a²−b²"
+  },
+  {
+    "quest": "Quiz#6737:\n5+4 ⇒ 13\n3+2 ⇒ 5\n2+6 ⇒ 34\n8+5 ⇒ 24\n5+3 ⇒ ?",
+    "answer": 9,
+    "pattern": "a+2^(b−1)",
+    "condition": "b>=1"
+  },
+  {
+    "quest": "Quiz#6738:\n2+6+7 ⇒ 89\n7+2+4 ⇒ 69\n6+6+4 ⇒ 88\n5+4+4 ⇒ 57\n2+6+5 ⇒ ?",
+    "answer": 65,
+    "pattern": "a²+b²+c²"
+  },
+  {
+    "quest": "Quiz#6739:\n7+8 ⇒ 63\n8+2 ⇒ 10\n5+4 ⇒ 21\n3+6 ⇒ 25\n5+3 ⇒ ?",
+    "answer": 14,
+    "pattern": "(a+2)×(b−1)",
+    "condition": "b>=1"
+  },
+  {
+    "quest": "Quiz#6740:\n7+4 ⇒ 9\n8+3 ⇒ 15\n6+4 ⇒ 6\n5+4 ⇒ 3\n5+5 ⇒ ?",
+    "answer": 0,
+    "pattern": "3×(a−b)"
+  },
+  {
+    "quest": "Quiz#6741:\n6+6 ⇒ 9\n4+6 ⇒ 5\n6+8 ⇒ 8\n2+6 ⇒ 1\n8+2 ⇒ ?",
+    "answer": 15,
+    "pattern": "2×a−b÷2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#6742:\n5+3 ⇒ 58\n4+2 ⇒ 46\n7+2 ⇒ 79\n4+4 ⇒ 48\n4+5 ⇒ ?",
+    "answer": 49,
+    "pattern": "concat(a,a+b)",
+    "condition": "a+b≤9"
+  },
+  {
+    "quest": "Quiz#6743:\n2+4 ⇒ 12\n7+8 ⇒ 15\n6+7 ⇒ 13\n5+5 ⇒ 0\n3+3 ⇒ ?",
+    "answer": 0,
+    "pattern": "b²−a²"
+  },
+  {
+    "quest": "Quiz#6744:\n6+6 ⇒ 7\n7+7 ⇒ 8\n3+3 ⇒ 4\n5+5 ⇒ 6\n4+2 ⇒ ?",
+    "answer": 4,
+    "pattern": "(a÷b)+b",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#6745:\n5+7+3 ⇒ 15\n3+2+6 ⇒ 18\n2+7+2 ⇒ 20\n7+4+7 ⇒ 27\n7+6+5 ⇒ ?",
+    "answer": 34,
+    "pattern": "prev+a",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#6746:\n5+4 ⇒ 55\n2+2 ⇒ 22\n5+3 ⇒ 55\n8+5 ⇒ 88\n8+4 ⇒ ?",
+    "answer": 88,
+    "pattern": "concat(a,b)+(a-b)"
+  },
+  {
+    "quest": "Quiz#6747:\n8+6 ⇒ 17\n3+6 ⇒ 12\n2+6 ⇒ 11\n5+2 ⇒ 8\n6+4 ⇒ ?",
+    "answer": 12,
+    "pattern": "a+3b/2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#6748:\n6+2+5 ⇒ 10\n6+7+6 ⇒ 0\n7+5+4 ⇒ 30\n5+2+4 ⇒ 10\n6+7+5 ⇒ ?",
+    "answer": 10,
+    "pattern": "concat(a,b)-concat(c,b)"
+  },
+  {
+    "quest": "Quiz#6749:\n7+7+5 ⇒ 72\n6+4+6 ⇒ 58\n6+2+6 ⇒ 56\n5+2+4 ⇒ 48\n4+4+3 ⇒ ?",
+    "answer": 41,
+    "pattern": "concat(a,b)-c"
+  },
+  {
+    "quest": "Quiz#6750:\n3+7 ⇒ 71\n4+2 ⇒ 80\n5+2 ⇒ 99\n2+6 ⇒ 50\n3+2 ⇒ ?",
+    "answer": 61,
+    "pattern": "concat(a,b)×2-a"
+  },
+  {
+    "quest": "Quiz#6751:\n7+2 ⇒ 10\n3+7 ⇒ 7\n8+7 ⇒ 42\n6+7 ⇒ 28\n8+3 ⇒ ?",
+    "answer": 18,
+    "pattern": "a×b−2×b"
+  },
+  {
+    "quest": "Quiz#6752:\n2+4+4 ⇒ 11\n6+5+2 ⇒ 15\n3+4+2 ⇒ 12\n7+5+2 ⇒ 18\n5+5+2 ⇒ ?",
+    "answer": 17,
+    "pattern": "a+b+c+n"
+  },
+  {
+    "quest": "Quiz#6753:\n2+2+6 ⇒ 12\n4+2+4 ⇒ 12\n2+6+6 ⇒ 20\n3+3+7 ⇒ 16\n6+4+7 ⇒ ?",
+    "answer": 21,
+    "pattern": "a+b×2+c"
+  },
+  {
+    "quest": "Quiz#6754:\n3+3 ⇒ 42\n5+3 ⇒ 68\n3+2 ⇒ 38\n2+2 ⇒ 26\n3+6 ⇒ ?",
+    "answer": 54,
+    "pattern": "concat(a,b)+(a×b)"
+  },
+  {
+    "quest": "Quiz#6755:\n4+5+5 ⇒ 29\n5+5+5 ⇒ 30\n3+7+7 ⇒ 52\n7+6+2 ⇒ 19\n3+2+7 ⇒ ?",
+    "answer": 17,
+    "pattern": "a+b×c"
+  },
+  {
+    "quest": "Quiz#6756:\n4+3+2 ⇒ 26\n4+2+4 ⇒ 24\n5+5+2 ⇒ 66\n4+3+3 ⇒ 27\n3+4+7 ⇒ ?",
+    "answer": 31,
+    "pattern": "2^a+2^b+c",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#6757:\n4+2 ⇒ 10\n8+2 ⇒ 22\n5+7 ⇒ 33\n4+5 ⇒ 19\n3+3 ⇒ ?",
+    "answer": 9,
+    "pattern": "(a×b)+(a−b)"
+  },
+  {
+    "quest": "Quiz#6758:\n3+5+6 ⇒ 41\n3+3+5 ⇒ 38\n4+5+2 ⇒ 47\n2+6+3 ⇒ 29\n3+4+4 ⇒ ?",
+    "answer": 38,
+    "pattern": "b+concat(a,c)"
+  },
+  {
+    "quest": "Quiz#6759:\n4+6 ⇒ 22\n8+8 ⇒ 40\n3+2 ⇒ 5\n5+8 ⇒ 37\n6+6 ⇒ ?",
+    "answer": 24,
+    "pattern": "b²÷2+a",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#6760:\n6+4+5 ⇒ 74\n6+2+3 ⇒ 36\n2+5+7 ⇒ 59\n6+4+7 ⇒ 94\n5+2+3 ⇒ ?",
+    "answer": 31,
+    "pattern": "a×(b+c)+b×c"
+  },
+  {
+    "quest": "Quiz#6761:\n5+6+3 ⇒ 47\n6+6+5 ⇒ 59\n2+4+3 ⇒ 19\n3+4+3 ⇒ 29\n5+5+3 ⇒ ?",
+    "answer": 48,
+    "pattern": "concat(a,c)-b"
+  },
+  {
+    "quest": "Quiz#6762:\n4+3 ⇒ 19\n4+4 ⇒ 20\n7+4 ⇒ 53\n6+6 ⇒ 42\n5+6 ⇒ ?",
+    "answer": 31,
+    "pattern": "a²+b"
+  },
+  {
+    "quest": "Quiz#6763:\n5+4 ⇒ 21\n6+5 ⇒ 38\n8+3 ⇒ 16\n7+2 ⇒ 11\n7+3 ⇒ ?",
+    "answer": 15,
+    "pattern": "a+2^b",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6764:\n4+3+4 ⇒ 28\n4+4+6 ⇒ 48\n3+5+4 ⇒ 32\n2+2+6 ⇒ 24\n2+3+5 ⇒ ?",
+    "answer": 25,
+    "pattern": "(a+b)×c"
+  },
+  {
+    "quest": "Quiz#6765:\n4+3+4 ⇒ 52\n2+7+4 ⇒ 32\n3+4+4 ⇒ 40\n3+6+2 ⇒ 56\n3+4+5 ⇒ ?",
+    "answer": 41,
+    "pattern": "a²×b+c"
+  },
+  {
+    "quest": "Quiz#6766:\n6+2+3 ⇒ 85\n4+4+4 ⇒ 88\n3+4+7 ⇒ 81\n2+5+2 ⇒ 77\n3+6+3 ⇒ ?",
+    "answer": 99,
+    "pattern": "concat(b,c)+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#6767:\n4+4+7 ⇒ 34\n6+2+6 ⇒ 30\n5+4+4 ⇒ 28\n3+3+2 ⇒ 19\n5+3+5 ⇒ ?",
+    "answer": 31,
+    "pattern": "a×1+b×2+c×3+n"
+  },
+  {
+    "quest": "Quiz#6768:\n2+2+2 ⇒ 24\n4+2+5 ⇒ 47\n4+3+2 ⇒ 45\n4+5+3 ⇒ 48\n5+3+5 ⇒ ?",
+    "answer": 58,
+    "pattern": "concat(a,c)+b"
+  },
+  {
+    "quest": "Quiz#6769:\n3+7+5 ⇒ 20\n4+2+3 ⇒ 21\n2+7+2 ⇒ 13\n3+4+5 ⇒ 17\n5+4+3 ⇒ ?",
+    "answer": 39,
+    "pattern": "2^a+b+c",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6770:\n5+8 ⇒ 15\n4+5 ⇒ 8\n6+4 ⇒ 24\n8+6 ⇒ 48\n4+2 ⇒ ?",
+    "answer": 8,
+    "pattern": "a²−2×a"
+  },
+  {
+    "quest": "Quiz#6771:\n5+2 ⇒ 28\n5+4 ⇒ 16\n3+3 ⇒ 0\n4+2 ⇒ 12\n5+5 ⇒ ?",
+    "answer": 0,
+    "pattern": "2^a-2^b",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#6772:\n2+4+5 ⇒ 47\n6+6+4 ⇒ 70\n7+7+6 ⇒ 83\n6+6+2 ⇒ 68\n3+7+4 ⇒ ?",
+    "answer": 77,
+    "pattern": "concat(b,c)+a"
+  },
+  {
+    "quest": "Quiz#6773:\n2+7+5 ⇒ 70\n3+2+7 ⇒ 42\n3+4+6 ⇒ 72\n3+5+4 ⇒ 60\n7+4+2 ⇒ ?",
+    "answer": 56,
+    "pattern": "a×b×c"
+  },
+  {
+    "quest": "Quiz#6774:\n2+2+5 ⇒ 27\n5+6+5 ⇒ 90\n5+6+2 ⇒ 63\n4+5+5 ⇒ 99\n3+3+5 ⇒ ?",
+    "answer": 18,
+    "pattern": "concat(b,c,a)-concat(a,b,c)"
+  },
+  {
+    "quest": "Quiz#6775:\n3+4 ⇒ 41\n8+3 ⇒ 94\n6+2 ⇒ 70\n2+7 ⇒ 36\n7+4 ⇒ ?",
+    "answer": 85,
+    "pattern": "concat(a,b)+a+b"
+  },
+  {
+    "quest": "Quiz#6776:\n5+3+4 ⇒ 12\n7+6+2 ⇒ 30\n6+3+6 ⇒ 45\n2+7+3 ⇒ 48\n4+5+3 ⇒ ?",
+    "answer": 60,
+    "pattern": "(a+b+c)×n"
+  },
+  {
+    "quest": "Quiz#6777:\n3+7+2 ⇒ 19\n7+7+6 ⇒ 43\n2+4+2 ⇒ 6\n4+5+2 ⇒ 18\n4+5+3 ⇒ ?",
+    "answer": 17,
+    "pattern": "a×b-c"
+  },
+  {
+    "quest": "Quiz#6778:\n4+2 ⇒ 6\n5+5 ⇒ 6\n6+3 ⇒ 8\n4+4 ⇒ 5\n7+7 ⇒ ?",
+    "answer": 8,
+    "pattern": "a+(a/b)",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#6779:\n6+3 ⇒ 21\n6+7 ⇒ 25\n4+5 ⇒ 13\n4+7 ⇒ 15\n2+8 ⇒ ?",
+    "answer": 10,
+    "pattern": "a²÷2+b",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#6780:\n5+4+4 ⇒ 21\n5+6+3 ⇒ 20\n7+3+3 ⇒ 19\n7+3+5 ⇒ 25\n3+2+4 ⇒ ?",
+    "answer": 17,
+    "pattern": "a+b+c×3"
+  },
+  {
+    "quest": "Quiz#6781:\n2+3+6 ⇒ 47\n5+7+4 ⇒ 70\n3+2+2 ⇒ 11\n6+3+6 ⇒ 51\n7+5+3 ⇒ ?",
+    "answer": 41,
+    "pattern": "a+b²+c²"
+  },
+  {
+    "quest": "Quiz#6782:\n4+3+2 ⇒ 26\n5+4+2 ⇒ 43\n6+4+3 ⇒ 55\n3+5+4 ⇒ 45\n7+3+4 ⇒ ?",
+    "answer": 61,
+    "pattern": "a²+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6783:\n7+8 ⇒ 15\n6+2 ⇒ 14\n5+7 ⇒ 22\n7+5 ⇒ 33\n5+3 ⇒ ?",
+    "answer": 28,
+    "pattern": "a*n+b"
+  },
+  {
+    "quest": "Quiz#6784:\n2+4 ⇒ 8\n3+8 ⇒ 16\n4+2 ⇒ 18\n5+7 ⇒ 39\n4+3 ⇒ ?",
+    "answer": 19,
+    "pattern": "b+2^a",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6785:\n2+5+2 ⇒ 27\n7+6+2 ⇒ 78\n7+2+5 ⇒ 77\n3+6+4 ⇒ 40\n2+7+2 ⇒ ?",
+    "answer": 29,
+    "pattern": "concat(a,b)+c"
+  },
+  {
+    "quest": "Quiz#6786:\n7+2+7 ⇒ 27\n5+2+3 ⇒ 17\n7+4+7 ⇒ 33\n5+2+6 ⇒ 23\n4+6+3 ⇒ ?",
+    "answer": 28,
+    "pattern": "a×1+b×3+c×2"
+  },
+  {
+    "quest": "Quiz#6787:\n7+7 ⇒ 48\n4+8 ⇒ 27\n7+5 ⇒ 36\n7+2 ⇒ 18\n3+2 ⇒ ?",
+    "answer": 6,
+    "pattern": "(a−1)×(b+1)",
+    "condition": "a>=1"
+  },
+  {
+    "quest": "Quiz#6788:\n5+5 ⇒ 10\n7+2 ⇒ 11\n2+6 ⇒ 5\n2+7 ⇒ 6\n4+3 ⇒ ?",
+    "answer": 6,
+    "pattern": "2a+b-5"
+  },
+  {
+    "quest": "Quiz#6789:\n5+5+4 ⇒ 41\n3+5+6 ⇒ 41\n7+5+2 ⇒ 41\n4+4+6 ⇒ 26\n5+2+3 ⇒ ?",
+    "answer": 12,
+    "pattern": "a+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6790:\n3+2 ⇒ 7\n5+3 ⇒ 11\n6+4 ⇒ 14\n5+8 ⇒ 21\n4+5 ⇒ ?",
+    "answer": 14,
+    "pattern": "a+b*2"
+  },
+  {
+    "quest": "Quiz#6791:\n5+4 ⇒ 19\n4+6 ⇒ 26\n5+3 ⇒ 13\n2+8 ⇒ 22\n3+8 ⇒ ?",
+    "answer": 29,
+    "pattern": "(a×b)−(a−b)"
+  },
+  {
+    "quest": "Quiz#6792:\n3+5 ⇒ 12\n2+6 ⇒ 9\n5+3 ⇒ 34\n4+7 ⇒ 22\n3+6 ⇒ ?",
+    "answer": 13,
+    "pattern": "2^a+b−1",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6793:\n6+4+2 ⇒ 88\n5+5+3 ⇒ 90\n2+4+2 ⇒ 48\n3+2+3 ⇒ 64\n6+2+2 ⇒ ?",
+    "answer": 84,
+    "pattern": "concat(a,b)+concat(c,b)"
+  },
+  {
+    "quest": "Quiz#6794:\n4+3+5 ⇒ 25\n7+5+6 ⇒ 35\n2+6+3 ⇒ 23\n2+5+6 ⇒ 30\n4+2+5 ⇒ ?",
+    "answer": 23,
+    "pattern": "a×1+b×2+c×3"
+  },
+  {
+    "quest": "Quiz#6795:\n4+4+2 ⇒ 32\n3+3+4 ⇒ 57\n6+7+3 ⇒ 99\n2+5+2 ⇒ 24\n3+7+3 ⇒ ?",
+    "answer": 72,
+    "pattern": "a²+b×c²"
+  },
+  {
+    "quest": "Quiz#6796:\n6+7+5 ⇒ 10\n4+5+5 ⇒ 10\n6+6+6 ⇒ 0\n5+5+7 ⇒ 0\n3+7+6 ⇒ ?",
+    "answer": 40,
+    "pattern": "concat(b,c)-concat(a,c)"
+  },
+  {
+    "quest": "Quiz#6797:\n7+3+3 ⇒ 72\n6+4+4 ⇒ 73\n6+4+3 ⇒ 66\n5+4+4 ⇒ 62\n4+6+2 ⇒ ?",
+    "answer": 61,
+    "pattern": "a²+b²+c²+5"
+  },
+  {
+    "quest": "Quiz#6798:\n7+5+3 ⇒ 20\n2+2+3 ⇒ 12\n6+6+2 ⇒ 16\n7+2+2 ⇒ 13\n7+2+3 ⇒ ?",
+    "answer": 17,
+    "pattern": "a+b+2^c",
+    "condition": "c<=5"
+  },
+  {
+    "quest": "Quiz#6799:\n6+7+4 ⇒ 47\n5+6+4 ⇒ 36\n6+6+5 ⇒ 44\n4+5+7 ⇒ 31\n4+5+3 ⇒ ?",
+    "answer": 28,
+    "pattern": "a×b+c+n"
+  },
+  {
+    "quest": "Quiz#6800:\n5+5 ⇒ 0\n8+7 ⇒ 15\n4+4 ⇒ 0\n6+6 ⇒ 0\n5+2 ⇒ ?",
+    "answer": 21,
+    "pattern": "(a+b)×(a−b)"
+  },
+  {
+    "quest": "Quiz#6801:\n4+3+4 ⇒ 99\n5+2+3 ⇒ 71\n3+2+6 ⇒ 83\n5+2+4 ⇒ 89\n5+3+2 ⇒ ?",
+    "answer": 71,
+    "pattern": "(a+1)×(b+1)×(c+1)-1"
+  },
+  {
+    "quest": "Quiz#6802:\n4+5+3 ⇒ 48\n4+5+6 ⇒ 60\n2+2+6 ⇒ 40\n7+4+6 ⇒ 68\n5+4+6 ⇒ ?",
+    "answer": 60,
+    "pattern": "(a+b+c)×4"
+  },
+  {
+    "quest": "Quiz#6803:\n6+4+4 ⇒ 50\n2+5+5 ⇒ 57\n5+7+5 ⇒ 80\n4+6+6 ⇒ 70\n5+6+7 ⇒ ?",
+    "answer": 72,
+    "pattern": "a+concat(b,c)"
+  },
+  {
+    "quest": "Quiz#6804:\n4+4 ⇒ 12\n6+7 ⇒ 39\n4+3 ⇒ 11\n7+5 ⇒ 69\n5+2 ⇒ ?",
+    "answer": 18,
+    "pattern": "b+2^(a−1)",
+    "condition": "a>=1"
+  },
+  {
+    "quest": "Quiz#6805:\n2+6 ⇒ 19\n6+6 ⇒ 39\n5+6 ⇒ 34\n5+8 ⇒ 37\n2+8 ⇒ ?",
+    "answer": 22,
+    "pattern": "concat(a,b)/2+b",
+    "condition": "concatgenap"
+  },
+  {
+    "quest": "Quiz#6806:\n7+2+2 ⇒ 32\n5+2+5 ⇒ 45\n6+3+3 ⇒ 45\n6+6+2 ⇒ 60\n2+5+2 ⇒ ?",
+    "answer": 24,
+    "pattern": "a×b+b×c+c×a"
+  },
+  {
+    "quest": "Quiz#6807:\n7+3 ⇒ 33\n7+4 ⇒ 44\n7+2 ⇒ 22\n6+4 ⇒ 44\n4+8 ⇒ ?",
+    "answer": 88,
+    "pattern": "concat(b,a)-a+b"
+  },
+  {
+    "quest": "Quiz#6808:\n5+7 ⇒ 59\n5+2 ⇒ 49\n4+7 ⇒ 50\n8+6 ⇒ 84\n6+3 ⇒ ?",
+    "answer": 60,
+    "pattern": "concat(a,b)-a+b"
+  },
+  {
+    "quest": "Quiz#6809:\n4+7 ⇒ 60\n6+5 ⇒ 46\n3+8 ⇒ 67\n5+7 ⇒ 61\n3+2 ⇒ ?",
+    "answer": 19,
+    "pattern": "concat(b,a)-2b"
+  },
+  {
+    "quest": "Quiz#6810:\n2+5+4 ⇒ 43\n3+6+4 ⇒ 75\n7+4+3 ⇒ 87\n2+5+6 ⇒ 63\n2+7+4 ⇒ ?",
+    "answer": 59,
+    "pattern": "a×b×c+3"
+  },
+  {
+    "quest": "Quiz#6811:\n4+6 ⇒ 22\n3+2 ⇒ 7\n6+4 ⇒ 26\n4+5 ⇒ 19\n3+5 ⇒ ?",
+    "answer": 13,
+    "pattern": "(a−b)+(a×b)"
+  },
+  {
+    "quest": "Quiz#6812:\n2+6+3 ⇒ 21\n4+6+6 ⇒ 60\n2+2+2 ⇒ 8\n2+2+7 ⇒ 53\n4+7+6 ⇒ ?",
+    "answer": 64,
+    "pattern": "a×b+c²"
+  },
+  {
+    "quest": "Quiz#6813:\n7+2+6 ⇒ 49\n5+4+3 ⇒ 8\n3+3+4 ⇒ 1\n6+5+2 ⇒ 6\n6+2+6 ⇒ ?",
+    "answer": 40,
+    "pattern": "concat(a,c)-concat(b,a)"
+  },
+  {
+    "quest": "Quiz#6814:\n2+6 ⇒ 16\n3+4 ⇒ 10\n6+6 ⇒ 32\n8+4 ⇒ 20\n4+5 ⇒ ?",
+    "answer": 18,
+    "pattern": "(a+2)×(b−2)",
+    "condition": "b>=2"
+  },
+  {
+    "quest": "Quiz#6815:\n3+3 ⇒ 9\n6+8 ⇒ 20\n2+8 ⇒ 12\n4+7 ⇒ 15\n5+6 ⇒ ?",
+    "answer": 16,
+    "pattern": "(a+b)×2−b"
+  },
+  {
+    "quest": "Quiz#6816:\n2+5+5 ⇒ 70\n5+2+2 ⇒ 28\n7+3+3 ⇒ 60\n5+5+3 ⇒ 80\n3+5+4 ⇒ ?",
+    "answer": 72,
+    "pattern": "(a+b)×(b+c)"
+  },
+  {
+    "quest": "Quiz#6817:\n4+4 ⇒ 1\n4+3 ⇒ 3\n5+4 ⇒ 4\n4+6 ⇒ 2\n2+4 ⇒ ?",
+    "answer": 3,
+    "pattern": "a-b+n"
+  },
+  {
+    "quest": "Quiz#6818:\n2+3+2 ⇒ 15\n5+5+2 ⇒ 52\n6+3+4 ⇒ 49\n5+7+3 ⇒ 77\n3+5+5 ⇒ ?",
+    "answer": 39,
+    "pattern": "a²+b²+c"
+  },
+  {
+    "quest": "Quiz#6819:\n2+7+7 ⇒ 21\n7+7+2 ⇒ 51\n4+4+6 ⇒ 22\n2+7+2 ⇒ 16\n2+3+2 ⇒ ?",
+    "answer": 8,
+    "pattern": "a×b+c"
+  },
+  {
+    "quest": "Quiz#6820:\n6+4 ⇒ 4\n8+3 ⇒ 32\n8+6 ⇒ 4\n5+2 ⇒ 8\n6+3 ⇒ ?",
+    "answer": 8,
+    "pattern": "2^(a−b)",
+    "condition": "a>=b"
+  },
+  {
+    "quest": "Quiz#6821:\n5+5 ⇒ 27\n2+5 ⇒ 30\n8+5 ⇒ 24\n6+4 ⇒ 10\n6+5 ⇒ ?",
+    "answer": 26,
+    "pattern": "2^b-a",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6822:\n4+3+7 ⇒ 25\n3+3+3 ⇒ 18\n7+2+3 ⇒ 28\n4+3+5 ⇒ 23\n4+3+3 ⇒ ?",
+    "answer": 21,
+    "pattern": "3a+2b+c"
+  },
+  {
+    "quest": "Quiz#6823:\n6+6 ⇒ 42\n7+7 ⇒ 56\n7+4 ⇒ 32\n6+2 ⇒ 14\n8+6 ⇒ ?",
+    "answer": 54,
+    "pattern": "b×(a+1)"
+  },
+  {
+    "quest": "Quiz#6824:\n3+3+5 ⇒ 84\n6+7+3 ⇒ 99\n2+2+6 ⇒ 76\n6+4+2 ⇒ 52\n3+6+3 ⇒ ?",
+    "answer": 63,
+    "pattern": "a²+b×c²"
+  },
+  {
+    "quest": "Quiz#6825:\n5+7+2 ⇒ 25\n6+5+4 ⇒ 28\n3+7+2 ⇒ 23\n6+2+3 ⇒ 19\n2+2+3 ⇒ ?",
+    "answer": 15,
+    "pattern": "a×1+b×2+c×3"
+  },
+  {
+    "quest": "Quiz#6826:\n5+5 ⇒ 24\n2+2 ⇒ 3\n8+2 ⇒ 12\n3+3 ⇒ 8\n6+3 ⇒ ?",
+    "answer": 16,
+    "pattern": "(a×b)−(a÷b)",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#6827:\n3+3+2 ⇒ 16\n5+2+7 ⇒ 42\n2+5+7 ⇒ 42\n5+5+2 ⇒ 20\n6+4+7 ⇒ ?",
+    "answer": 45,
+    "pattern": "a+b+c×5"
+  },
+  {
+    "quest": "Quiz#6828:\n3+6+2 ⇒ 56\n3+6+4 ⇒ 58\n5+2+6 ⇒ 56\n3+7+4 ⇒ 67\n3+4+7 ⇒ ?",
+    "answer": 43,
+    "pattern": "a²×b+c"
+  },
+  {
+    "quest": "Quiz#6829:\n3+3+5 ⇒ 25\n3+5+6 ⇒ 33\n6+3+7 ⇒ 36\n7+6+4 ⇒ 35\n3+4+3 ⇒ ?",
+    "answer": 25,
+    "pattern": "a×1+b×2+c×3+n"
+  },
+  {
+    "quest": "Quiz#6830:\n4+2 ⇒ 6\n8+2 ⇒ 10\n4+3 ⇒ 10\n6+8 ⇒ 62\n3+4 ⇒ ?",
+    "answer": 15,
+    "pattern": "a+b²−b"
+  },
+  {
+    "quest": "Quiz#6831:\n3+6+3 ⇒ 22\n5+3+6 ⇒ 23\n3+3+6 ⇒ 18\n7+7+2 ⇒ 55\n7+5+2 ⇒ ?",
+    "answer": 42,
+    "pattern": "a×b+c+n"
+  },
+  {
+    "quest": "Quiz#6832:\n2+7+2 ⇒ 57\n7+5+3 ⇒ 83\n4+7+5 ⇒ 90\n6+4+5 ⇒ 77\n2+4+5 ⇒ ?",
+    "answer": 45,
+    "pattern": "a²+b²+c²"
+  },
+  {
+    "quest": "Quiz#6833:\n6+7+7 ⇒ 41\n3+5+2 ⇒ 22\n5+2+6 ⇒ 23\n4+7+3 ⇒ 31\n2+2+2 ⇒ ?",
+    "answer": 12,
+    "pattern": "a×1+b×3+c×2"
+  },
+  {
+    "quest": "Quiz#6834:\n4+6 ⇒ 22\n4+5 ⇒ 21\n2+7 ⇒ 11\n3+2 ⇒ 10\n3+8 ⇒ ?",
+    "answer": 16,
+    "pattern": "2^a+b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6835:\n2+8 ⇒ 16\n3+8 ⇒ 23\n6+3 ⇒ 51\n3+2 ⇒ 17\n7+5 ⇒ ?",
+    "answer": 68,
+    "pattern": "a²+2×a+b"
+  },
+  {
+    "quest": "Quiz#6836:\n2+5+3 ⇒ 17\n6+2+5 ⇒ 16\n4+6+6 ⇒ 40\n7+2+4 ⇒ 15\n3+4+6 ⇒ ?",
+    "answer": 27,
+    "pattern": "a+b×c"
+  },
+  {
+    "quest": "Quiz#6837:\n3+3 ⇒ 0\n7+4 ⇒ 9\n5+5 ⇒ 0\n5+4 ⇒ 3\n6+4 ⇒ ?",
+    "answer": 6,
+    "pattern": "(a−b)×3"
+  },
+  {
+    "quest": "Quiz#6838:\n3+4 ⇒ 19\n5+2 ⇒ 17\n5+5 ⇒ 35\n4+5 ⇒ 29\n5+3 ⇒ ?",
+    "answer": 23,
+    "pattern": "(a+b)+(a×b)"
+  },
+  {
+    "quest": "Quiz#6839:\n3+7+7 ⇒ 91\n4+3+4 ⇒ 40\n5+6+6 ⇒ 96\n4+3+7 ⇒ 61\n2+7+3 ⇒ ?",
+    "answer": 41,
+    "pattern": "a×b+b×c+c×a"
+  },
+  {
+    "quest": "Quiz#6840:\n2+2+3 ⇒ 9\n5+3+6 ⇒ 41\n3+5+6 ⇒ 19\n5+5+7 ⇒ 44\n4+2+4 ⇒ ?",
+    "answer": 22,
+    "pattern": "2^a+b+c",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6841:\n4+2+4 ⇒ 84\n3+7+2 ⇒ 64\n4+7+3 ⇒ 84\n3+5+4 ⇒ 80\n4+3+5 ⇒ ?",
+    "answer": 96,
+    "pattern": "concat(a,b)+concat(c,b)"
+  },
+  {
+    "quest": "Quiz#6842:\n8+2 ⇒ 20\n4+4 ⇒ 17\n7+7 ⇒ 50\n2+2 ⇒ 5\n3+3 ⇒ ?",
+    "answer": 10,
+    "pattern": "(a×b)+(a÷b)",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#6843:\n3+4 ⇒ 24\n4+3 ⇒ 24\n5+4 ⇒ 48\n4+4 ⇒ 32\n5+3 ⇒ ?",
+    "answer": 40,
+    "pattern": "2^a+2^b",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#6844:\n5+4+4 ⇒ 29\n5+4+2 ⇒ 27\n5+3+3 ⇒ 23\n2+6+6 ⇒ 38\n2+6+3 ⇒ ?",
+    "answer": 35,
+    "pattern": "a+b×5+c"
+  },
+  {
+    "quest": "Quiz#6845:\n4+7+5 ⇒ 48\n5+3+4 ⇒ 35\n2+6+7 ⇒ 26\n3+5+3 ⇒ 24\n7+7+5 ⇒ ?",
+    "answer": 84,
+    "pattern": "a×(b+c)"
+  },
+  {
+    "quest": "Quiz#6846:\n2+2 ⇒ 3\n4+3 ⇒ 5\n8+4 ⇒ 8\n4+2 ⇒ 4\n2+8 ⇒ ?",
+    "answer": 9,
+    "pattern": "a/2+b",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#6847:\n4+5 ⇒ 80\n3+5 ⇒ 40\n3+6 ⇒ 48\n2+2 ⇒ 8\n3+2 ⇒ ?",
+    "answer": 16,
+    "pattern": "2^a*b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6848:\n4+7+4 ⇒ 45\n6+3+7 ⇒ 49\n6+7+4 ⇒ 49\n6+4+2 ⇒ 32\n2+6+4 ⇒ ?",
+    "answer": 38,
+    "pattern": "2a+3b+4c"
+  },
+  {
+    "quest": "Quiz#6849:\n4+2 ⇒ 9\n5+5 ⇒ 20\n2+2 ⇒ 8\n4+4 ⇒ 16\n2+4 ⇒ ?",
+    "answer": 18,
+    "pattern": "(a+b)²÷a",
+    "condition": "a≠0dana|(a+b)²"
+  },
+  {
+    "quest": "Quiz#6850:\n2+4 ⇒ 4\n8+5 ⇒ 24\n4+8 ⇒ 24\n5+2 ⇒ 0\n2+2 ⇒ ?",
+    "answer": 0,
+    "pattern": "a×(b−2)",
+    "condition": "b>=2"
+  },
+  {
+    "quest": "Quiz#6851:\n7+3+5 ⇒ 46\n5+6+4 ⇒ 46\n7+2+4 ⇒ 30\n5+5+7 ⇒ 74\n5+7+2 ⇒ ?",
+    "answer": 39,
+    "pattern": "a×b+c²"
+  },
+  {
+    "quest": "Quiz#6852:\n2+7+3 ⇒ 16\n7+5+4 ⇒ 69\n5+7+4 ⇒ 47\n4+3+5 ⇒ 42\n5+4+2 ⇒ ?",
+    "answer": 48,
+    "pattern": "concat(a,c)-b"
+  },
+  {
+    "quest": "Quiz#6853:\n5+6+7 ⇒ 2\n2+3+4 ⇒ 2\n6+2+6 ⇒ 4\n7+6+7 ⇒ 1\n4+6+7 ⇒ ?",
+    "answer": 3,
+    "pattern": "max(a,b,c)-min(a,b,c)"
+  },
+  {
+    "quest": "Quiz#6854:\n3+3+2 ⇒ 64\n2+5+2 ⇒ 81\n3+2+4 ⇒ 81\n3+2+2 ⇒ 49\n2+2+3 ⇒ ?",
+    "answer": 49,
+    "pattern": "(a+b+c)²"
+  },
+  {
+    "quest": "Quiz#6855:\n5+3 ⇒ 45\n7+4 ⇒ 63\n5+4 ⇒ 45\n6+7 ⇒ 54\n7+6 ⇒ ?",
+    "answer": 63,
+    "pattern": "concat(a,b)-a-b"
+  },
+  {
+    "quest": "Quiz#6856:\n3+6+2 ⇒ 17\n3+6+6 ⇒ 21\n2+6+7 ⇒ 19\n5+7+3 ⇒ 25\n7+7+5 ⇒ ?",
+    "answer": 33,
+    "pattern": "a×3+b+c"
+  },
+  {
+    "quest": "Quiz#6857:\n3+2 ⇒ 8\n8+7 ⇒ 58\n5+2 ⇒ 12\n8+2 ⇒ 18\n3+7 ⇒ ?",
+    "answer": 23,
+    "pattern": "a×b+2"
+  },
+  {
+    "quest": "Quiz#6858:\n3+4 ⇒ 43\n4+2 ⇒ 58\n2+2 ⇒ 26\n2+5 ⇒ 29\n3+8 ⇒ ?",
+    "answer": 47,
+    "pattern": "concat(a,b)+(a^2)"
+  },
+  {
+    "quest": "Quiz#6859:\n4+6 ⇒ 22\n7+3 ⇒ 52\n5+4 ⇒ 34\n3+4 ⇒ 22\n8+7 ⇒ ?",
+    "answer": 31,
+    "pattern": "concat(a,b)-(a×b)"
+  },
+  {
+    "quest": "Quiz#6860:\n7+6+5 ⇒ 81\n3+5+3 ⇒ 38\n2+4+5 ⇒ 29\n4+2+7 ⇒ 49\n3+2+4 ⇒ ?",
+    "answer": 36,
+    "pattern": "concat(a,b)+c"
+  },
+  {
+    "quest": "Quiz#6861:\n6+7+4 ⇒ 20\n7+2+6 ⇒ 10\n5+4+3 ⇒ 20\n5+3+5 ⇒ 0\n7+6+5 ⇒ ?",
+    "answer": 20,
+    "pattern": "concat(a,b)-concat(c,b)"
+  },
+  {
+    "quest": "Quiz#6862:\n4+4+7 ⇒ 9\n2+6+3 ⇒ 9\n2+4+6 ⇒ 2\n2+5+7 ⇒ 3\n5+7+6 ⇒ ?",
+    "answer": 29,
+    "pattern": "a×b-c"
+  },
+  {
+    "quest": "Quiz#6863:\n6+4+3 ⇒ 13\n4+3+5 ⇒ 25\n5+6+2 ⇒ 38\n6+5+7 ⇒ 56\n7+7+2 ⇒ ?",
+    "answer": 72,
+    "pattern": "prev+(a+b+c)",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#6864:\n5+5 ⇒ 51\n4+2 ⇒ 42\n8+8 ⇒ 81\n3+3 ⇒ 31\n6+2 ⇒ ?",
+    "answer": 63,
+    "pattern": "concat(a,a/b)",
+    "condition": "b|a,a//b≤9"
+  },
+  {
+    "quest": "Quiz#6865:\n4+7+3 ⇒ 14\n7+7+7 ⇒ 21\n7+5+3 ⇒ 28\n5+3+3 ⇒ 33\n4+7+6 ⇒ ?",
+    "answer": 37,
+    "pattern": "prev+a",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#6866:\n5+3+3 ⇒ 45\n7+2+5 ⇒ 70\n3+7+4 ⇒ 84\n4+4+5 ⇒ 80\n2+4+2 ⇒ ?",
+    "answer": 16,
+    "pattern": "a×b×c"
+  },
+  {
+    "quest": "Quiz#6867:\n5+3+7 ⇒ 15\n2+5+3 ⇒ 20\n3+4+4 ⇒ 33\n7+4+3 ⇒ 56\n3+6+2 ⇒ ?",
+    "answer": 55,
+    "pattern": "(a+b+c)×n"
+  },
+  {
+    "quest": "Quiz#6868:\n4+4 ⇒ 0\n7+3 ⇒ 8\n6+4 ⇒ 4\n6+3 ⇒ 6\n7+5 ⇒ ?",
+    "answer": 4,
+    "pattern": "(a−b)×2"
+  },
+  {
+    "quest": "Quiz#6869:\n2+5+4 ⇒ 28\n2+5+5 ⇒ 35\n5+6+4 ⇒ 44\n7+3+5 ⇒ 50\n5+5+4 ⇒ ?",
+    "answer": 40,
+    "pattern": "(a+b)×c"
+  },
+  {
+    "quest": "Quiz#6870:\n7+4+7 ⇒ 81\n2+5+7 ⇒ 32\n5+3+5 ⇒ 58\n4+5+5 ⇒ 50\n5+5+5 ⇒ ?",
+    "answer": 60,
+    "pattern": "b+concat(a,c)"
+  },
+  {
+    "quest": "Quiz#6871:\n7+3+3 ⇒ 70\n5+2+6 ⇒ 46\n3+5+3 ⇒ 32\n6+5+3 ⇒ 62\n2+3+3 ⇒ ?",
+    "answer": 20,
+    "pattern": "concat(a,b)-c"
+  },
+  {
+    "quest": "Quiz#6872:\n6+2+4 ⇒ 14\n5+5+6 ⇒ 43\n4+3+3 ⇒ 15\n5+3+3 ⇒ 16\n3+2+2 ⇒ ?",
+    "answer": 9,
+    "pattern": "a+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6873:\n7+6 ⇒ 79\n4+3 ⇒ 22\n2+7 ⇒ 46\n4+7 ⇒ 58\n3+8 ⇒ ?",
+    "answer": 65,
+    "pattern": "a²+b²−b"
+  },
+  {
+    "quest": "Quiz#6874:\n7+6 ⇒ 32\n3+6 ⇒ 24\n6+6 ⇒ 30\n7+8 ⇒ 38\n4+5 ⇒ ?",
+    "answer": 23,
+    "pattern": "2a+3b"
+  },
+  {
+    "quest": "Quiz#6875:\n3+3 ⇒ 4\n7+7 ⇒ 8\n4+4 ⇒ 5\n2+2 ⇒ 3\n4+2 ⇒ ?",
+    "answer": 6,
+    "pattern": "(a÷b)+a",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#6876:\n2+3+5 ⇒ 37\n2+2+3 ⇒ 25\n5+2+3 ⇒ 28\n2+7+5 ⇒ 77\n5+4+2 ⇒ ?",
+    "answer": 47,
+    "pattern": "a+concat(b,c)"
+  },
+  {
+    "quest": "Quiz#6877:\n7+5+7 ⇒ 64\n2+7+4 ⇒ 76\n2+4+3 ⇒ 45\n6+4+7 ⇒ 53\n4+7+3 ⇒ ?",
+    "answer": 77,
+    "pattern": "concat(b,c)+a"
+  },
+  {
+    "quest": "Quiz#6878:\n5+8 ⇒ 24\n3+8 ⇒ 0\n2+3 ⇒ 1\n4+8 ⇒ 8\n4+4 ⇒ ?",
+    "answer": 12,
+    "pattern": "2^a−b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6879:\n6+2+2 ⇒ 88\n2+3+3 ⇒ 55\n5+2+2 ⇒ 77\n3+2+7 ⇒ 60\n2+3+5 ⇒ ?",
+    "answer": 57,
+    "pattern": "concat(a,c)+concat(b,a)"
+  },
+  {
+    "quest": "Quiz#6880:\n6+2+3 ⇒ 65\n4+5+6 ⇒ 51\n4+4+4 ⇒ 48\n6+3+7 ⇒ 70\n5+4+2 ⇒ ?",
+    "answer": 56,
+    "pattern": "c+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#6881:\n4+5+4 ⇒ 25\n6+4+5 ⇒ 42\n4+3+5 ⇒ 39\n7+6+3 ⇒ 21\n2+3+2 ⇒ ?",
+    "answer": 9,
+    "pattern": "a+b+2^c",
+    "condition": "c<=5"
+  },
+  {
+    "quest": "Quiz#6882:\n5+4 ⇒ 21\n3+5 ⇒ 35\n8+3 ⇒ 16\n5+2 ⇒ 9\n3+3 ⇒ ?",
+    "answer": 11,
+    "pattern": "2^b+a",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6883:\n5+3 ⇒ 12\n4+8 ⇒ 24\n6+3 ⇒ 15\n5+7 ⇒ 28\n6+6 ⇒ ?",
+    "answer": 30,
+    "pattern": "(a−1)×b",
+    "condition": "a>=1"
+  },
+  {
+    "quest": "Quiz#6884:\n2+6+7 ⇒ 87\n4+5+2 ⇒ 43\n5+3+6 ⇒ 93\n3+3+5 ⇒ 48\n4+7+2 ⇒ ?",
+    "answer": 59,
+    "pattern": "a×b×c+3"
+  },
+  {
+    "quest": "Quiz#6885:\n5+4 ⇒ 9\n3+8 ⇒ 19\n7+7 ⇒ 28\n8+8 ⇒ 40\n8+5 ⇒ ?",
+    "answer": 33,
+    "pattern": "a+b*n"
+  },
+  {
+    "quest": "Quiz#6886:\n3+2+5 ⇒ 31\n4+3+5 ⇒ 47\n3+7+6 ⇒ 81\n3+2+7 ⇒ 41\n6+4+6 ⇒ ?",
+    "answer": 84,
+    "pattern": "a×(b+c)+b×c"
+  },
+  {
+    "quest": "Quiz#6887:\n3+3+4 ⇒ 1\n2+5+3 ⇒ 5\n2+7+2 ⇒ 10\n3+4+3 ⇒ 2\n3+4+2 ⇒ ?",
+    "answer": 3,
+    "pattern": "|a-b|+|b-c|"
+  },
+  {
+    "quest": "Quiz#6888:\n4+6+6 ⇒ 52\n3+2+2 ⇒ 34\n5+5+2 ⇒ 57\n7+6+5 ⇒ 81\n6+7+3 ⇒ ?",
+    "answer": 70,
+    "pattern": "concat(a,c)+b"
+  },
+  {
+    "quest": "Quiz#6889:\n2+2 ⇒ 18\n8+4 ⇒ 68\n4+5 ⇒ 20\n4+2 ⇒ 38\n5+7 ⇒ ?",
+    "answer": 8,
+    "pattern": "concat(a,b)-b^2"
+  },
+  {
+    "quest": "Quiz#6890:\n2+5+2 ⇒ 52\n7+3+7 ⇒ 70\n5+4+2 ⇒ 82\n5+2+6 ⇒ 26\n3+4+3 ⇒ ?",
+    "answer": 51,
+    "pattern": "a×b²+c"
+  },
+  {
+    "quest": "Quiz#6891:\n2+2+4 ⇒ 12\n3+5+5 ⇒ 45\n5+5+2 ⇒ 66\n4+4+2 ⇒ 34\n5+4+5 ⇒ ?",
+    "answer": 53,
+    "pattern": "2^a+2^b+c",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#6892:\n3+3+4 ⇒ 28\n7+4+4 ⇒ 39\n3+5+5 ⇒ 53\n2+6+7 ⇒ 87\n6+4+7 ⇒ ?",
+    "answer": 71,
+    "pattern": "a+b²+c²"
+  },
+  {
+    "quest": "Quiz#6893:\n6+5 ⇒ 77\n6+6 ⇒ 78\n6+7 ⇒ 79\n7+4 ⇒ 88\n2+3 ⇒ ?",
+    "answer": 27,
+    "pattern": "concat(a,b)+2a"
+  },
+  {
+    "quest": "Quiz#6894:\n4+5+5 ⇒ 70\n4+3+2 ⇒ 33\n3+3+5 ⇒ 47\n3+5+4 ⇒ 54\n2+5+3 ⇒ ?",
+    "answer": 42,
+    "pattern": "a²+b²+c²+4"
+  },
+  {
+    "quest": "Quiz#6895:\n5+3 ⇒ 3\n2+3 ⇒ 6\n2+5 ⇒ 30\n4+4 ⇒ 12\n4+5 ⇒ ?",
+    "answer": 28,
+    "pattern": "2^b−a",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6896:\n4+6+3 ⇒ 31\n3+3+4 ⇒ 28\n7+5+5 ⇒ 79\n6+4+6 ⇒ 76\n6+2+7 ⇒ ?",
+    "answer": 87,
+    "pattern": "a²+b+c²"
+  },
+  {
+    "quest": "Quiz#6897:\n4+6+4 ⇒ 28\n2+2+5 ⇒ 15\n5+2+3 ⇒ 22\n6+6+6 ⇒ 36\n5+4+3 ⇒ ?",
+    "answer": 26,
+    "pattern": "a×3+b×2+c×1"
+  },
+  {
+    "quest": "Quiz#6898:\n4+2+6 ⇒ 25\n6+7+5 ⇒ 50\n3+2+7 ⇒ 21\n2+4+5 ⇒ 17\n3+3+7 ⇒ ?",
+    "answer": 24,
+    "pattern": "a²+b+c+n"
+  },
+  {
+    "quest": "Quiz#6899:\n2+8 ⇒ 7\n2+5 ⇒ 10\n2+4 ⇒ 12\n6+5 ⇒ 78\n4+8 ⇒ ?",
+    "answer": 24,
+    "pattern": "concat(a,b)×a/b",
+    "condition": "b≠0,hasilbulat"
+  },
+  {
+    "quest": "Quiz#6900:\n2+3 ⇒ 5\n2+7 ⇒ 9\n2+8 ⇒ 10\n4+8 ⇒ 20\n8+5 ⇒ ?",
+    "answer": 28,
+    "pattern": "a+(b×a÷2)",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#6901:\n6+5 ⇒ 29\n2+6 ⇒ 11\n7+8 ⇒ 55\n5+8 ⇒ 39\n3+2 ⇒ ?",
+    "answer": 5,
+    "pattern": "a*b-1"
+  },
+  {
+    "quest": "Quiz#6902:\n4+2 ⇒ 16\n3+5 ⇒ 47\n5+5 ⇒ 45\n5+7 ⇒ 65\n8+8 ⇒ ?",
+    "answer": 72,
+    "pattern": "concat(b,a)-2a"
+  },
+  {
+    "quest": "Quiz#6903:\n6+5+5 ⇒ 49\n2+5+7 ⇒ 55\n5+5+4 ⇒ 49\n2+7+6 ⇒ 74\n6+6+6 ⇒ ?",
+    "answer": 60,
+    "pattern": "concat(b,c)-a"
+  },
+  {
+    "quest": "Quiz#6904:\n7+5 ⇒ 20\n3+4 ⇒ 12\n6+3 ⇒ 18\n4+5 ⇒ 17\n2+7 ⇒ ?",
+    "answer": 16,
+    "pattern": "2a+b+n"
+  },
+  {
+    "quest": "Quiz#6905:\n2+5+2 ⇒ 18\n4+3+2 ⇒ 18\n4+6+3 ⇒ 26\n7+3+5 ⇒ 30\n5+3+6 ⇒ ?",
+    "answer": 28,
+    "pattern": "(a+b+c)×2"
+  },
+  {
+    "quest": "Quiz#6906:\n7+7 ⇒ 77\n5+3 ⇒ 37\n3+6 ⇒ 60\n2+4 ⇒ 40\n2+2 ⇒ ?",
+    "answer": 22,
+    "pattern": "concat(b,a)+a-b"
+  },
+  {
+    "quest": "Quiz#6907:\n4+3+3 ⇒ 79\n2+2+5 ⇒ 53\n3+5+3 ⇒ 95\n2+7+2 ⇒ 71\n6+2+2 ⇒ ?",
+    "answer": 62,
+    "pattern": "(a+1)×(b+1)×(c+1)-1"
+  },
+  {
+    "quest": "Quiz#6908:\n7+4+5 ⇒ 99\n5+2+7 ⇒ 63\n3+5+4 ⇒ 72\n5+5+3 ⇒ 80\n3+2+3 ⇒ ?",
+    "answer": 25,
+    "pattern": "(a+b)×(b+c)"
+  },
+  {
+    "quest": "Quiz#6909:\n7+3+2 ⇒ 35\n6+6+6 ⇒ 0\n4+4+5 ⇒ 1\n6+3+2 ⇒ 26\n5+2+5 ⇒ ?",
+    "answer": 30,
+    "pattern": "concat(a,c)-concat(b,a)"
+  },
+  {
+    "quest": "Quiz#6910:\n7+2+2 ⇒ 25\n2+7+7 ⇒ 25\n2+4+5 ⇒ 5\n6+6+6 ⇒ 0\n2+5+7 ⇒ ?",
+    "answer": 13,
+    "pattern": "(a-b)²+(b-c)²"
+  },
+  {
+    "quest": "Quiz#6911:\n5+5 ⇒ 0\n8+3 ⇒ 10\n8+5 ⇒ 6\n8+4 ⇒ 8\n8+2 ⇒ ?",
+    "answer": 12,
+    "pattern": "2×a−2×b"
+  },
+  {
+    "quest": "Quiz#6912:\n3+3 ⇒ 3\n6+3 ⇒ 12\n5+5 ⇒ 5\n7+7 ⇒ 7\n6+2 ⇒ ?",
+    "answer": 18,
+    "pattern": "a²÷b",
+    "condition": "b|a²"
+  },
+  {
+    "quest": "Quiz#6913:\n5+2+2 ⇒ 74\n5+4+3 ⇒ 97\n3+4+4 ⇒ 78\n6+3+3 ⇒ 96\n2+5+7 ⇒ ?",
+    "answer": 82,
+    "pattern": "concat(b,c)+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#6914:\n6+3+4 ⇒ 48\n6+2+7 ⇒ 47\n5+5+4 ⇒ 61\n7+4+7 ⇒ 72\n6+2+6 ⇒ ?",
+    "answer": 46,
+    "pattern": "a²+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6915:\n5+5+6 ⇒ 9\n6+7+2 ⇒ 54\n6+7+4 ⇒ 72\n6+6+6 ⇒ 0\n5+5+5 ⇒ ?",
+    "answer": 0,
+    "pattern": "concat(b,c,a)-concat(a,b,c)"
+  },
+  {
+    "quest": "Quiz#6916:\n5+3 ⇒ 12\n5+5 ⇒ 22\n4+7 ⇒ 25\n7+2 ⇒ 11\n7+6 ⇒ ?",
+    "answer": 39,
+    "pattern": "a×b−3"
+  },
+  {
+    "quest": "Quiz#6917:\n6+2+4 ⇒ 6\n7+4+3 ⇒ 4\n7+6+7 ⇒ 2\n3+4+2 ⇒ 3\n2+2+5 ⇒ ?",
+    "answer": 3,
+    "pattern": "|a-b|+|b-c|"
+  },
+  {
+    "quest": "Quiz#6918:\n6+5+3 ⇒ 26\n3+3+7 ⇒ 41\n2+2+3 ⇒ 19\n5+3+7 ⇒ 43\n6+7+2 ⇒ ?",
+    "answer": 23,
+    "pattern": "a+b+c×5"
+  },
+  {
+    "quest": "Quiz#6919:\n5+5 ⇒ 70\n8+7 ⇒ 99\n6+3 ⇒ 45\n7+7 ⇒ 98\n8+6 ⇒ ?",
+    "answer": 86,
+    "pattern": "concat(b,a)+3b"
+  },
+  {
+    "quest": "Quiz#6920:\n6+6+6 ⇒ 18\n4+7+4 ⇒ 15\n6+7+6 ⇒ 19\n7+4+4 ⇒ 15\n2+6+6 ⇒ ?",
+    "answer": 14,
+    "pattern": "a×1+b+c"
+  },
+  {
+    "quest": "Quiz#6921:\n2+3 ⇒ 24\n7+6 ⇒ 80\n2+4 ⇒ 33\n5+3 ⇒ 69\n3+6 ⇒ ?",
+    "answer": 61,
+    "pattern": "concat(a,b)+n²"
+  },
+  {
+    "quest": "Quiz#6922:\n2+6 ⇒ 48\n4+8 ⇒ 96\n4+2 ⇒ 12\n3+8 ⇒ 88\n8+6 ⇒ ?",
+    "answer": 84,
+    "pattern": "b²+a×b"
+  },
+  {
+    "quest": "Quiz#6923:\n7+7 ⇒ 18\n4+4 ⇒ 15\n2+2 ⇒ 13\n4+8 ⇒ 20\n2+4 ⇒ ?",
+    "answer": 16,
+    "pattern": "concat(a,b)/a+b",
+    "condition": "a≠0,a|concat"
+  },
+  {
+    "quest": "Quiz#6924:\n7+2+7 ⇒ 50\n6+3+6 ⇒ 18\n7+6+2 ⇒ 17\n7+3+2 ⇒ 17\n5+4+6 ⇒ ?",
+    "answer": 5,
+    "pattern": "(a-b)²+(b-c)²"
+  },
+  {
+    "quest": "Quiz#6925:\n6+6+5 ⇒ 66\n2+4+6 ⇒ 20\n7+6+3 ⇒ 63\n4+5+6 ⇒ 44\n4+3+4 ⇒ ?",
+    "answer": 28,
+    "pattern": "a×(b+c)"
+  },
+  {
+    "quest": "Quiz#6926:\n2+6+4 ⇒ 90\n6+2+4 ⇒ 86\n6+3+6 ⇒ 99\n3+2+5 ⇒ 57\n3+2+4 ⇒ ?",
+    "answer": 56,
+    "pattern": "concat(b,c)+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#6927:\n3+7+5 ⇒ 15\n2+2+4 ⇒ 8\n2+4+5 ⇒ 11\n4+6+6 ⇒ 16\n6+3+5 ⇒ ?",
+    "answer": 14,
+    "pattern": "a+b×1+c"
+  },
+  {
+    "quest": "Quiz#6928:\n8+3 ⇒ 77\n7+8 ⇒ 62\n2+2 ⇒ 18\n8+5 ⇒ 75\n8+6 ⇒ ?",
+    "answer": 74,
+    "pattern": "concat(a,b)-2*b"
+  },
+  {
+    "quest": "Quiz#6929:\n6+8 ⇒ 40\n8+5 ⇒ 42\n7+3 ⇒ 25\n6+2 ⇒ 16\n7+4 ⇒ ?",
+    "answer": 30,
+    "pattern": "(a−2)×(b+2)",
+    "condition": "a>=2"
+  },
+  {
+    "quest": "Quiz#6930:\n7+2+4 ⇒ 30\n5+7+6 ⇒ 71\n5+3+5 ⇒ 40\n5+3+2 ⇒ 19\n6+2+6 ⇒ ?",
+    "answer": 48,
+    "pattern": "a×b+c²"
+  },
+  {
+    "quest": "Quiz#6931:\n3+6 ⇒ 35\n7+3 ⇒ 71\n8+2 ⇒ 79\n6+6 ⇒ 62\n2+5 ⇒ ?",
+    "answer": 20,
+    "pattern": "concat(a,b)-n"
+  },
+  {
+    "quest": "Quiz#6932:\n2+3 ⇒ 6\n6+2 ⇒ 11\n2+2 ⇒ 5\n4+6 ⇒ 12\n4+5 ⇒ ?",
+    "answer": 11,
+    "pattern": "3a/2+b",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#6933:\n2+5 ⇒ 21\n3+3 ⇒ 26\n4+3 ⇒ 51\n2+4 ⇒ 20\n5+2 ⇒ ?",
+    "answer": 69,
+    "pattern": "2^a*b+n",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6934:\n5+3+2 ⇒ 16\n7+2+7 ⇒ 63\n4+2+5 ⇒ 30\n4+2+7 ⇒ 42\n7+4+4 ⇒ ?",
+    "answer": 44,
+    "pattern": "(a+b)×c"
+  },
+  {
+    "quest": "Quiz#6935:\n5+5+6 ⇒ 89\n3+3+5 ⇒ 46\n2+2+2 ⇒ 15\n5+2+2 ⇒ 36\n5+5+2 ⇒ ?",
+    "answer": 57,
+    "pattern": "a²+b²+c²+3"
+  },
+  {
+    "quest": "Quiz#6936:\n5+4+2 ⇒ 23\n4+2+3 ⇒ 11\n5+4+5 ⇒ 26\n4+3+4 ⇒ 16\n5+5+6 ⇒ ?",
+    "answer": 43,
+    "pattern": "a+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6937:\n3+6+7 ⇒ 81\n5+7+3 ⇒ 71\n5+3+3 ⇒ 39\n6+4+5 ⇒ 74\n4+6+6 ⇒ ?",
+    "answer": 84,
+    "pattern": "a×b+b×c+c×a"
+  },
+  {
+    "quest": "Quiz#6938:\n6+3+4 ⇒ 20\n6+6+3 ⇒ 30\n6+5+6 ⇒ 0\n7+2+7 ⇒ 0\n7+5+4 ⇒ ?",
+    "answer": 30,
+    "pattern": "concat(a,b)-concat(c,b)"
+  },
+  {
+    "quest": "Quiz#6939:\n6+4+3 ⇒ 55\n2+3+7 ⇒ 19\n7+4+7 ⇒ 72\n4+3+2 ⇒ 26\n2+5+5 ⇒ ?",
+    "answer": 41,
+    "pattern": "a²+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#6940:\n4+4+4 ⇒ 88\n4+7+2 ⇒ 74\n3+7+5 ⇒ 94\n3+7+3 ⇒ 74\n6+3+2 ⇒ ?",
+    "answer": 86,
+    "pattern": "concat(a,b)+concat(c,b)"
+  },
+  {
+    "quest": "Quiz#6941:\n5+5 ⇒ 15\n4+2 ⇒ 10\n4+7 ⇒ 15\n6+3 ⇒ 15\n8+5 ⇒ ?",
+    "answer": 21,
+    "pattern": "2×a+b"
+  },
+  {
+    "quest": "Quiz#6942:\n7+5 ⇒ 63\n8+8 ⇒ 72\n7+4 ⇒ 63\n6+7 ⇒ 54\n3+7 ⇒ ?",
+    "answer": 27,
+    "pattern": "concat(a,b)-(a+b)"
+  },
+  {
+    "quest": "Quiz#6943:\n3+5+2 ⇒ 77\n4+2+2 ⇒ 18\n5+3+4 ⇒ 49\n7+2+7 ⇒ 35\n5+2+7 ⇒ ?",
+    "answer": 27,
+    "pattern": "a×b²+c"
+  },
+  {
+    "quest": "Quiz#6944:\n4+4+6 ⇒ 42\n3+3+5 ⇒ 32\n7+4+6 ⇒ 72\n2+7+4 ⇒ 17\n3+7+7 ⇒ ?",
+    "answer": 30,
+    "pattern": "concat(a,c)-b"
+  },
+  {
+    "quest": "Quiz#6945:\n6+4 ⇒ 14\n4+8 ⇒ 20\n2+2 ⇒ 6\n8+6 ⇒ 20\n2+3 ⇒ ?",
+    "answer": 8,
+    "pattern": "a+2×b"
+  },
+  {
+    "quest": "Quiz#6946:\n6+2 ⇒ 18\n8+4 ⇒ 40\n7+6 ⇒ 49\n2+6 ⇒ 14\n6+4 ⇒ ?",
+    "answer": 30,
+    "pattern": "a×(b+1)"
+  },
+  {
+    "quest": "Quiz#6947:\n6+2+4 ⇒ 30\n7+5+5 ⇒ 62\n6+5+7 ⇒ 63\n6+4+7 ⇒ 53\n2+3+7 ⇒ ?",
+    "answer": 39,
+    "pattern": "concat(b,c)+a"
+  },
+  {
+    "quest": "Quiz#6948:\n5+2 ⇒ 17\n4+3 ⇒ 19\n5+7 ⇒ 47\n7+4 ⇒ 39\n7+2 ⇒ ?",
+    "answer": 23,
+    "pattern": "a+b+a×b"
+  },
+  {
+    "quest": "Quiz#6949:\n8+4 ⇒ 32\n6+3 ⇒ 21\n7+6 ⇒ 50\n7+5 ⇒ 39\n5+7 ⇒ ?",
+    "answer": 59,
+    "pattern": "a×2+b²"
+  },
+  {
+    "quest": "Quiz#6950:\n2+2+4 ⇒ 46\n5+4+3 ⇒ 98\n3+2+3 ⇒ 56\n4+3+3 ⇒ 77\n6+3+3 ⇒ ?",
+    "answer": 99,
+    "pattern": "concat(a,c)+concat(b,a)"
+  },
+  {
+    "quest": "Quiz#6951:\n6+7+6 ⇒ 48\n5+3+3 ⇒ 14\n2+3+6 ⇒ 20\n5+6+7 ⇒ 47\n3+5+4 ⇒ ?",
+    "answer": 23,
+    "pattern": "a+b×c"
+  },
+  {
+    "quest": "Quiz#6952:\n3+8 ⇒ 7\n6+4 ⇒ 8\n8+4 ⇒ 10\n7+6 ⇒ 10\n4+4 ⇒ ?",
+    "answer": 6,
+    "pattern": "a+b/2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#6953:\n3+2+4 ⇒ 29\n4+4+7 ⇒ 81\n6+7+3 ⇒ 94\n7+2+3 ⇒ 62\n2+2+3 ⇒ ?",
+    "answer": 17,
+    "pattern": "a²+b²+c²"
+  },
+  {
+    "quest": "Quiz#6954:\n3+2+5 ⇒ 30\n7+4+3 ⇒ 84\n2+5+6 ⇒ 60\n2+2+6 ⇒ 24\n4+7+2 ⇒ ?",
+    "answer": 56,
+    "pattern": "a×b×c"
+  },
+  {
+    "quest": "Quiz#6955:\n7+7+2 ⇒ 16\n7+6+7 ⇒ 40\n5+4+4 ⇒ 39\n6+2+3 ⇒ 44\n3+6+4 ⇒ ?",
+    "answer": 65,
+    "pattern": "(a+b+c)×n"
+  },
+  {
+    "quest": "Quiz#6956:\n3+3+3 ⇒ 63\n4+5+2 ⇒ 89\n2+3+5 ⇒ 71\n6+2+3 ⇒ 83\n6+3+2 ⇒ ?",
+    "answer": 83,
+    "pattern": "(a+1)×(b+1)×(c+1)-1"
+  },
+  {
+    "quest": "Quiz#6957:\n3+3 ⇒ 39\n4+7 ⇒ 82\n2+5 ⇒ 56\n6+2 ⇒ 38\n7+5 ⇒ ?",
+    "answer": 71,
+    "pattern": "concat(b,a)+2a"
+  },
+  {
+    "quest": "Quiz#6958:\n3+2 ⇒ 7\n6+8 ⇒ 50\n4+5 ⇒ 23\n5+5 ⇒ 29\n6+5 ⇒ ?",
+    "answer": 35,
+    "pattern": "a*b+n"
+  },
+  {
+    "quest": "Quiz#6959:\n3+4 ⇒ 14\n2+8 ⇒ 18\n7+6 ⇒ 44\n6+2 ⇒ 14\n8+3 ⇒ ?",
+    "answer": 26,
+    "pattern": "a*b+2"
+  },
+  {
+    "quest": "Quiz#6960:\n5+2 ⇒ 8\n8+5 ⇒ 11\n8+2 ⇒ 14\n3+2 ⇒ 4\n2+3 ⇒ ?",
+    "answer": 1,
+    "pattern": "a*2-b"
+  },
+  {
+    "quest": "Quiz#6961:\n6+4+5 ⇒ 90\n4+2+6 ⇒ 48\n5+2+7 ⇒ 63\n6+5+3 ⇒ 88\n3+6+5 ⇒ ?",
+    "answer": 99,
+    "pattern": "(a+b)×(b+c)"
+  },
+  {
+    "quest": "Quiz#6962:\n6+5+2 ⇒ 67\n4+4+3 ⇒ 47\n2+2+4 ⇒ 26\n3+4+4 ⇒ 38\n5+4+7 ⇒ ?",
+    "answer": 61,
+    "pattern": "concat(a,b)+c"
+  },
+  {
+    "quest": "Quiz#6963:\n4+6 ⇒ 48\n7+4 ⇒ 71\n8+4 ⇒ 80\n6+5 ⇒ 64\n6+8 ⇒ ?",
+    "answer": 70,
+    "pattern": "concat(a,b)-(a-b)"
+  },
+  {
+    "quest": "Quiz#6964:\n3+3 ⇒ 1\n2+3 ⇒ 2\n4+5 ⇒ 2\n5+8 ⇒ 8\n4+8 ⇒ ?",
+    "answer": 16,
+    "pattern": "2^(b−a)",
+    "condition": "b>=a"
+  },
+  {
+    "quest": "Quiz#6965:\n3+7+6 ⇒ 52\n6+3+3 ⇒ 48\n6+4+3 ⇒ 49\n6+4+5 ⇒ 65\n2+7+2 ⇒ ?",
+    "answer": 15,
+    "pattern": "a²+b+c²"
+  },
+  {
+    "quest": "Quiz#6966:\n6+6 ⇒ 24\n2+6 ⇒ 8\n6+2 ⇒ 12\n5+6 ⇒ 20\n7+2 ⇒ ?",
+    "answer": 14,
+    "pattern": "a+(a×b÷2)",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#6967:\n3+6 ⇒ 9\n8+7 ⇒ 6\n2+8 ⇒ 14\n5+5 ⇒ 5\n6+5 ⇒ ?",
+    "answer": 4,
+    "pattern": "b*2-a"
+  },
+  {
+    "quest": "Quiz#6968:\n5+5+4 ⇒ 46\n6+5+3 ⇒ 40\n5+3+4 ⇒ 30\n6+6+6 ⇒ 78\n4+4+5 ⇒ ?",
+    "answer": 45,
+    "pattern": "a+b²+c²"
+  },
+  {
+    "quest": "Quiz#6969:\n5+5 ⇒ 45\n7+2 ⇒ 46\n6+7 ⇒ 79\n7+7 ⇒ 91\n3+2 ⇒ ?",
+    "answer": 10,
+    "pattern": "a²+b²−a"
+  },
+  {
+    "quest": "Quiz#6970:\n7+2 ⇒ 13\n7+8 ⇒ 8\n2+5 ⇒ 2\n2+6 ⇒ 2\n6+5 ⇒ ?",
+    "answer": 12,
+    "pattern": "2a-b+n"
+  },
+  {
+    "quest": "Quiz#6971:\n2+6+4 ⇒ 40\n3+6+7 ⇒ 30\n2+2+2 ⇒ 0\n5+7+3 ⇒ 20\n2+5+4 ⇒ ?",
+    "answer": 30,
+    "pattern": "concat(b,c)-concat(a,c)"
+  },
+  {
+    "quest": "Quiz#6972:\n3+2+7 ⇒ 14\n4+4+4 ⇒ 0\n5+4+3 ⇒ 8\n3+3+4 ⇒ 1\n3+2+3 ⇒ ?",
+    "answer": 10,
+    "pattern": "concat(a,c)-concat(b,a)"
+  },
+  {
+    "quest": "Quiz#6973:\n4+4+6 ⇒ 2\n3+2+4 ⇒ 2\n2+4+7 ⇒ 5\n6+5+2 ⇒ 4\n4+5+2 ⇒ ?",
+    "answer": 3,
+    "pattern": "max(a,b,c)-min(a,b,c)"
+  },
+  {
+    "quest": "Quiz#6974:\n7+4+5 ⇒ 70\n3+3+2 ⇒ 20\n7+2+4 ⇒ 57\n6+3+5 ⇒ 50\n5+5+5 ⇒ ?",
+    "answer": 55,
+    "pattern": "a²+b²+c"
+  },
+  {
+    "quest": "Quiz#6975:\n7+2 ⇒ 9\n6+2 ⇒ 16\n3+8 ⇒ 33\n7+3 ⇒ 40\n3+4 ⇒ ?",
+    "answer": 35,
+    "pattern": "(a+b)*n"
+  },
+  {
+    "quest": "Quiz#6976:\n3+3 ⇒ 22\n3+8 ⇒ 62\n5+2 ⇒ 62\n4+3 ⇒ 46\n2+7 ⇒ ?",
+    "answer": 26,
+    "pattern": "2^a*b-2",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#6977:\n4+6 ⇒ 24\n8+5 ⇒ 34\n4+3 ⇒ 18\n2+8 ⇒ 22\n7+5 ⇒ ?",
+    "answer": 31,
+    "pattern": "3a+2b"
+  },
+  {
+    "quest": "Quiz#6978:\n8+5 ⇒ 22\n7+2 ⇒ 22\n2+5 ⇒ 4\n3+2 ⇒ 10\n3+4 ⇒ ?",
+    "answer": 8,
+    "pattern": "a*3-b+3"
+  },
+  {
+    "quest": "Quiz#6979:\n2+7+6 ⇒ 35\n7+4+3 ⇒ 25\n5+3+3 ⇒ 20\n3+3+4 ⇒ 20\n7+5+7 ⇒ ?",
+    "answer": 36,
+    "pattern": "a×1+b×3+c×2"
+  },
+  {
+    "quest": "Quiz#6980:\n7+4+7 ⇒ 19\n3+7+2 ⇒ 14\n7+3+3 ⇒ 16\n5+2+6 ⇒ 17\n3+5+4 ⇒ ?",
+    "answer": 17,
+    "pattern": "a+b+c+n"
+  },
+  {
+    "quest": "Quiz#6981:\n3+7+4 ⇒ 77\n6+5+2 ⇒ 58\n2+7+5 ⇒ 77\n2+3+7 ⇒ 39\n7+3+3 ⇒ ?",
+    "answer": 40,
+    "pattern": "a+concat(b,c)"
+  },
+  {
+    "quest": "Quiz#6982:\n5+8 ⇒ 53\n8+5 ⇒ 69\n4+5 ⇒ 33\n7+6 ⇒ 48\n6+8 ⇒ ?",
+    "answer": 38,
+    "pattern": "concat(a,b)-a*n"
+  },
+  {
+    "quest": "Quiz#6983:\n7+5+4 ⇒ 35\n2+4+5 ⇒ 19\n3+2+5 ⇒ 18\n2+5+7 ⇒ 23\n7+5+2 ⇒ ?",
+    "answer": 33,
+    "pattern": "a×3+b×2+c×1"
+  },
+  {
+    "quest": "Quiz#6984:\n5+4 ⇒ 9\n8+5 ⇒ 27\n8+7 ⇒ 9\n7+7 ⇒ 0\n6+3 ⇒ ?",
+    "answer": 27,
+    "pattern": "concat(a,b)-reverse"
+  },
+  {
+    "quest": "Quiz#6985:\n3+4 ⇒ 31\n3+7 ⇒ 34\n5+8 ⇒ 53\n4+7 ⇒ 43\n3+5 ⇒ ?",
+    "answer": 32,
+    "pattern": "concat(a,b-a)",
+    "condition": "b>a"
+  },
+  {
+    "quest": "Quiz#6986:\n4+4+5 ⇒ 84\n3+3+6 ⇒ 58\n3+3+4 ⇒ 40\n6+5+3 ⇒ 94\n3+2+7 ⇒ ?",
+    "answer": 46,
+    "pattern": "a×b×c+4"
+  },
+  {
+    "quest": "Quiz#6987:\n4+5+4 ⇒ 96\n3+2+6 ⇒ 81\n2+2+6 ⇒ 76\n6+6+2 ⇒ 60\n4+2+5 ⇒ ?",
+    "answer": 66,
+    "pattern": "a²+b×c²"
+  },
+  {
+    "quest": "Quiz#6988:\n6+5 ⇒ 75\n3+4 ⇒ 42\n2+7 ⇒ 41\n5+8 ⇒ 74\n7+8 ⇒ ?",
+    "answer": 94,
+    "pattern": "concat(a,b)+2b"
+  },
+  {
+    "quest": "Quiz#6989:\n2+7 ⇒ 99\n4+3 ⇒ 77\n3+4 ⇒ 77\n4+5 ⇒ 99\n6+2 ⇒ ?",
+    "answer": 88,
+    "pattern": "concat(a,b)+concat(b,a)"
+  },
+  {
+    "quest": "Quiz#6990:\n4+5 ⇒ 29\n7+3 ⇒ 16\n6+6 ⇒ 42\n5+5 ⇒ 30\n7+2 ⇒ ?",
+    "answer": 11,
+    "pattern": "a+b²"
+  },
+  {
+    "quest": "Quiz#6991:\n6+5 ⇒ 66\n5+6 ⇒ 55\n6+8 ⇒ 66\n8+6 ⇒ 88\n8+5 ⇒ ?",
+    "answer": 88,
+    "pattern": "concat(a,b)+a-b"
+  },
+  {
+    "quest": "Quiz#6992:\n4+2+4 ⇒ 36\n4+3+6 ⇒ 54\n3+7+4 ⇒ 67\n5+2+3 ⇒ 53\n4+4+6 ⇒ ?",
+    "answer": 70,
+    "pattern": "a²×b+c"
+  },
+  {
+    "quest": "Quiz#6993:\n5+2 ⇒ 25\n7+8 ⇒ 87\n8+7 ⇒ 78\n2+6 ⇒ 62\n5+4 ⇒ ?",
+    "answer": 45,
+    "pattern": "concat(b,a)"
+  },
+  {
+    "quest": "Quiz#6994:\n2+5+7 ⇒ 23\n6+2+7 ⇒ 29\n7+2+6 ⇒ 31\n5+7+4 ⇒ 33\n3+4+4 ⇒ ?",
+    "answer": 21,
+    "pattern": "3a+2b+c"
+  },
+  {
+    "quest": "Quiz#6995:\n7+4 ⇒ 24\n6+2 ⇒ 7\n3+5 ⇒ 16\n8+4 ⇒ 27\n4+6 ⇒ ?",
+    "answer": 25,
+    "pattern": "(a+1)×(b−1)",
+    "condition": "b>=1"
+  },
+  {
+    "quest": "Quiz#6996:\n5+3+5 ⇒ 55\n7+6+2 ⇒ 68\n7+5+5 ⇒ 95\n6+4+2 ⇒ 44\n7+7+2 ⇒ ?",
+    "answer": 77,
+    "pattern": "a×(b+c)+b×c"
+  },
+  {
+    "quest": "Quiz#6997:\n3+3+5 ⇒ 55\n5+6+2 ⇒ 65\n5+2+2 ⇒ 45\n6+4+7 ⇒ 85\n2+6+2 ⇒ ?",
+    "answer": 50,
+    "pattern": "(a+b+c)×5"
+  },
+  {
+    "quest": "Quiz#6998:\n6+7+6 ⇒ 90\n2+2+4 ⇒ 18\n5+6+4 ⇒ 81\n6+7+7 ⇒ 99\n3+3+7 ⇒ ?",
+    "answer": 36,
+    "pattern": "concat(b,c,a)-concat(a,b,c)"
+  },
+  {
+    "quest": "Quiz#6999:\n2+5+6 ⇒ 54\n2+4+7 ⇒ 45\n2+4+6 ⇒ 44\n2+3+3 ⇒ 31\n2+3+6 ⇒ ?",
+    "answer": 34,
+    "pattern": "concat(b,c)-a"
+  },
+  {
+    "quest": "Quiz#7000:\n5+4 ⇒ 9\n8+5 ⇒ 27\n4+2 ⇒ 18\n8+3 ⇒ 45\n5+5 ⇒ ?",
+    "answer": 0,
+    "pattern": "concat(a,b)-concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7001:\n2+5+2 ⇒ 9\n5+2+7 ⇒ 14\n5+4+6 ⇒ 19\n4+2+7 ⇒ 23\n6+3+4 ⇒ ?",
+    "answer": 29,
+    "pattern": "prev+a",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7002:\n7+6+4 ⇒ 60\n2+7+7 ⇒ 20\n6+7+6 ⇒ 52\n6+3+6 ⇒ 49\n6+2+2 ⇒ ?",
+    "answer": 45,
+    "pattern": "a²+b+c+n"
+  },
+  {
+    "quest": "Quiz#7003:\n2+8 ⇒ 20\n4+5 ⇒ 36\n5+3 ⇒ 40\n3+3 ⇒ 18\n3+8 ⇒ ?",
+    "answer": 33,
+    "pattern": "a²+a×b"
+  },
+  {
+    "quest": "Quiz#7004:\n2+2+7 ⇒ 27\n5+6+7 ⇒ 38\n7+4+5 ⇒ 30\n5+7+4 ⇒ 31\n3+3+3 ⇒ ?",
+    "answer": 18,
+    "pattern": "a×1+b×2+c×3"
+  },
+  {
+    "quest": "Quiz#7005:\n7+7 ⇒ 8\n3+3 ⇒ 4\n8+8 ⇒ 9\n3+6 ⇒ 5\n2+4 ⇒ ?",
+    "answer": 4,
+    "pattern": "a+(b/a)",
+    "condition": "a|b"
+  },
+  {
+    "quest": "Quiz#7006:\n6+2+7 ⇒ 55\n3+6+3 ⇒ 33\n4+3+5 ⇒ 38\n7+7+6 ⇒ 71\n7+4+4 ⇒ ?",
+    "answer": 70,
+    "pattern": "concat(a,b)-c"
+  },
+  {
+    "quest": "Quiz#7007:\n6+5+7 ⇒ 37\n5+4+7 ⇒ 27\n3+4+4 ⇒ 16\n6+6+2 ⇒ 38\n6+6+6 ⇒ ?",
+    "answer": 42,
+    "pattern": "a×b+c"
+  },
+  {
+    "quest": "Quiz#7008:\n2+4+6 ⇒ 14\n5+6+3 ⇒ 41\n3+6+7 ⇒ 21\n2+5+6 ⇒ 15\n3+5+2 ⇒ ?",
+    "answer": 15,
+    "pattern": "2^a+b+c",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7009:\n7+7+3 ⇒ 31\n6+2+7 ⇒ 33\n7+2+7 ⇒ 35\n6+3+3 ⇒ 25\n4+3+4 ⇒ ?",
+    "answer": 27,
+    "pattern": "a×1+b×2+c×3+n"
+  },
+  {
+    "quest": "Quiz#7010:\n6+2+7 ⇒ 69\n4+3+7 ⇒ 50\n6+4+4 ⇒ 68\n5+5+4 ⇒ 59\n5+5+7 ⇒ ?",
+    "answer": 62,
+    "pattern": "concat(a,c)+b"
+  },
+  {
+    "quest": "Quiz#7011:\n5+7+6 ⇒ 42\n6+2+5 ⇒ 19\n3+5+4 ⇒ 22\n3+5+7 ⇒ 26\n3+3+2 ⇒ ?",
+    "answer": 16,
+    "pattern": "a×b+c+n"
+  },
+  {
+    "quest": "Quiz#7012:\n3+6 ⇒ 72\n3+5 ⇒ 61\n4+2 ⇒ 30\n2+2 ⇒ 26\n4+8 ⇒ ?",
+    "answer": 96,
+    "pattern": "concat(b,a)+a+b"
+  },
+  {
+    "quest": "Quiz#7013:\n8+8 ⇒ 80\n3+2 ⇒ 14\n6+3 ⇒ 45\n5+8 ⇒ 38\n4+3 ⇒ ?",
+    "answer": 23,
+    "pattern": "(a+b)+a²"
+  },
+  {
+    "quest": "Quiz#7014:\n3+4+7 ⇒ 5\n2+6+3 ⇒ 9\n4+6+6 ⇒ 18\n2+7+2 ⇒ 12\n2+5+3 ⇒ ?",
+    "answer": 7,
+    "pattern": "a×b-c"
+  },
+  {
+    "quest": "Quiz#7015:\n7+7+5 ⇒ 19\n3+6+6 ⇒ 34\n4+3+4 ⇒ 45\n5+3+2 ⇒ 55\n4+6+4 ⇒ ?",
+    "answer": 69,
+    "pattern": "prev+(a+b+c)",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7016:\n4+6+4 ⇒ 26\n5+6+3 ⇒ 19\n7+6+5 ⇒ 45\n6+3+3 ⇒ 17\n2+2+4 ⇒ ?",
+    "answer": 20,
+    "pattern": "a+b+2^c",
+    "condition": "c<=5"
+  },
+  {
+    "quest": "Quiz#7017:\n6+5 ⇒ 23\n5+3 ⇒ 18\n3+3 ⇒ 12\n3+7 ⇒ 16\n3+5 ⇒ ?",
+    "answer": 14,
+    "pattern": "3a+b"
+  },
+  {
+    "quest": "Quiz#7018:\n2+8 ⇒ 70\n5+5 ⇒ 40\n3+3 ⇒ 18\n5+4 ⇒ 31\n4+3 ⇒ ?",
+    "answer": 21,
+    "pattern": "a×3+b²"
+  },
+  {
+    "quest": "Quiz#7019:\n2+5+2 ⇒ 27\n6+6+5 ⇒ 71\n5+4+5 ⇒ 59\n6+4+4 ⇒ 68\n2+7+5 ⇒ ?",
+    "answer": 32,
+    "pattern": "c+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7020:\n3+6 ⇒ 27\n3+7 ⇒ 36\n4+8 ⇒ 36\n3+8 ⇒ 45\n2+5 ⇒ ?",
+    "answer": 27,
+    "pattern": "concat(b,a)-concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7021:\n6+2 ⇒ 63\n4+2 ⇒ 42\n2+2 ⇒ 21\n8+4 ⇒ 82\n8+2 ⇒ ?",
+    "answer": 84,
+    "pattern": "concat(a,a/b)",
+    "condition": "b|a,a//b≤9"
+  },
+  {
+    "quest": "Quiz#7022:\n2+5+5 ⇒ 30\n7+7+2 ⇒ 79\n3+4+7 ⇒ 41\n2+7+4 ⇒ 31\n4+6+7 ⇒ ?",
+    "answer": 53,
+    "pattern": "b+concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7023:\n4+5 ⇒ 11\n6+8 ⇒ 17\n6+3 ⇒ 12\n6+2 ⇒ 11\n4+3 ⇒ ?",
+    "answer": 9,
+    "pattern": "3a/2+b",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#7024:\n6+6+2 ⇒ 38\n3+7+3 ⇒ 39\n7+6+6 ⇒ 56\n2+6+5 ⇒ 42\n5+4+2 ⇒ ?",
+    "answer": 30,
+    "pattern": "2a+3b+4c"
+  },
+  {
+    "quest": "Quiz#7025:\n4+3+5 ⇒ 29\n4+5+4 ⇒ 52\n3+4+3 ⇒ 27\n5+4+7 ⇒ 55\n2+5+2 ⇒ ?",
+    "answer": 38,
+    "pattern": "2^a+2^b+c",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#7026:\n6+3+7 ⇒ 33\n4+6+6 ⇒ 34\n6+2+4 ⇒ 22\n6+7+5 ⇒ 35\n7+4+7 ⇒ ?",
+    "answer": 36,
+    "pattern": "a×1+b×2+c×3"
+  },
+  {
+    "quest": "Quiz#7027:\n6+3 ⇒ 12\n8+8 ⇒ 56\n6+5 ⇒ 24\n2+2 ⇒ 2\n4+8 ⇒ ?",
+    "answer": 28,
+    "pattern": "a×b−a"
+  },
+  {
+    "quest": "Quiz#7028:\n3+7+3 ⇒ 19\n3+2+3 ⇒ 14\n7+7+4 ⇒ 32\n3+3+4 ⇒ 16\n5+4+6 ⇒ ?",
+    "answer": 25,
+    "pattern": "a×3+b+c"
+  },
+  {
+    "quest": "Quiz#7029:\n7+3+2 ⇒ 61\n5+2+3 ⇒ 43\n3+2+3 ⇒ 27\n2+3+5 ⇒ 79\n4+3+2 ⇒ ?",
+    "answer": 28,
+    "pattern": "a²+b×c²"
+  },
+  {
+    "quest": "Quiz#7030:\n4+5+7 ⇒ 94\n4+3+7 ⇒ 78\n4+2+5 ⇒ 49\n2+3+7 ⇒ 66\n5+4+2 ⇒ ?",
+    "answer": 49,
+    "pattern": "a²+b²+c²+4"
+  },
+  {
+    "quest": "Quiz#7031:\n3+6+2 ⇒ 98\n5+4+2 ⇒ 96\n3+3+4 ⇒ 67\n3+3+3 ⇒ 66\n5+2+2 ⇒ ?",
+    "answer": 74,
+    "pattern": "concat(b,c)+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7032:\n4+2+6 ⇒ 44\n3+5+3 ⇒ 24\n5+7+5 ⇒ 60\n2+3+2 ⇒ 10\n5+4+7 ⇒ ?",
+    "answer": 69,
+    "pattern": "a×b+c²"
+  },
+  {
+    "quest": "Quiz#7033:\n2+2+7 ⇒ 45\n4+4+7 ⇒ 27\n4+5+5 ⇒ 99\n6+7+2 ⇒ 54\n5+6+3 ⇒ ?",
+    "answer": 72,
+    "pattern": "concat(b,c,a)-concat(a,b,c)"
+  },
+  {
+    "quest": "Quiz#7034:\n7+3+4 ⇒ 15\n3+4+2 ⇒ 11\n3+4+6 ⇒ 16\n3+6+2 ⇒ 15\n4+5+7 ⇒ ?",
+    "answer": 21,
+    "pattern": "a+b+c+n"
+  },
+  {
+    "quest": "Quiz#7035:\n2+4+3 ⇒ 45\n5+3+6 ⇒ 41\n7+6+7 ⇒ 74\n5+4+7 ⇒ 52\n3+6+5 ⇒ ?",
+    "answer": 68,
+    "pattern": "a+concat(b,c)"
+  },
+  {
+    "quest": "Quiz#7036:\n5+4 ⇒ 5\n4+4 ⇒ 0\n7+2 ⇒ 35\n8+6 ⇒ 16\n7+6 ⇒ ?",
+    "answer": 7,
+    "pattern": "a×(a−b)"
+  },
+  {
+    "quest": "Quiz#7037:\n3+2+2 ⇒ 9\n2+4+2 ⇒ 20\n5+3+7 ⇒ 20\n2+5+3 ⇒ 37\n2+4+4 ⇒ ?",
+    "answer": 22,
+    "pattern": "a+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7038:\n5+4+4 ⇒ 38\n2+7+4 ⇒ 41\n3+5+7 ⇒ 49\n6+3+2 ⇒ 29\n2+6+4 ⇒ ?",
+    "answer": 38,
+    "pattern": "2a+3b+4c"
+  },
+  {
+    "quest": "Quiz#7039:\n7+3+5 ⇒ 68\n5+7+6 ⇒ 51\n5+4+6 ⇒ 48\n7+7+4 ⇒ 73\n2+7+6 ⇒ ?",
+    "answer": 21,
+    "pattern": "concat(a,b)-c"
+  },
+  {
+    "quest": "Quiz#7040:\n8+3 ⇒ 88\n5+7 ⇒ 55\n4+6 ⇒ 44\n8+8 ⇒ 88\n5+8 ⇒ ?",
+    "answer": 55,
+    "pattern": "concat(a,b)+(a-b)"
+  },
+  {
+    "quest": "Quiz#7041:\n6+2 ⇒ 58\n8+5 ⇒ 82\n2+7 ⇒ 32\n3+8 ⇒ 43\n8+2 ⇒ ?",
+    "answer": 76,
+    "pattern": "concat(a,b)-(a-b)"
+  },
+  {
+    "quest": "Quiz#7042:\n3+7 ⇒ 34\n2+5 ⇒ 23\n3+8 ⇒ 35\n2+7 ⇒ 25\n5+8 ⇒ ?",
+    "answer": 53,
+    "pattern": "concat(a,b-a)",
+    "condition": "b>a"
+  },
+  {
+    "quest": "Quiz#7043:\n2+3 ⇒ 36\n5+3 ⇒ 45\n6+7 ⇒ 88\n2+4 ⇒ 46\n2+7 ⇒ ?",
+    "answer": 76,
+    "pattern": "concat(b,a)+2a"
+  },
+  {
+    "quest": "Quiz#7044:\n3+2+7 ⇒ 23\n4+4+2 ⇒ 20\n3+5+4 ⇒ 26\n7+4+4 ⇒ 27\n7+7+5 ⇒ ?",
+    "answer": 38,
+    "pattern": "a×1+b×3+c×2"
+  },
+  {
+    "quest": "Quiz#7045:\n4+5+5 ⇒ 34\n3+7+5 ⇒ 35\n4+2+4 ⇒ 26\n4+7+3 ⇒ 26\n2+4+3 ⇒ ?",
+    "answer": 21,
+    "pattern": "a+b+c×5"
+  },
+  {
+    "quest": "Quiz#7046:\n7+6+7 ⇒ 91\n7+5+3 ⇒ 56\n6+7+5 ⇒ 72\n3+3+2 ⇒ 15\n2+6+4 ⇒ ?",
+    "answer": 20,
+    "pattern": "a×(b+c)"
+  },
+  {
+    "quest": "Quiz#7047:\n5+2 ⇒ 28\n5+3 ⇒ 24\n5+4 ⇒ 16\n2+2 ⇒ 0\n3+2 ⇒ ?",
+    "answer": 4,
+    "pattern": "2^a-2^b",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#7048:\n3+4+2 ⇒ 29\n2+3+7 ⇒ 62\n5+2+2 ⇒ 33\n5+5+7 ⇒ 99\n2+4+2 ⇒ ?",
+    "answer": 24,
+    "pattern": "a²+b²+c²"
+  },
+  {
+    "quest": "Quiz#7049:\n4+5+2 ⇒ 11\n4+7+5 ⇒ 15\n6+2+7 ⇒ 21\n7+3+6 ⇒ 28\n4+5+7 ⇒ ?",
+    "answer": 32,
+    "pattern": "prev+a",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7050:\n6+6+6 ⇒ 0\n4+7+2 ⇒ 20\n3+2+3 ⇒ 0\n7+2+5 ⇒ 20\n7+3+4 ⇒ ?",
+    "answer": 30,
+    "pattern": "concat(a,b)-concat(c,b)"
+  },
+  {
+    "quest": "Quiz#7051:\n4+5+6 ⇒ 28\n4+4+6 ⇒ 28\n6+3+2 ⇒ 44\n2+2+3 ⇒ 13\n2+6+5 ⇒ ?",
+    "answer": 20,
+    "pattern": "a²+b+c+n"
+  },
+  {
+    "quest": "Quiz#7052:\n4+6+4 ⇒ 60\n7+5+5 ⇒ 48\n5+4+4 ⇒ 39\n7+6+6 ⇒ 59\n3+7+2 ⇒ ?",
+    "answer": 69,
+    "pattern": "concat(b,c)-a"
+  },
+  {
+    "quest": "Quiz#7053:\n7+6+4 ⇒ 51\n3+5+6 ⇒ 42\n7+7+3 ⇒ 51\n7+3+5 ⇒ 45\n4+7+4 ⇒ ?",
+    "answer": 45,
+    "pattern": "(a+b+c)×3"
+  },
+  {
+    "quest": "Quiz#7054:\n3+4+7 ⇒ 49\n5+5+5 ⇒ 50\n6+6+5 ⇒ 60\n6+4+3 ⇒ 30\n4+2+2 ⇒ ?",
+    "answer": 12,
+    "pattern": "(a+b)×c"
+  },
+  {
+    "quest": "Quiz#7055:\n3+3 ⇒ 66\n2+4 ⇒ 66\n6+3 ⇒ 99\n7+2 ⇒ 99\n3+2 ⇒ ?",
+    "answer": 55,
+    "pattern": "concat(a,b)+reverse"
+  },
+  {
+    "quest": "Quiz#7056:\n7+5+6 ⇒ 5\n2+2+3 ⇒ 1\n4+2+5 ⇒ 13\n4+6+6 ⇒ 4\n6+4+7 ⇒ ?",
+    "answer": 13,
+    "pattern": "(a-b)²+(b-c)²"
+  },
+  {
+    "quest": "Quiz#7057:\n5+4 ⇒ 7\n7+4 ⇒ 9\n2+4 ⇒ 4\n6+2 ⇒ 7\n3+6 ⇒ ?",
+    "answer": 6,
+    "pattern": "a+b/2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#7058:\n3+2+5 ⇒ 17\n5+4+3 ⇒ 51\n4+4+5 ⇒ 37\n5+5+7 ⇒ 71\n5+3+3 ⇒ ?",
+    "answer": 43,
+    "pattern": "2^a+2^b+c",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#7059:\n8+2 ⇒ 21\n5+6 ⇒ 28\n3+7 ⇒ 16\n3+4 ⇒ 10\n8+6 ⇒ ?",
+    "answer": 49,
+    "pattern": "(a−1)×(b+1)",
+    "condition": "a>=1"
+  },
+  {
+    "quest": "Quiz#7060:\n6+2 ⇒ 5\n8+3 ⇒ 7\n5+3 ⇒ 5\n3+7 ⇒ 0\n6+6 ⇒ ?",
+    "answer": 5,
+    "pattern": "a-b+n"
+  },
+  {
+    "quest": "Quiz#7061:\n3+5+7 ⇒ 96\n4+5+4 ⇒ 81\n6+3+5 ⇒ 72\n6+2+6 ⇒ 64\n4+3+2 ⇒ ?",
+    "answer": 35,
+    "pattern": "(a+b)×(b+c)"
+  },
+  {
+    "quest": "Quiz#7062:\n3+2+3 ⇒ 47\n3+2+5 ⇒ 71\n3+4+2 ⇒ 59\n2+5+2 ⇒ 53\n4+3+2 ⇒ ?",
+    "answer": 59,
+    "pattern": "(a+1)×(b+1)×(c+1)-1"
+  },
+  {
+    "quest": "Quiz#7063:\n3+4 ⇒ 35\n5+5 ⇒ 45\n8+7 ⇒ 64\n3+7 ⇒ 59\n6+7 ⇒ ?",
+    "answer": 62,
+    "pattern": "concat(b,a)-2b"
+  },
+  {
+    "quest": "Quiz#7064:\n5+3+2 ⇒ 12\n3+2+3 ⇒ 13\n7+4+4 ⇒ 27\n4+6+5 ⇒ 42\n6+6+4 ⇒ ?",
+    "answer": 28,
+    "pattern": "a+b+2^c",
+    "condition": "c<=5"
+  },
+  {
+    "quest": "Quiz#7065:\n2+6+5 ⇒ 87\n5+4+4 ⇒ 99\n4+4+4 ⇒ 88\n3+6+3 ⇒ 96\n6+3+2 ⇒ ?",
+    "answer": 98,
+    "pattern": "concat(a,c)+concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7066:\n3+7 ⇒ 11\n3+4 ⇒ 8\n3+3 ⇒ 7\n7+5 ⇒ 69\n6+6 ⇒ ?",
+    "answer": 38,
+    "pattern": "b+2^(a−1)",
+    "condition": "a>=1"
+  },
+  {
+    "quest": "Quiz#7067:\n2+7+7 ⇒ 21\n5+3+6 ⇒ 21\n5+4+5 ⇒ 25\n4+6+5 ⇒ 29\n4+6+3 ⇒ ?",
+    "answer": 27,
+    "pattern": "a×b+c"
+  },
+  {
+    "quest": "Quiz#7068:\n6+7+2 ⇒ 34\n2+7+3 ⇒ 23\n4+3+5 ⇒ 23\n3+4+2 ⇒ 19\n5+5+6 ⇒ ?",
+    "answer": 31,
+    "pattern": "3a+2b+c"
+  },
+  {
+    "quest": "Quiz#7069:\n3+7+5 ⇒ 33\n5+5+2 ⇒ 23\n2+5+6 ⇒ 33\n6+6+7 ⇒ 43\n7+4+2 ⇒ ?",
+    "answer": 26,
+    "pattern": "a×1+b×2+c×3+n"
+  },
+  {
+    "quest": "Quiz#7070:\n6+5+3 ⇒ 14\n4+2+3 ⇒ 23\n4+3+6 ⇒ 36\n6+5+7 ⇒ 54\n3+4+7 ⇒ ?",
+    "answer": 68,
+    "pattern": "prev+(a+b+c)",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7071:\n5+2 ⇒ 8\n3+3 ⇒ 3\n8+5 ⇒ 11\n6+4 ⇒ 8\n7+4 ⇒ ?",
+    "answer": 10,
+    "pattern": "a*2-b"
+  },
+  {
+    "quest": "Quiz#7072:\n3+5+3 ⇒ 70\n7+2+2 ⇒ 94\n4+5+3 ⇒ 80\n2+3+4 ⇒ 66\n2+2+5 ⇒ ?",
+    "answer": 74,
+    "pattern": "concat(a,b)+concat(c,b)"
+  },
+  {
+    "quest": "Quiz#7073:\n6+2 ⇒ 54\n7+5 ⇒ 63\n4+6 ⇒ 36\n3+5 ⇒ 27\n8+4 ⇒ ?",
+    "answer": 72,
+    "pattern": "concat(a,b)-(a+b)"
+  },
+  {
+    "quest": "Quiz#7074:\n7+2+4 ⇒ 61\n2+6+3 ⇒ 41\n3+5+3 ⇒ 50\n7+4+2 ⇒ 61\n6+2+4 ⇒ ?",
+    "answer": 53,
+    "pattern": "a×b×c+5"
+  },
+  {
+    "quest": "Quiz#7075:\n8+7 ⇒ 9\n6+6 ⇒ 0\n3+2 ⇒ 9\n8+6 ⇒ 18\n7+7 ⇒ ?",
+    "answer": 0,
+    "pattern": "concat(a,b)-concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7076:\n5+3+7 ⇒ 82\n3+4+4 ⇒ 40\n4+2+6 ⇒ 38\n3+6+2 ⇒ 56\n5+3+3 ⇒ ?",
+    "answer": 78,
+    "pattern": "a²×b+c"
+  },
+  {
+    "quest": "Quiz#7077:\n6+7 ⇒ 20\n7+4 ⇒ 15\n4+6 ⇒ 16\n5+7 ⇒ 19\n5+2 ⇒ ?",
+    "answer": 9,
+    "pattern": "a+2×b"
+  },
+  {
+    "quest": "Quiz#7078:\n3+7+7 ⇒ 30\n5+6+6 ⇒ 50\n5+5+2 ⇒ 47\n5+4+6 ⇒ 52\n6+5+6 ⇒ ?",
+    "answer": 61,
+    "pattern": "concat(a,c)-b"
+  },
+  {
+    "quest": "Quiz#7079:\n6+7+7 ⇒ 92\n3+6+4 ⇒ 31\n2+2+7 ⇒ 55\n4+4+6 ⇒ 56\n5+7+3 ⇒ ?",
+    "answer": 41,
+    "pattern": "a²+b+c²"
+  },
+  {
+    "quest": "Quiz#7080:\n3+7+2 ⇒ 24\n3+6+3 ⇒ 23\n6+2+6 ⇒ 21\n2+2+3 ⇒ 11\n7+6+3 ⇒ ?",
+    "answer": 50,
+    "pattern": "a×b+c+n"
+  },
+  {
+    "quest": "Quiz#7081:\n6+3+7 ⇒ 31\n6+4+6 ⇒ 32\n2+2+3 ⇒ 13\n7+5+2 ⇒ 33\n2+5+2 ⇒ ?",
+    "answer": 18,
+    "pattern": "a×3+b×2+c×1"
+  },
+  {
+    "quest": "Quiz#7082:\n2+3+6 ⇒ 11\n7+2+5 ⇒ 28\n7+4+6 ⇒ 51\n6+5+6 ⇒ 68\n5+2+2 ⇒ ?",
+    "answer": 45,
+    "pattern": "(a+b+c)×n"
+  },
+  {
+    "quest": "Quiz#7083:\n5+6 ⇒ 66\n6+6 ⇒ 72\n3+7 ⇒ 70\n4+3 ⇒ 21\n8+3 ⇒ ?",
+    "answer": 33,
+    "pattern": "b²+a×b"
+  },
+  {
+    "quest": "Quiz#7084:\n6+2+6 ⇒ 18\n5+5+7 ⇒ 27\n7+6+6 ⇒ 31\n7+6+4 ⇒ 29\n3+5+2 ⇒ ?",
+    "answer": 20,
+    "pattern": "a+b×3+c"
+  },
+  {
+    "quest": "Quiz#7085:\n7+5+7 ⇒ 20\n2+2+6 ⇒ 4\n7+3+3 ⇒ 36\n7+6+6 ⇒ 9\n6+5+7 ⇒ ?",
+    "answer": 11,
+    "pattern": "concat(a,c)-concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7086:\n5+7+5 ⇒ 20\n2+6+3 ⇒ 40\n3+4+3 ⇒ 10\n3+4+7 ⇒ 10\n4+4+7 ⇒ ?",
+    "answer": 0,
+    "pattern": "concat(b,c)-concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7087:\n7+7 ⇒ 8\n2+8 ⇒ 6\n8+8 ⇒ 9\n3+6 ⇒ 5\n2+2 ⇒ ?",
+    "answer": 3,
+    "pattern": "a+(b/a)",
+    "condition": "a|b"
+  },
+  {
+    "quest": "Quiz#7088:\n6+4 ⇒ 36\n5+6 ⇒ 34\n4+6 ⇒ 29\n3+2 ⇒ 18\n2+4 ⇒ ?",
+    "answer": 16,
+    "pattern": "concat(a,b)/2+b",
+    "condition": "concatgenap"
+  },
+  {
+    "quest": "Quiz#7089:\n4+5 ⇒ 44\n5+6 ⇒ 55\n6+5 ⇒ 66\n5+3 ⇒ 55\n2+5 ⇒ ?",
+    "answer": 22,
+    "pattern": "concat(a,b)+a-b"
+  },
+  {
+    "quest": "Quiz#7090:\n4+7+3 ⇒ 50\n3+5+4 ⇒ 39\n2+5+2 ⇒ 27\n3+7+2 ⇒ 39\n3+6+7 ⇒ ?",
+    "answer": 43,
+    "pattern": "concat(a,c)+b"
+  },
+  {
+    "quest": "Quiz#7091:\n5+3 ⇒ 88\n2+4 ⇒ 66\n2+5 ⇒ 77\n5+2 ⇒ 77\n2+3 ⇒ ?",
+    "answer": 55,
+    "pattern": "concat(a,b)+concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7092:\n6+2+6 ⇒ 68\n6+3+2 ⇒ 65\n2+5+4 ⇒ 29\n4+7+5 ⇒ 52\n7+3+4 ⇒ ?",
+    "answer": 77,
+    "pattern": "concat(a,b)+c"
+  },
+  {
+    "quest": "Quiz#7093:\n5+6 ⇒ 57\n7+4 ⇒ 78\n7+8 ⇒ 87\n2+8 ⇒ 44\n2+2 ⇒ ?",
+    "answer": 47,
+    "pattern": "concat(a,b)+n²"
+  },
+  {
+    "quest": "Quiz#7094:\n7+2+4 ⇒ 57\n2+5+5 ⇒ 34\n6+2+2 ⇒ 42\n6+2+3 ⇒ 43\n5+7+4 ⇒ ?",
+    "answer": 78,
+    "pattern": "a²+b²+c"
+  },
+  {
+    "quest": "Quiz#7095:\n5+6+3 ⇒ 41\n4+5+6 ⇒ 27\n5+3+5 ⇒ 40\n4+3+4 ⇒ 23\n2+3+2 ⇒ ?",
+    "answer": 9,
+    "pattern": "2^a+b+c",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7096:\n7+4 ⇒ 60\n6+8 ⇒ 50\n2+8 ⇒ 14\n4+5 ⇒ 25\n4+3 ⇒ ?",
+    "answer": 23,
+    "pattern": "(a+b)+a²"
+  },
+  {
+    "quest": "Quiz#7097:\n6+2+6 ⇒ 32\n6+6+6 ⇒ 72\n5+6+7 ⇒ 72\n7+4+5 ⇒ 52\n2+6+6 ⇒ ?",
+    "answer": 68,
+    "pattern": "concat(b,c)+a"
+  },
+  {
+    "quest": "Quiz#7098:\n5+5+5 ⇒ 30\n2+4+5 ⇒ 22\n6+7+7 ⇒ 55\n3+2+5 ⇒ 13\n3+2+7 ⇒ ?",
+    "answer": 17,
+    "pattern": "a+b×c"
+  },
+  {
+    "quest": "Quiz#7099:\n5+2 ⇒ 60\n2+3 ⇒ 8\n3+6 ⇒ 44\n4+2 ⇒ 28\n2+8 ⇒ ?",
+    "answer": 28,
+    "pattern": "2^a*b-4",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7100:\n3+2 ⇒ 9\n6+6 ⇒ 0\n7+4 ⇒ 27\n7+2 ⇒ 45\n8+2 ⇒ ?",
+    "answer": 54,
+    "pattern": "concat(a,b)-reverse"
+  },
+  {
+    "quest": "Quiz#7101:\n3+4+7 ⇒ 61\n5+2+7 ⇒ 59\n2+2+2 ⇒ 12\n2+3+2 ⇒ 16\n5+3+2 ⇒ ?",
+    "answer": 31,
+    "pattern": "a×b+b×c+c×a"
+  },
+  {
+    "quest": "Quiz#7102:\n6+7+2 ⇒ 6\n4+6+2 ⇒ 6\n2+2+7 ⇒ 5\n5+5+2 ⇒ 3\n3+4+3 ⇒ ?",
+    "answer": 2,
+    "pattern": "|a-b|+|b-c|"
+  },
+  {
+    "quest": "Quiz#7103:\n2+5+4 ⇒ 40\n3+4+6 ⇒ 31\n6+3+3 ⇒ 47\n5+4+4 ⇒ 45\n5+3+4 ⇒ ?",
+    "answer": 37,
+    "pattern": "a²+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7104:\n4+5+6 ⇒ 74\n7+6+3 ⇒ 81\n7+4+2 ⇒ 50\n2+5+6 ⇒ 52\n7+3+2 ⇒ ?",
+    "answer": 41,
+    "pattern": "a×(b+c)+b×c"
+  },
+  {
+    "quest": "Quiz#7105:\n4+3+7 ⇒ 84\n4+5+4 ⇒ 80\n7+2+7 ⇒ 98\n2+7+5 ⇒ 70\n2+3+3 ⇒ ?",
+    "answer": 18,
+    "pattern": "a×b×c"
+  },
+  {
+    "quest": "Quiz#7106:\n7+7+6 ⇒ 83\n5+4+3 ⇒ 57\n3+6+2 ⇒ 38\n3+6+4 ⇒ 40\n3+3+4 ⇒ ?",
+    "answer": 37,
+    "pattern": "b+concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7107:\n8+4 ⇒ 48\n7+5 ⇒ 24\n7+6 ⇒ 13\n4+4 ⇒ 0\n4+3 ⇒ ?",
+    "answer": 7,
+    "pattern": "(a+b)×(a−b)"
+  },
+  {
+    "quest": "Quiz#7108:\n6+4 ⇒ 10\n6+3 ⇒ 18\n5+5 ⇒ 30\n5+7 ⇒ 48\n4+6 ⇒ ?",
+    "answer": 50,
+    "pattern": "(a+b)*n"
+  },
+  {
+    "quest": "Quiz#7109:\n4+3+7 ⇒ 43\n6+2+7 ⇒ 31\n5+2+6 ⇒ 26\n3+5+6 ⇒ 81\n5+3+3 ⇒ ?",
+    "answer": 48,
+    "pattern": "a×b²+c"
+  },
+  {
+    "quest": "Quiz#7110:\n3+7+3 ⇒ 4\n4+6+3 ⇒ 3\n5+4+4 ⇒ 1\n5+7+7 ⇒ 2\n5+7+3 ⇒ ?",
+    "answer": 4,
+    "pattern": "max(a,b,c)-min(a,b,c)"
+  },
+  {
+    "quest": "Quiz#7111:\n4+2+2 ⇒ 12\n4+4+6 ⇒ 56\n7+5+7 ⇒ 81\n4+3+6 ⇒ 49\n5+4+7 ⇒ ?",
+    "answer": 70,
+    "pattern": "a+b²+c²"
+  },
+  {
+    "quest": "Quiz#7112:\n4+7+5 ⇒ 52\n5+6+4 ⇒ 60\n2+6+4 ⇒ 30\n6+4+5 ⇒ 69\n5+5+4 ⇒ ?",
+    "answer": 59,
+    "pattern": "c+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7113:\n4+2+4 ⇒ 4\n2+7+3 ⇒ 11\n2+6+5 ⇒ 7\n5+4+5 ⇒ 15\n7+7+4 ⇒ ?",
+    "answer": 45,
+    "pattern": "a×b-c"
+  },
+  {
+    "quest": "Quiz#7114:\n2+2+4 ⇒ 20\n3+2+4 ⇒ 26\n5+7+5 ⇒ 95\n3+6+5 ⇒ 63\n4+4+6 ⇒ ?",
+    "answer": 64,
+    "pattern": "a×(b+c)+b×c"
+  },
+  {
+    "quest": "Quiz#7115:\n5+3 ⇒ 8\n8+8 ⇒ 10\n5+8 ⇒ 5\n7+5 ⇒ 13\n8+5 ⇒ ?",
+    "answer": 16,
+    "pattern": "2a-b+n"
+  },
+  {
+    "quest": "Quiz#7116:\n3+7+3 ⇒ 27\n7+4+6 ⇒ 25\n2+3+3 ⇒ 14\n5+3+7 ⇒ 21\n5+6+5 ⇒ ?",
+    "answer": 28,
+    "pattern": "a+b×3+c"
+  },
+  {
+    "quest": "Quiz#7117:\n6+5 ⇒ 21\n6+4 ⇒ 18\n2+4 ⇒ 6\n8+3 ⇒ 20\n4+6 ⇒ ?",
+    "answer": 16,
+    "pattern": "a+(b×a÷2)",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#7118:\n2+3+2 ⇒ 25\n2+2+5 ⇒ 27\n2+6+2 ⇒ 28\n6+6+5 ⇒ 71\n5+3+4 ⇒ ?",
+    "answer": 57,
+    "pattern": "c+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7119:\n7+4 ⇒ 26\n4+7 ⇒ 29\n4+2 ⇒ 14\n2+5 ⇒ 19\n3+6 ⇒ ?",
+    "answer": 24,
+    "pattern": "2a+3b"
+  },
+  {
+    "quest": "Quiz#7120:\n5+2+7 ⇒ 5\n7+7+7 ⇒ 0\n3+7+7 ⇒ 4\n7+3+5 ⇒ 4\n2+6+7 ⇒ ?",
+    "answer": 5,
+    "pattern": "max(a,b,c)-min(a,b,c)"
+  },
+  {
+    "quest": "Quiz#7121:\n3+6+5 ⇒ 68\n4+7+7 ⇒ 81\n2+5+3 ⇒ 55\n3+4+5 ⇒ 48\n2+3+2 ⇒ ?",
+    "answer": 34,
+    "pattern": "a+concat(b,c)"
+  },
+  {
+    "quest": "Quiz#7122:\n6+4 ⇒ 58\n3+4 ⇒ 55\n6+2 ⇒ 32\n5+3 ⇒ 44\n5+7 ⇒ ?",
+    "answer": 96,
+    "pattern": "concat(b,a)+3b"
+  },
+  {
+    "quest": "Quiz#7123:\n5+6+6 ⇒ 99\n5+6+4 ⇒ 81\n2+2+3 ⇒ 9\n3+4+3 ⇒ 90\n3+4+2 ⇒ ?",
+    "answer": 81,
+    "pattern": "concat(b,c,a)-concat(a,b,c)"
+  },
+  {
+    "quest": "Quiz#7124:\n4+4+4 ⇒ 13\n6+2+6 ⇒ 16\n3+2+5 ⇒ 13\n3+5+5 ⇒ 17\n6+2+5 ⇒ ?",
+    "answer": 18,
+    "pattern": "a+b+c+n"
+  },
+  {
+    "quest": "Quiz#7125:\n7+2 ⇒ 13\n5+8 ⇒ 29\n3+8 ⇒ 27\n8+5 ⇒ 23\n3+7 ⇒ ?",
+    "answer": 24,
+    "pattern": "a+3b"
+  },
+  {
+    "quest": "Quiz#7126:\n2+6 ⇒ 30\n2+3 ⇒ 27\n4+4 ⇒ 60\n4+2 ⇒ 58\n4+5 ⇒ ?",
+    "answer": 61,
+    "pattern": "concat(a,b)+(a^2)"
+  },
+  {
+    "quest": "Quiz#7127:\n6+5+2 ⇒ 60\n4+3+7 ⇒ 84\n7+2+5 ⇒ 70\n2+6+3 ⇒ 36\n2+7+7 ⇒ ?",
+    "answer": 98,
+    "pattern": "a×b×c"
+  },
+  {
+    "quest": "Quiz#7128:\n2+2+4 ⇒ 10\n2+4+3 ⇒ 21\n6+5+3 ⇒ 41\n4+4+5 ⇒ 25\n5+2+4 ⇒ ?",
+    "answer": 13,
+    "pattern": "a+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7129:\n5+7 ⇒ 47\n7+6 ⇒ 37\n8+5 ⇒ 28\n8+3 ⇒ 14\n2+2 ⇒ ?",
+    "answer": 4,
+    "pattern": "a+b²−b"
+  },
+  {
+    "quest": "Quiz#7130:\n6+2+4 ⇒ 60\n3+7+4 ⇒ 70\n3+4+7 ⇒ 70\n4+3+5 ⇒ 60\n3+4+2 ⇒ ?",
+    "answer": 45,
+    "pattern": "(a+b+c)×5"
+  },
+  {
+    "quest": "Quiz#7131:\n6+4+3 ⇒ 5\n2+6+4 ⇒ 20\n3+5+7 ⇒ 8\n5+5+6 ⇒ 1\n4+7+3 ⇒ ?",
+    "answer": 25,
+    "pattern": "(a-b)²+(b-c)²"
+  },
+  {
+    "quest": "Quiz#7132:\n5+2 ⇒ 12\n6+2 ⇒ 16\n5+7 ⇒ 27\n3+7 ⇒ 9\n4+6 ⇒ ?",
+    "answer": 16,
+    "pattern": "(a−2)×(b+2)",
+    "condition": "a>=2"
+  },
+  {
+    "quest": "Quiz#7133:\n8+7 ⇒ 38\n4+2 ⇒ 38\n5+4 ⇒ 38\n6+6 ⇒ 30\n8+6 ⇒ ?",
+    "answer": 50,
+    "pattern": "concat(a,b)-b^2"
+  },
+  {
+    "quest": "Quiz#7134:\n5+3+6 ⇒ 22\n4+3+3 ⇒ 17\n4+4+2 ⇒ 21\n5+7+5 ⇒ 44\n6+5+2 ⇒ ?",
+    "answer": 37,
+    "pattern": "a×b+c+n"
+  },
+  {
+    "quest": "Quiz#7135:\n3+5+7 ⇒ 92\n3+4+7 ⇒ 81\n5+4+2 ⇒ 96\n4+2+7 ⇒ 69\n5+3+4 ⇒ ?",
+    "answer": 87,
+    "pattern": "concat(b,c)+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7136:\n7+5+5 ⇒ 80\n7+3+4 ⇒ 77\n7+6+7 ⇒ 83\n6+7+6 ⇒ 73\n3+7+6 ⇒ ?",
+    "answer": 43,
+    "pattern": "concat(a,b)+c"
+  },
+  {
+    "quest": "Quiz#7137:\n3+6+4 ⇒ 18\n4+6+2 ⇒ 24\n4+3+5 ⇒ 24\n5+5+5 ⇒ 42\n2+3+3 ⇒ ?",
+    "answer": 10,
+    "pattern": "2^a+b+c",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7138:\n7+2 ⇒ 7\n2+3 ⇒ 5\n4+2 ⇒ 4\n3+7 ⇒ 38\n8+3 ⇒ ?",
+    "answer": 11,
+    "pattern": "b²−2×b+a"
+  },
+  {
+    "quest": "Quiz#7139:\n3+7+5 ⇒ 68\n3+2+2 ⇒ 20\n2+4+5 ⇒ 21\n2+2+7 ⇒ 15\n3+4+4 ⇒ ?",
+    "answer": 40,
+    "pattern": "a²×b+c"
+  },
+  {
+    "quest": "Quiz#7140:\n3+6+7 ⇒ 70\n2+6+3 ⇒ 65\n6+3+6 ⇒ 42\n3+6+2 ⇒ 65\n7+6+4 ⇒ ?",
+    "answer": 71,
+    "pattern": "concat(b,c)+a"
+  },
+  {
+    "quest": "Quiz#7141:\n2+5+5 ⇒ 41\n4+5+2 ⇒ 50\n5+2+7 ⇒ 43\n5+2+6 ⇒ 42\n3+2+3 ⇒ ?",
+    "answer": 15,
+    "pattern": "2^a+2^b+c",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#7142:\n5+2+6 ⇒ 81\n3+6+3 ⇒ 96\n5+2+2 ⇒ 77\n2+7+4 ⇒ 96\n4+3+7 ⇒ ?",
+    "answer": 81,
+    "pattern": "concat(a,c)+concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7143:\n3+2 ⇒ 38\n4+6 ⇒ 70\n5+4 ⇒ 74\n2+8 ⇒ 44\n3+8 ⇒ ?",
+    "answer": 62,
+    "pattern": "concat(a,b)+(a×b)"
+  },
+  {
+    "quest": "Quiz#7144:\n2+3+6 ⇒ 29\n4+3+7 ⇒ 50\n6+3+2 ⇒ 65\n5+7+4 ⇒ 61\n7+5+5 ⇒ ?",
+    "answer": 80,
+    "pattern": "b+concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7145:\n5+5+4 ⇒ 59\n7+4+7 ⇒ 81\n7+5+4 ⇒ 79\n3+6+7 ⇒ 43\n7+3+2 ⇒ ?",
+    "answer": 75,
+    "pattern": "concat(a,c)+b"
+  },
+  {
+    "quest": "Quiz#7146:\n4+5+2 ⇒ 22\n5+3+7 ⇒ 22\n7+2+7 ⇒ 21\n6+7+7 ⇒ 49\n6+7+5 ⇒ ?",
+    "answer": 47,
+    "pattern": "a×b+c"
+  },
+  {
+    "quest": "Quiz#7147:\n3+2+3 ⇒ 16\n7+2+4 ⇒ 23\n6+7+4 ⇒ 32\n5+7+7 ⇒ 40\n6+3+7 ⇒ ?",
+    "answer": 33,
+    "pattern": "a×1+b×2+c×3"
+  },
+  {
+    "quest": "Quiz#7148:\n6+6+7 ⇒ 84\n2+5+6 ⇒ 42\n6+3+3 ⇒ 27\n6+5+2 ⇒ 22\n4+4+2 ⇒ ?",
+    "answer": 16,
+    "pattern": "(a+b)×c"
+  },
+  {
+    "quest": "Quiz#7149:\n5+6+6 ⇒ 17\n2+6+5 ⇒ 13\n4+7+5 ⇒ 16\n6+2+3 ⇒ 11\n6+2+5 ⇒ ?",
+    "answer": 13,
+    "pattern": "a+b+c×1"
+  },
+  {
+    "quest": "Quiz#7150:\n3+6 ⇒ 15\n5+3 ⇒ 12\n3+5 ⇒ 12\n8+7 ⇒ 53\n3+2 ⇒ ?",
+    "answer": 3,
+    "pattern": "a×b−3"
+  },
+  {
+    "quest": "Quiz#7151:\n5+6 ⇒ 44\n7+4 ⇒ 66\n3+8 ⇒ 22\n3+4 ⇒ 26\n4+4 ⇒ ?",
+    "answer": 36,
+    "pattern": "concat(a,b)-2*b"
+  },
+  {
+    "quest": "Quiz#7152:\n2+4+3 ⇒ 13\n7+3+3 ⇒ 27\n4+6+6 ⇒ 24\n2+6+3 ⇒ 15\n7+7+6 ⇒ ?",
+    "answer": 34,
+    "pattern": "a×3+b+c"
+  },
+  {
+    "quest": "Quiz#7153:\n7+7+7 ⇒ 70\n5+2+6 ⇒ 46\n4+5+3 ⇒ 42\n7+7+3 ⇒ 74\n6+2+5 ⇒ ?",
+    "answer": 57,
+    "pattern": "concat(a,b)-c"
+  },
+  {
+    "quest": "Quiz#7154:\n4+5+2 ⇒ 33\n2+6+2 ⇒ 42\n7+2+7 ⇒ 60\n6+4+2 ⇒ 26\n2+6+5 ⇒ ?",
+    "answer": 63,
+    "pattern": "a+b²+c²"
+  },
+  {
+    "quest": "Quiz#7155:\n2+6+7 ⇒ 92\n5+3+4 ⇒ 53\n4+7+5 ⇒ 93\n6+2+6 ⇒ 79\n2+7+6 ⇒ ?",
+    "answer": 92,
+    "pattern": "a²+b²+c²+3"
+  },
+  {
+    "quest": "Quiz#7156:\n3+7 ⇒ 16\n2+6 ⇒ 12\n6+6 ⇒ 24\n8+5 ⇒ 29\n7+3 ⇒ ?",
+    "answer": 24,
+    "pattern": "3a+b"
+  },
+  {
+    "quest": "Quiz#7157:\n2+4+2 ⇒ 64\n3+4+2 ⇒ 81\n2+3+4 ⇒ 81\n2+2+2 ⇒ 36\n3+2+2 ⇒ ?",
+    "answer": 49,
+    "pattern": "(a+b+c)²"
+  },
+  {
+    "quest": "Quiz#7158:\n6+7+5 ⇒ 18\n6+2+6 ⇒ 24\n2+7+2 ⇒ 26\n5+6+3 ⇒ 31\n6+2+2 ⇒ ?",
+    "answer": 37,
+    "pattern": "prev+a",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7159:\n5+2 ⇒ 9\n5+5 ⇒ 0\n4+2 ⇒ 6\n7+5 ⇒ 6\n6+4 ⇒ ?",
+    "answer": 6,
+    "pattern": "(a−b)×3"
+  },
+  {
+    "quest": "Quiz#7160:\n5+5 ⇒ 27\n4+8 ⇒ 8\n3+4 ⇒ 4\n4+3 ⇒ 13\n5+6 ⇒ ?",
+    "answer": 26,
+    "pattern": "2^a-b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7161:\n4+7+3 ⇒ 84\n2+7+6 ⇒ 94\n3+5+3 ⇒ 70\n5+6+3 ⇒ 92\n3+5+2 ⇒ ?",
+    "answer": 60,
+    "pattern": "concat(a,b)+concat(c,b)"
+  },
+  {
+    "quest": "Quiz#7162:\n7+8 ⇒ 15\n3+5 ⇒ 13\n4+5 ⇒ 19\n4+4 ⇒ 20\n2+4 ⇒ ?",
+    "answer": 22,
+    "pattern": "a+b*n"
+  },
+  {
+    "quest": "Quiz#7163:\n5+6+7 ⇒ 10\n4+4+3 ⇒ 0\n3+6+3 ⇒ 30\n5+6+6 ⇒ 10\n2+3+4 ⇒ ?",
+    "answer": 10,
+    "pattern": "concat(b,c)-concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7164:\n4+3+4 ⇒ 11\n4+4+5 ⇒ 24\n4+3+7 ⇒ 38\n7+6+5 ⇒ 56\n3+3+3 ⇒ ?",
+    "answer": 65,
+    "pattern": "prev+(a+b+c)",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7165:\n7+2 ⇒ 10\n5+2 ⇒ 6\n6+4 ⇒ 4\n8+7 ⇒ 2\n6+5 ⇒ ?",
+    "answer": 2,
+    "pattern": "2×a−2×b"
+  },
+  {
+    "quest": "Quiz#7166:\n5+6+3 ⇒ 20\n3+7+3 ⇒ 0\n5+4+4 ⇒ 10\n5+2+3 ⇒ 20\n7+4+3 ⇒ ?",
+    "answer": 40,
+    "pattern": "concat(a,b)-concat(c,b)"
+  },
+  {
+    "quest": "Quiz#7167:\n3+6+6 ⇒ 51\n5+4+2 ⇒ 43\n7+4+2 ⇒ 67\n5+3+2 ⇒ 36\n7+2+6 ⇒ ?",
+    "answer": 59,
+    "pattern": "a²+b²+c"
+  },
+  {
+    "quest": "Quiz#7168:\n2+2+5 ⇒ 18\n2+5+5 ⇒ 27\n3+7+7 ⇒ 38\n6+2+4 ⇒ 20\n3+6+2 ⇒ ?",
+    "answer": 25,
+    "pattern": "a×1+b×3+c×2"
+  },
+  {
+    "quest": "Quiz#7169:\n6+6+4 ⇒ 88\n2+3+2 ⇒ 17\n2+5+6 ⇒ 65\n5+4+2 ⇒ 45\n7+2+3 ⇒ ?",
+    "answer": 62,
+    "pattern": "a²+b²+c²"
+  },
+  {
+    "quest": "Quiz#7170:\n7+6 ⇒ 20\n6+4 ⇒ 16\n2+5 ⇒ 9\n6+3 ⇒ 15\n7+3 ⇒ ?",
+    "answer": 17,
+    "pattern": "(a+b)×2−b"
+  },
+  {
+    "quest": "Quiz#7171:\n5+3 ⇒ 51\n2+4 ⇒ 26\n7+7 ⇒ 77\n5+4 ⇒ 53\n5+7 ⇒ ?",
+    "answer": 59,
+    "pattern": "concat(a,b)-a+b"
+  },
+  {
+    "quest": "Quiz#7172:\n3+6+4 ⇒ 25\n7+2+4 ⇒ 25\n4+6+2 ⇒ 14\n6+3+3 ⇒ 17\n3+4+2 ⇒ ?",
+    "answer": 11,
+    "pattern": "a+b+2^c",
+    "condition": "c<=5"
+  },
+  {
+    "quest": "Quiz#7173:\n5+4 ⇒ 36\n4+5 ⇒ 21\n5+7 ⇒ 39\n2+6 ⇒ 10\n2+5 ⇒ ?",
+    "answer": 9,
+    "pattern": "2^a+b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7174:\n8+6 ⇒ 70\n4+7 ⇒ 23\n2+2 ⇒ 6\n4+2 ⇒ 18\n5+4 ⇒ ?",
+    "answer": 29,
+    "pattern": "a²+b"
+  },
+  {
+    "quest": "Quiz#7175:\n2+7 ⇒ 66\n3+4 ⇒ 11\n5+7 ⇒ 69\n5+5 ⇒ 21\n7+7 ⇒ ?",
+    "answer": 71,
+    "pattern": "a+2^(b−1)",
+    "condition": "b>=1"
+  },
+  {
+    "quest": "Quiz#7176:\n6+2+4 ⇒ 44\n5+6+6 ⇒ 96\n4+2+3 ⇒ 26\n3+2+7 ⇒ 41\n4+4+2 ⇒ ?",
+    "answer": 32,
+    "pattern": "a×b+b×c+c×a"
+  },
+  {
+    "quest": "Quiz#7177:\n5+2 ⇒ 10\n6+8 ⇒ 30\n8+2 ⇒ 16\n6+4 ⇒ 18\n7+2 ⇒ ?",
+    "answer": 14,
+    "pattern": "a+(a×b÷2)",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#7178:\n7+2+5 ⇒ 18\n7+7+3 ⇒ 66\n2+4+3 ⇒ 41\n7+4+6 ⇒ 39\n7+3+3 ⇒ ?",
+    "answer": 26,
+    "pattern": "concat(b,c)-a"
+  },
+  {
+    "quest": "Quiz#7179:\n5+7+2 ⇒ 35\n7+5+7 ⇒ 63\n6+3+7 ⇒ 49\n2+4+7 ⇒ 19\n4+7+4 ⇒ ?",
+    "answer": 32,
+    "pattern": "a²+b+c+n"
+  },
+  {
+    "quest": "Quiz#7180:\n6+2 ⇒ 8\n2+2 ⇒ 4\n4+6 ⇒ 22\n6+8 ⇒ 38\n5+4 ⇒ ?",
+    "answer": 13,
+    "pattern": "b²÷2+a",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#7181:\n6+5+4 ⇒ 29\n7+7+7 ⇒ 44\n4+4+7 ⇒ 36\n7+5+3 ⇒ 30\n6+6+5 ⇒ ?",
+    "answer": 38,
+    "pattern": "a×1+b×2+c×3+n"
+  },
+  {
+    "quest": "Quiz#7182:\n4+4+5 ⇒ 25\n2+3+5 ⇒ 17\n4+3+2 ⇒ 20\n5+4+7 ⇒ 30\n2+2+2 ⇒ ?",
+    "answer": 12,
+    "pattern": "a×3+b×2+c×1"
+  },
+  {
+    "quest": "Quiz#7183:\n8+6 ⇒ 17\n8+2 ⇒ 13\n6+3 ⇒ 10\n6+2 ⇒ 9\n4+2 ⇒ ?",
+    "answer": 5,
+    "pattern": "2a+b-5"
+  },
+  {
+    "quest": "Quiz#7184:\n5+5 ⇒ 3\n4+4 ⇒ 3\n8+2 ⇒ 6\n8+4 ⇒ 4\n6+6 ⇒ ?",
+    "answer": 3,
+    "pattern": "a/b+2",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#7185:\n4+7+3 ⇒ 25\n4+6+3 ⇒ 21\n7+6+3 ⇒ 39\n6+5+3 ⇒ 27\n7+7+4 ⇒ ?",
+    "answer": 45,
+    "pattern": "a×b-c"
+  },
+  {
+    "quest": "Quiz#7186:\n7+2+7 ⇒ 35\n3+2+7 ⇒ 19\n7+3+7 ⇒ 70\n4+3+2 ⇒ 38\n3+2+3 ⇒ ?",
+    "answer": 15,
+    "pattern": "a×b²+c"
+  },
+  {
+    "quest": "Quiz#7187:\n7+2+2 ⇒ 32\n4+7+2 ⇒ 60\n6+7+2 ⇒ 88\n2+5+2 ⇒ 24\n5+2+3 ⇒ ?",
+    "answer": 34,
+    "pattern": "a×b×c+4"
+  },
+  {
+    "quest": "Quiz#7188:\n6+5+6 ⇒ 17\n3+2+2 ⇒ 14\n2+5+6 ⇒ 39\n6+6+6 ⇒ 72\n4+6+4 ⇒ ?",
+    "answer": 70,
+    "pattern": "(a+b+c)×n"
+  },
+  {
+    "quest": "Quiz#7189:\n5+4+2 ⇒ 54\n3+2+2 ⇒ 20\n3+2+4 ⇒ 30\n3+3+5 ⇒ 48\n3+6+5 ⇒ ?",
+    "answer": 99,
+    "pattern": "(a+b)×(b+c)"
+  },
+  {
+    "quest": "Quiz#7190:\n3+3+4 ⇒ 31\n3+4+7 ⇒ 46\n4+7+7 ⇒ 57\n2+7+3 ⇒ 37\n3+3+2 ⇒ ?",
+    "answer": 23,
+    "pattern": "2a+3b+4c"
+  },
+  {
+    "quest": "Quiz#7191:\n3+4 ⇒ 9\n2+3 ⇒ 9\n4+6 ⇒ 18\n8+8 ⇒ 0\n6+8 ⇒ ?",
+    "answer": 18,
+    "pattern": "concat(b,a)-concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7192:\n7+4+2 ⇒ 31\n4+3+4 ⇒ 22\n5+7+2 ⇒ 31\n6+2+6 ⇒ 28\n4+3+2 ⇒ ?",
+    "answer": 20,
+    "pattern": "3a+2b+c"
+  },
+  {
+    "quest": "Quiz#7193:\n7+8 ⇒ 19\n2+2 ⇒ 5\n4+8 ⇒ 16\n8+8 ⇒ 20\n3+6 ⇒ ?",
+    "answer": 12,
+    "pattern": "a+3b/2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#7194:\n3+8 ⇒ 28\n8+2 ⇒ 9\n7+3 ⇒ 16\n8+8 ⇒ 63\n8+4 ⇒ ?",
+    "answer": 27,
+    "pattern": "(a+1)×(b−1)",
+    "condition": "b>=1"
+  },
+  {
+    "quest": "Quiz#7195:\n2+2 ⇒ 22\n3+4 ⇒ 44\n8+4 ⇒ 44\n5+6 ⇒ 66\n3+2 ⇒ ?",
+    "answer": 22,
+    "pattern": "concat(b,a)-a+b"
+  },
+  {
+    "quest": "Quiz#7196:\n8+2 ⇒ 12\n8+4 ⇒ 30\n5+5 ⇒ 24\n6+6 ⇒ 35\n2+2 ⇒ ?",
+    "answer": 3,
+    "pattern": "(a×b)−(a÷b)",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#7197:\n2+5+4 ⇒ 26\n6+2+2 ⇒ 16\n2+3+4 ⇒ 22\n2+6+4 ⇒ 28\n6+5+7 ⇒ ?",
+    "answer": 79,
+    "pattern": "a×b+c²"
+  },
+  {
+    "quest": "Quiz#7198:\n4+4 ⇒ 15\n2+8 ⇒ 22\n2+4 ⇒ 16\n7+7 ⇒ 18\n2+2 ⇒ ?",
+    "answer": 13,
+    "pattern": "concat(a,b)/a+b",
+    "condition": "a≠0,a|concat"
+  },
+  {
+    "quest": "Quiz#7199:\n2+3+2 ⇒ 35\n5+2+4 ⇒ 89\n2+4+3 ⇒ 59\n4+3+2 ⇒ 59\n2+2+4 ⇒ ?",
+    "answer": 44,
+    "pattern": "(a+1)×(b+1)×(c+1)-1"
+  },
+  {
+    "quest": "Quiz#7200:\n3+4+7 ⇒ 32\n5+4+2 ⇒ 43\n2+3+7 ⇒ 19\n5+2+4 ⇒ 33\n4+2+4 ⇒ ?",
+    "answer": 24,
+    "pattern": "a²+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7201:\n4+7 ⇒ 30\n2+8 ⇒ 18\n7+2 ⇒ 16\n3+2 ⇒ 8\n5+8 ⇒ ?",
+    "answer": 42,
+    "pattern": "a×b+2"
+  },
+  {
+    "quest": "Quiz#7202:\n4+2+3 ⇒ 27\n4+4+2 ⇒ 24\n6+6+6 ⇒ 78\n3+3+7 ⇒ 61\n5+7+3 ⇒ ?",
+    "answer": 41,
+    "pattern": "a²+b+c²"
+  },
+  {
+    "quest": "Quiz#7203:\n7+2+2 ⇒ 57\n3+2+3 ⇒ 27\n4+4+3 ⇒ 52\n5+4+4 ⇒ 89\n6+3+3 ⇒ ?",
+    "answer": 63,
+    "pattern": "a²+b×c²"
+  },
+  {
+    "quest": "Quiz#7204:\n3+4 ⇒ 13\n5+3 ⇒ 3\n4+4 ⇒ 12\n6+3 ⇒ 2\n3+3 ⇒ ?",
+    "answer": 5,
+    "pattern": "2^b-a",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7205:\n4+4+5 ⇒ 36\n6+3+3 ⇒ 36\n6+2+3 ⇒ 30\n2+7+4 ⇒ 22\n2+2+6 ⇒ ?",
+    "answer": 16,
+    "pattern": "a×(b+c)"
+  },
+  {
+    "quest": "Quiz#7206:\n5+4+4 ⇒ 9\n3+3+6 ⇒ 3\n7+6+7 ⇒ 10\n4+3+3 ⇒ 9\n2+2+3 ⇒ ?",
+    "answer": 1,
+    "pattern": "concat(a,c)-concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7207:\n5+7+2 ⇒ 7\n3+5+7 ⇒ 4\n2+4+5 ⇒ 3\n3+7+5 ⇒ 6\n4+7+5 ⇒ ?",
+    "answer": 5,
+    "pattern": "|a-b|+|b-c|"
+  },
+  {
+    "quest": "Quiz#7208:\n5+2+2 ⇒ 50\n7+5+3 ⇒ 68\n5+2+5 ⇒ 53\n2+3+2 ⇒ 19\n4+7+3 ⇒ ?",
+    "answer": 36,
+    "pattern": "concat(a,c)-b"
+  },
+  {
+    "quest": "Quiz#7209:\n4+7 ⇒ 58\n5+2 ⇒ 27\n4+3 ⇒ 22\n6+6 ⇒ 66\n6+8 ⇒ ?",
+    "answer": 92,
+    "pattern": "a²+b²−b"
+  },
+  {
+    "quest": "Quiz#7210:\n4+5 ⇒ 18\n8+8 ⇒ 60\n5+5 ⇒ 21\n5+6 ⇒ 28\n3+6 ⇒ ?",
+    "answer": 20,
+    "pattern": "(a+2)×(b−2)",
+    "condition": "b>=2"
+  },
+  {
+    "quest": "Quiz#7211:\n2+3+4 ⇒ 14\n3+3+7 ⇒ 24\n7+5+2 ⇒ 17\n7+3+4 ⇒ 19\n3+5+2 ⇒ ?",
+    "answer": 13,
+    "pattern": "a+b×c"
+  },
+  {
+    "quest": "Quiz#7212:\n8+8 ⇒ 8\n6+2 ⇒ 18\n6+6 ⇒ 6\n3+3 ⇒ 3\n8+2 ⇒ ?",
+    "answer": 32,
+    "pattern": "a²÷b",
+    "condition": "b|a²"
+  },
+  {
+    "quest": "Quiz#7213:\n2+4 ⇒ 22\n7+7 ⇒ 63\n6+2 ⇒ 44\n4+5 ⇒ 29\n3+2 ⇒ ?",
+    "answer": 17,
+    "pattern": "concat(a,b)-a*n"
+  },
+  {
+    "quest": "Quiz#7214:\n4+3+5 ⇒ 24\n5+2+2 ⇒ 36\n3+7+2 ⇒ 17\n2+3+5 ⇒ 12\n5+3+6 ⇒ ?",
+    "answer": 41,
+    "pattern": "2^a+b+c",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7215:\n2+4 ⇒ 18\n5+6 ⇒ 41\n4+8 ⇒ 68\n3+5 ⇒ 28\n7+5 ⇒ ?",
+    "answer": 32,
+    "pattern": "a+b²"
+  },
+  {
+    "quest": "Quiz#7216:\n2+5+4 ⇒ 70\n2+3+4 ⇒ 66\n2+3+7 ⇒ 96\n4+7+3 ⇒ 84\n7+2+2 ⇒ ?",
+    "answer": 94,
+    "pattern": "concat(a,b)+concat(c,b)"
+  },
+  {
+    "quest": "Quiz#7217:\n3+3+4 ⇒ 21\n5+6+5 ⇒ 32\n6+7+6 ⇒ 38\n6+7+4 ⇒ 32\n5+6+7 ⇒ ?",
+    "answer": 38,
+    "pattern": "a×1+b×2+c×3"
+  },
+  {
+    "quest": "Quiz#7218:\n7+5+2 ⇒ 58\n2+5+6 ⇒ 45\n4+6+3 ⇒ 31\n6+2+6 ⇒ 74\n2+5+5 ⇒ ?",
+    "answer": 34,
+    "pattern": "a²+b+c²"
+  },
+  {
+    "quest": "Quiz#7219:\n3+5 ⇒ 41\n2+3 ⇒ 27\n3+4 ⇒ 40\n7+5 ⇒ 89\n2+2 ⇒ ?",
+    "answer": 26,
+    "pattern": "concat(a,b)+2a"
+  },
+  {
+    "quest": "Quiz#7220:\n7+5+5 ⇒ 32\n3+6+7 ⇒ 45\n7+5+7 ⇒ 42\n4+6+3 ⇒ 22\n5+3+5 ⇒ ?",
+    "answer": 20,
+    "pattern": "a+b×c"
+  },
+  {
+    "quest": "Quiz#7221:\n5+5+5 ⇒ 50\n4+4+7 ⇒ 43\n5+5+4 ⇒ 49\n4+5+7 ⇒ 53\n2+2+5 ⇒ ?",
+    "answer": 23,
+    "pattern": "concat(b,c)-a"
+  },
+  {
+    "quest": "Quiz#7222:\n2+3+6 ⇒ 38\n4+6+4 ⇒ 68\n3+6+5 ⇒ 68\n7+6+7 ⇒ 74\n3+4+3 ⇒ ?",
+    "answer": 46,
+    "pattern": "concat(b,c)+a"
+  },
+  {
+    "quest": "Quiz#7223:\n7+2+3 ⇒ 17\n3+6+5 ⇒ 41\n4+6+5 ⇒ 42\n5+5+5 ⇒ 42\n6+6+3 ⇒ ?",
+    "answer": 20,
+    "pattern": "a+b+2^c",
+    "condition": "c<=5"
+  },
+  {
+    "quest": "Quiz#7224:\n8+8 ⇒ 88\n4+6 ⇒ 48\n7+7 ⇒ 70\n6+5 ⇒ 43\n5+6 ⇒ ?",
+    "answer": 51,
+    "pattern": "a×3+b²"
+  },
+  {
+    "quest": "Quiz#7225:\n5+4+2 ⇒ 30\n3+5+2 ⇒ 29\n7+2+5 ⇒ 40\n5+3+4 ⇒ 35\n7+4+7 ⇒ ?",
+    "answer": 54,
+    "pattern": "2a+3b+4c"
+  },
+  {
+    "quest": "Quiz#7226:\n2+7 ⇒ 8\n2+2 ⇒ 3\n4+4 ⇒ 6\n6+3 ⇒ 6\n4+6 ⇒ ?",
+    "answer": 8,
+    "pattern": "a/2+b",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#7227:\n3+3 ⇒ 15\n5+3 ⇒ 21\n5+5 ⇒ 25\n2+2 ⇒ 10\n5+7 ⇒ ?",
+    "answer": 29,
+    "pattern": "3a+2b"
+  },
+  {
+    "quest": "Quiz#7228:\n7+2 ⇒ 45\n6+2 ⇒ 32\n5+5 ⇒ 0\n6+3 ⇒ 27\n8+6 ⇒ ?",
+    "answer": 28,
+    "pattern": "a²−b²"
+  },
+  {
+    "quest": "Quiz#7229:\n5+6+7 ⇒ 34\n3+2+5 ⇒ 18\n2+5+6 ⇒ 22\n4+4+7 ⇒ 27\n4+4+6 ⇒ ?",
+    "answer": 26,
+    "pattern": "3a+2b+c"
+  },
+  {
+    "quest": "Quiz#7230:\n4+5+6 ⇒ 54\n3+6+4 ⇒ 36\n4+7+7 ⇒ 77\n7+7+6 ⇒ 84\n5+2+2 ⇒ ?",
+    "answer": 14,
+    "pattern": "(a+b)×c"
+  },
+  {
+    "quest": "Quiz#7231:\n6+6 ⇒ 7\n5+5 ⇒ 6\n6+2 ⇒ 5\n8+8 ⇒ 9\n7+7 ⇒ ?",
+    "answer": 8,
+    "pattern": "(a÷b)+b",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#7232:\n3+6+6 ⇒ 60\n2+5+4 ⇒ 24\n3+2+2 ⇒ 20\n2+7+5 ⇒ 33\n2+6+5 ⇒ ?",
+    "answer": 29,
+    "pattern": "a²×b+c"
+  },
+  {
+    "quest": "Quiz#7233:\n7+3+7 ⇒ 8\n4+5+7 ⇒ 3\n5+6+3 ⇒ 4\n3+4+7 ⇒ 4\n3+3+7 ⇒ ?",
+    "answer": 4,
+    "pattern": "|a-b|+|b-c|"
+  },
+  {
+    "quest": "Quiz#7234:\n2+3+3 ⇒ 15\n2+2+2 ⇒ 10\n2+5+7 ⇒ 43\n3+3+6 ⇒ 22\n4+2+7 ⇒ ?",
+    "answer": 27,
+    "pattern": "2^a+2^b+c",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#7235:\n3+4+6 ⇒ 23\n2+2+7 ⇒ 17\n3+5+4 ⇒ 23\n7+6+7 ⇒ 40\n5+2+4 ⇒ ?",
+    "answer": 23,
+    "pattern": "a×3+b×2+c×1"
+  },
+  {
+    "quest": "Quiz#7236:\n2+7+6 ⇒ 89\n3+6+3 ⇒ 54\n2+3+2 ⇒ 17\n2+2+4 ⇒ 24\n5+2+2 ⇒ ?",
+    "answer": 33,
+    "pattern": "a²+b²+c²"
+  },
+  {
+    "quest": "Quiz#7237:\n8+6 ⇒ 23\n4+2 ⇒ 12\n8+8 ⇒ 27\n2+6 ⇒ 14\n2+7 ⇒ ?",
+    "answer": 16,
+    "pattern": "2a+b+n"
+  },
+  {
+    "quest": "Quiz#7238:\n5+3 ⇒ 15\n5+8 ⇒ 15\n6+8 ⇒ 24\n3+4 ⇒ 3\n8+2 ⇒ ?",
+    "answer": 48,
+    "pattern": "a²−2×a"
+  },
+  {
+    "quest": "Quiz#7239:\n7+6+4 ⇒ 41\n3+7+2 ⇒ 40\n4+4+5 ⇒ 29\n4+5+2 ⇒ 31\n6+5+7 ⇒ ?",
+    "answer": 38,
+    "pattern": "a+b×5+c"
+  },
+  {
+    "quest": "Quiz#7240:\n4+5 ⇒ 20\n5+6 ⇒ 37\n2+7 ⇒ 10\n5+3 ⇒ 34\n2+8 ⇒ ?",
+    "answer": 11,
+    "pattern": "2^a+b−1",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7241:\n3+5+7 ⇒ 82\n6+2+5 ⇒ 29\n5+2+2 ⇒ 22\n7+2+2 ⇒ 30\n7+3+6 ⇒ ?",
+    "answer": 69,
+    "pattern": "a×b²+c"
+  },
+  {
+    "quest": "Quiz#7242:\n8+8 ⇒ 88\n5+5 ⇒ 55\n3+3 ⇒ 33\n4+8 ⇒ 24\n2+5 ⇒ ?",
+    "answer": 10,
+    "pattern": "concat(a,b)×a/b",
+    "condition": "b≠0,hasilbulat"
+  },
+  {
+    "quest": "Quiz#7243:\n7+7 ⇒ 28\n3+3 ⇒ 12\n8+4 ⇒ 18\n8+8 ⇒ 32\n6+6 ⇒ ?",
+    "answer": 24,
+    "pattern": "(a+b)²÷a",
+    "condition": "a≠0dana|(a+b)²"
+  },
+  {
+    "quest": "Quiz#7244:\n7+8 ⇒ 71\n2+2 ⇒ 8\n5+2 ⇒ 17\n4+6 ⇒ 34\n2+8 ⇒ ?",
+    "answer": 26,
+    "pattern": "(a+b)+(a×b)"
+  },
+  {
+    "quest": "Quiz#7245:\n7+6+7 ⇒ 83\n2+3+6 ⇒ 29\n5+3+5 ⇒ 58\n6+6+6 ⇒ 72\n3+4+2 ⇒ ?",
+    "answer": 36,
+    "pattern": "c+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7246:\n7+7 ⇒ 63\n3+6 ⇒ 45\n6+8 ⇒ 78\n8+2 ⇒ 14\n5+5 ⇒ ?",
+    "answer": 35,
+    "pattern": "(a+b)+b²"
+  },
+  {
+    "quest": "Quiz#7247:\n2+4+3 ⇒ 9\n6+3+4 ⇒ 22\n5+7+6 ⇒ 40\n7+3+5 ⇒ 55\n7+7+3 ⇒ ?",
+    "answer": 72,
+    "pattern": "prev+(a+b+c)",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7248:\n2+3+4 ⇒ 16\n2+5+2 ⇒ 38\n7+4+2 ⇒ 67\n7+3+4 ⇒ 61\n7+3+3 ⇒ ?",
+    "answer": 60,
+    "pattern": "a²+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7249:\n5+8 ⇒ 1\n2+4 ⇒ 0\n4+2 ⇒ 3\n7+4 ⇒ 5\n4+8 ⇒ ?",
+    "answer": 0,
+    "pattern": "a-b/2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#7250:\n8+4 ⇒ 10\n6+6 ⇒ 7\n4+4 ⇒ 5\n3+3 ⇒ 4\n7+7 ⇒ ?",
+    "answer": 8,
+    "pattern": "a+(a/b)",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#7251:\n2+5 ⇒ 26\n5+3 ⇒ 55\n6+6 ⇒ 69\n3+5 ⇒ 39\n7+3 ⇒ ?",
+    "answer": 78,
+    "pattern": "concat(a,b)+n"
+  },
+  {
+    "quest": "Quiz#7252:\n3+4 ⇒ 65\n3+6 ⇒ 69\n2+2 ⇒ 42\n4+7 ⇒ 90\n4+4 ⇒ ?",
+    "answer": 84,
+    "pattern": "concat(a,b)×2-a"
+  },
+  {
+    "quest": "Quiz#7253:\n8+8 ⇒ 48\n3+8 ⇒ 8\n4+6 ⇒ 12\n3+7 ⇒ 7\n2+5 ⇒ ?",
+    "answer": 0,
+    "pattern": "a×b−2×b"
+  },
+  {
+    "quest": "Quiz#7254:\n3+5+7 ⇒ 42\n4+2+3 ⇒ 45\n4+4+7 ⇒ 51\n2+3+6 ⇒ 29\n5+6+4 ⇒ ?",
+    "answer": 60,
+    "pattern": "b+concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7255:\n5+5 ⇒ 15\n3+6 ⇒ 12\n8+5 ⇒ 24\n6+4 ⇒ 12\n8+2 ⇒ ?",
+    "answer": 0,
+    "pattern": "a×(b−2)",
+    "condition": "b>=2"
+  },
+  {
+    "quest": "Quiz#7256:\n5+4+6 ⇒ 11\n7+4+7 ⇒ 30\n7+4+5 ⇒ 28\n7+3+6 ⇒ 39\n5+2+3 ⇒ ?",
+    "answer": 28,
+    "pattern": "concat(a,c)-concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7257:\n4+3+6 ⇒ 75\n4+4+5 ⇒ 83\n2+4+5 ⇒ 43\n2+6+6 ⇒ 75\n2+7+3 ⇒ ?",
+    "answer": 45,
+    "pattern": "a×b×c+3"
+  },
+  {
+    "quest": "Quiz#7258:\n5+5+4 ⇒ 10\n3+7+2 ⇒ 10\n5+7+3 ⇒ 20\n4+7+3 ⇒ 10\n4+2+4 ⇒ ?",
+    "answer": 0,
+    "pattern": "concat(a,b)-concat(c,b)"
+  },
+  {
+    "quest": "Quiz#7259:\n6+8 ⇒ 84\n3+5 ⇒ 45\n5+5 ⇒ 65\n6+3 ⇒ 69\n3+3 ⇒ ?",
+    "answer": 39,
+    "pattern": "concat(a,b)+2b"
+  },
+  {
+    "quest": "Quiz#7260:\n3+5+7 ⇒ 15\n2+7+6 ⇒ 15\n4+2+4 ⇒ 10\n7+4+5 ⇒ 16\n2+5+7 ⇒ ?",
+    "answer": 14,
+    "pattern": "a×1+b+c"
+  },
+  {
+    "quest": "Quiz#7261:\n2+3 ⇒ 8\n3+4 ⇒ 15\n4+5 ⇒ 24\n5+5 ⇒ 30\n4+6 ⇒ ?",
+    "answer": 28,
+    "pattern": "a×(b+1)"
+  },
+  {
+    "quest": "Quiz#7262:\n5+4+6 ⇒ 29\n5+7+7 ⇒ 40\n6+5+7 ⇒ 35\n7+3+2 ⇒ 20\n6+2+2 ⇒ ?",
+    "answer": 16,
+    "pattern": "a×1+b×3+c×2"
+  },
+  {
+    "quest": "Quiz#7263:\n5+4 ⇒ 10\n6+4 ⇒ 12\n2+4 ⇒ 9\n6+5 ⇒ 15\n4+7 ⇒ ?",
+    "answer": 16,
+    "pattern": "a+b+n"
+  },
+  {
+    "quest": "Quiz#7264:\n3+6 ⇒ 19\n3+3 ⇒ 11\n4+8 ⇒ 35\n4+6 ⇒ 28\n5+7 ⇒ ?",
+    "answer": 40,
+    "pattern": "a*b+n"
+  },
+  {
+    "quest": "Quiz#7265:\n3+5 ⇒ 41\n5+3 ⇒ 98\n2+8 ⇒ 35\n3+7 ⇒ 60\n2+4 ⇒ ?",
+    "answer": 21,
+    "pattern": "2^a*b+n",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7266:\n4+2+3 ⇒ 10\n7+4+3 ⇒ 16\n7+7+2 ⇒ 19\n4+5+7 ⇒ 20\n3+6+7 ⇒ ?",
+    "answer": 21,
+    "pattern": "a+b+c+n"
+  },
+  {
+    "quest": "Quiz#7267:\n4+4 ⇒ 20\n7+4 ⇒ 23\n2+4 ⇒ 18\n4+5 ⇒ 36\n7+3 ⇒ ?",
+    "answer": 15,
+    "pattern": "2^b+a",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7268:\n2+8 ⇒ 10\n8+2 ⇒ 34\n6+3 ⇒ 21\n4+7 ⇒ 15\n2+7 ⇒ ?",
+    "answer": 9,
+    "pattern": "a²÷2+b",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#7269:\n8+5 ⇒ 48\n2+5 ⇒ 12\n3+4 ⇒ 15\n6+6 ⇒ 42\n3+8 ⇒ ?",
+    "answer": 27,
+    "pattern": "a×b+a"
+  },
+  {
+    "quest": "Quiz#7270:\n7+3 ⇒ 31\n7+6 ⇒ 55\n6+5 ⇒ 41\n2+2 ⇒ 8\n7+4 ⇒ ?",
+    "answer": 39,
+    "pattern": "a+b+a×b"
+  },
+  {
+    "quest": "Quiz#7271:\n3+6 ⇒ 15\n8+2 ⇒ 13\n3+2 ⇒ 3\n8+4 ⇒ 29\n4+6 ⇒ ?",
+    "answer": 21,
+    "pattern": "a*b-3"
+  },
+  {
+    "quest": "Quiz#7272:\n6+7+4 ⇒ 71\n7+2+3 ⇒ 20\n4+6+5 ⇒ 65\n4+6+3 ⇒ 49\n5+5+2 ⇒ ?",
+    "answer": 34,
+    "pattern": "a+b²+c²"
+  },
+  {
+    "quest": "Quiz#7273:\n4+4+7 ⇒ 27\n5+3+7 ⇒ 20\n2+4+2 ⇒ 20\n7+3+4 ⇒ 19\n6+5+3 ⇒ ?",
+    "answer": 41,
+    "pattern": "a+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7274:\n3+3+6 ⇒ 45\n2+2+2 ⇒ 12\n7+4+3 ⇒ 61\n2+5+2 ⇒ 24\n7+2+7 ⇒ ?",
+    "answer": 77,
+    "pattern": "a×b+b×c+c×a"
+  },
+  {
+    "quest": "Quiz#7275:\n6+5+4 ⇒ 59\n5+4+4 ⇒ 50\n6+7+3 ⇒ 56\n3+7+6 ⇒ 29\n3+5+7 ⇒ ?",
+    "answer": 32,
+    "pattern": "concat(a,c)-b"
+  },
+  {
+    "quest": "Quiz#7276:\n5+5 ⇒ 30\n6+2 ⇒ 50\n3+6 ⇒ 18\n6+8 ⇒ 20\n5+4 ⇒ ?",
+    "answer": 34,
+    "pattern": "concat(a,b)-(a×b)"
+  },
+  {
+    "quest": "Quiz#7277:\n2+7 ⇒ 35\n3+5 ⇒ 10\n2+3 ⇒ 3\n5+5 ⇒ 0\n2+5 ⇒ ?",
+    "answer": 15,
+    "pattern": "b×(b−a)",
+    "condition": "b>=a"
+  },
+  {
+    "quest": "Quiz#7278:\n2+2 ⇒ 2\n3+7 ⇒ 14\n2+8 ⇒ 8\n8+3 ⇒ 21\n6+4 ⇒ ?",
+    "answer": 20,
+    "pattern": "(a−1)×b",
+    "condition": "a>=1"
+  },
+  {
+    "quest": "Quiz#7279:\n4+2+5 ⇒ 33\n4+7+2 ⇒ 32\n6+2+6 ⇒ 48\n5+7+6 ⇒ 71\n6+7+3 ⇒ ?",
+    "answer": 51,
+    "pattern": "a×b+c²"
+  },
+  {
+    "quest": "Quiz#7280:\n7+3 ⇒ 23\n2+2 ⇒ 8\n8+2 ⇒ 20\n6+5 ⇒ 37\n4+3 ⇒ ?",
+    "answer": 17,
+    "pattern": "a×2+b²"
+  },
+  {
+    "quest": "Quiz#7281:\n4+3 ⇒ 3\n8+7 ⇒ 3\n5+2 ⇒ 9\n6+2 ⇒ 12\n5+5 ⇒ ?",
+    "answer": 0,
+    "pattern": "3×(a−b)"
+  },
+  {
+    "quest": "Quiz#7282:\n7+2+5 ⇒ 27\n3+2+5 ⇒ 24\n4+2+3 ⇒ 20\n6+5+5 ⇒ 35\n5+2+5 ⇒ ?",
+    "answer": 29,
+    "pattern": "a×1+b×2+c×3+n"
+  },
+  {
+    "quest": "Quiz#7283:\n4+2+2 ⇒ 20\n7+5+3 ⇒ 71\n5+4+5 ⇒ 65\n3+6+5 ⇒ 63\n4+3+3 ⇒ ?",
+    "answer": 33,
+    "pattern": "a×(b+c)+b×c"
+  },
+  {
+    "quest": "Quiz#7284:\n8+4 ⇒ 2\n6+4 ⇒ 0\n5+2 ⇒ 2\n7+2 ⇒ 4\n8+2 ⇒ ?",
+    "answer": 5,
+    "pattern": "a-3b/2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#7285:\n4+3 ⇒ 12\n5+2 ⇒ 9\n8+2 ⇒ 12\n7+2 ⇒ 11\n7+4 ⇒ ?",
+    "answer": 23,
+    "pattern": "a+2^b",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7286:\n3+4+6 ⇒ 10\n2+7+5 ⇒ 50\n2+7+6 ⇒ 50\n2+5+7 ⇒ 30\n3+6+3 ⇒ ?",
+    "answer": 30,
+    "pattern": "concat(b,c)-concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7287:\n6+6+2 ⇒ 34\n4+7+7 ⇒ 21\n5+2+4 ⇒ 6\n4+5+2 ⇒ 18\n2+7+5 ⇒ ?",
+    "answer": 9,
+    "pattern": "a×b-c"
+  },
+  {
+    "quest": "Quiz#7288:\n2+2+2 ⇒ 6\n7+6+7 ⇒ 13\n2+4+4 ⇒ 15\n4+5+5 ⇒ 19\n5+6+2 ⇒ ?",
+    "answer": 24,
+    "pattern": "prev+a",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7289:\n4+7 ⇒ 35\n7+4 ⇒ 32\n3+6 ⇒ 24\n6+3 ⇒ 21\n6+6 ⇒ ?",
+    "answer": 42,
+    "pattern": "a×b+b"
+  },
+  {
+    "quest": "Quiz#7290:\n2+7 ⇒ 11\n4+2 ⇒ 18\n4+3 ⇒ 19\n3+4 ⇒ 12\n4+4 ⇒ ?",
+    "answer": 20,
+    "pattern": "b+2^a",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7291:\n5+5 ⇒ 25\n3+6 ⇒ 21\n3+4 ⇒ 13\n7+7 ⇒ 49\n4+2 ⇒ ?",
+    "answer": 6,
+    "pattern": "(a×b)−(a−b)"
+  },
+  {
+    "quest": "Quiz#7292:\n7+4+2 ⇒ 56\n3+6+3 ⇒ 54\n5+5+3 ⇒ 75\n2+3+2 ⇒ 12\n3+4+5 ⇒ ?",
+    "answer": 60,
+    "pattern": "a×b×c"
+  },
+  {
+    "quest": "Quiz#7293:\n6+3 ⇒ 36\n2+3 ⇒ 32\n8+4 ⇒ 48\n4+5 ⇒ 54\n5+8 ⇒ ?",
+    "answer": 85,
+    "pattern": "concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7294:\n5+4 ⇒ 14\n4+7 ⇒ 15\n4+5 ⇒ 13\n2+3 ⇒ 7\n7+8 ⇒ ?",
+    "answer": 22,
+    "pattern": "2×a+b"
+  },
+  {
+    "quest": "Quiz#7295:\n2+3+6 ⇒ 59\n2+4+5 ⇒ 69\n3+2+6 ⇒ 58\n3+5+4 ⇒ 89\n3+4+2 ⇒ ?",
+    "answer": 76,
+    "pattern": "concat(b,c)+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7296:\n2+5 ⇒ 20\n3+6 ⇒ 48\n2+8 ⇒ 32\n4+3 ⇒ 48\n2+6 ⇒ ?",
+    "answer": 24,
+    "pattern": "2^a*b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7297:\n6+4+6 ⇒ 2\n5+6+7 ⇒ 2\n2+3+3 ⇒ 1\n4+7+2 ⇒ 5\n7+2+6 ⇒ ?",
+    "answer": 5,
+    "pattern": "max(a,b,c)-min(a,b,c)"
+  },
+  {
+    "quest": "Quiz#7298:\n4+5+4 ⇒ 90\n5+6+5 ⇒ 90\n6+7+5 ⇒ 81\n2+2+7 ⇒ 45\n5+6+3 ⇒ ?",
+    "answer": 72,
+    "pattern": "concat(b,c,a)-concat(a,b,c)"
+  },
+  {
+    "quest": "Quiz#7299:\n2+8 ⇒ 10\n7+6 ⇒ 43\n2+3 ⇒ 5\n7+8 ⇒ 55\n3+3 ⇒ ?",
+    "answer": 9,
+    "pattern": "(a×b)+(a−b)"
+  },
+  {
+    "quest": "Quiz#7300:\n4+4+6 ⇒ 50\n5+6+7 ⇒ 63\n6+3+7 ⇒ 70\n3+5+4 ⇒ 39\n4+7+5 ⇒ ?",
+    "answer": 52,
+    "pattern": "concat(a,c)+b"
+  },
+  {
+    "quest": "Quiz#7301:\n5+4+4 ⇒ 24\n2+3+5 ⇒ 11\n7+5+3 ⇒ 38\n5+3+7 ⇒ 22\n3+2+2 ⇒ ?",
+    "answer": 8,
+    "pattern": "a×b+c"
+  },
+  {
+    "quest": "Quiz#7302:\n4+6 ⇒ 9\n2+7 ⇒ 2\n5+6 ⇒ 12\n8+6 ⇒ 21\n7+2 ⇒ ?",
+    "answer": 22,
+    "pattern": "a*3-b+3"
+  },
+  {
+    "quest": "Quiz#7303:\n6+2+4 ⇒ 68\n2+3+4 ⇒ 52\n4+7+2 ⇒ 44\n7+3+4 ⇒ 97\n3+5+2 ⇒ ?",
+    "answer": 29,
+    "pattern": "a²+b×c²"
+  },
+  {
+    "quest": "Quiz#7304:\n8+2 ⇒ 12\n2+2 ⇒ 3\n3+3 ⇒ 4\n4+4 ⇒ 5\n7+7 ⇒ ?",
+    "answer": 8,
+    "pattern": "(a÷b)+a",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#7305:\n6+4+3 ⇒ 55\n3+4+4 ⇒ 29\n5+7+7 ⇒ 81\n2+5+5 ⇒ 34\n3+7+4 ⇒ ?",
+    "answer": 62,
+    "pattern": "a²+b²+c"
+  },
+  {
+    "quest": "Quiz#7306:\n4+2 ⇒ 10\n4+4 ⇒ 17\n5+5 ⇒ 26\n6+6 ⇒ 37\n8+4 ⇒ ?",
+    "answer": 34,
+    "pattern": "(a×b)+(a÷b)",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#7307:\n6+7 ⇒ 13\n8+3 ⇒ 19\n2+6 ⇒ 12\n6+4 ⇒ 28\n8+4 ⇒ ?",
+    "answer": 44,
+    "pattern": "a*n+b"
+  },
+  {
+    "quest": "Quiz#7308:\n3+4+6 ⇒ 28\n2+3+6 ⇒ 17\n4+7+7 ⇒ 40\n5+3+5 ⇒ 48\n3+2+7 ⇒ ?",
+    "answer": 25,
+    "pattern": "concat(a,b)-c"
+  },
+  {
+    "quest": "Quiz#7309:\n8+6 ⇒ 86\n5+5 ⇒ 40\n7+4 ⇒ 67\n6+4 ⇒ 52\n7+7 ⇒ ?",
+    "answer": 70,
+    "pattern": "a²+2×a+b"
+  },
+  {
+    "quest": "Quiz#7310:\n7+4 ⇒ 30\n2+4 ⇒ 10\n2+8 ⇒ 18\n4+5 ⇒ 22\n5+5 ⇒ ?",
+    "answer": 27,
+    "pattern": "a*b+2"
+  },
+  {
+    "quest": "Quiz#7311:\n6+7+6 ⇒ 57\n2+3+3 ⇒ 24\n5+2+6 ⇒ 39\n5+3+3 ⇒ 33\n5+7+4 ⇒ ?",
+    "answer": 48,
+    "pattern": "(a+b+c)×3"
+  },
+  {
+    "quest": "Quiz#7312:\n3+4+7 ⇒ 50\n3+3+2 ⇒ 35\n2+4+4 ⇒ 46\n5+3+4 ⇒ 39\n5+5+5 ⇒ ?",
+    "answer": 60,
+    "pattern": "a+concat(b,c)"
+  },
+  {
+    "quest": "Quiz#7313:\n4+6 ⇒ 62\n3+8 ⇒ 78\n2+3 ⇒ 31\n5+4 ⇒ 46\n2+2 ⇒ ?",
+    "answer": 22,
+    "pattern": "concat(b,a)+a-b"
+  },
+  {
+    "quest": "Quiz#7314:\n7+2 ⇒ 36\n5+6 ⇒ 76\n8+5 ⇒ 71\n7+6 ⇒ 80\n4+6 ⇒ ?",
+    "answer": 74,
+    "pattern": "concat(b,a)+a+b"
+  },
+  {
+    "quest": "Quiz#7315:\n8+2 ⇒ 18\n4+8 ⇒ 40\n4+3 ⇒ 15\n8+8 ⇒ 72\n6+4 ⇒ ?",
+    "answer": 28,
+    "pattern": "b×(a+1)"
+  },
+  {
+    "quest": "Quiz#7316:\n5+3+6 ⇒ 73\n2+5+2 ⇒ 36\n5+4+6 ⇒ 80\n3+7+6 ⇒ 97\n3+5+5 ⇒ ?",
+    "answer": 62,
+    "pattern": "a²+b²+c²+3"
+  },
+  {
+    "quest": "Quiz#7317:\n4+3+2 ⇒ 59\n7+2+2 ⇒ 71\n2+2+6 ⇒ 62\n4+2+3 ⇒ 59\n5+4+2 ⇒ ?",
+    "answer": 89,
+    "pattern": "(a+1)×(b+1)×(c+1)-1"
+  },
+  {
+    "quest": "Quiz#7318:\n5+5 ⇒ 27\n6+5 ⇒ 26\n2+3 ⇒ 6\n4+5 ⇒ 28\n2+5 ⇒ ?",
+    "answer": 30,
+    "pattern": "2^b−a",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7319:\n4+2+3 ⇒ 15\n7+5+3 ⇒ 21\n5+7+4 ⇒ 24\n6+4+5 ⇒ 25\n4+3+2 ⇒ ?",
+    "answer": 13,
+    "pattern": "a+b+c×3"
+  },
+  {
+    "quest": "Quiz#7320:\n5+4+2 ⇒ 11\n2+6+5 ⇒ 26\n3+7+2 ⇒ 36\n5+3+5 ⇒ 52\n5+7+2 ⇒ ?",
+    "answer": 70,
+    "pattern": "(a+b+c)×n"
+  },
+  {
+    "quest": "Quiz#7321:\n6+6+3 ⇒ 54\n4+4+6 ⇒ 40\n2+6+2 ⇒ 16\n5+2+2 ⇒ 20\n5+4+2 ⇒ ?",
+    "answer": 30,
+    "pattern": "a×(b+c)"
+  },
+  {
+    "quest": "Quiz#7322:\n5+5 ⇒ 27\n3+5 ⇒ 3\n4+5 ⇒ 11\n4+4 ⇒ 12\n5+2 ⇒ ?",
+    "answer": 30,
+    "pattern": "2^a−b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7323:\n7+7+4 ⇒ 81\n4+6+3 ⇒ 49\n4+5+6 ⇒ 51\n5+6+6 ⇒ 62\n3+6+6 ⇒ ?",
+    "answer": 42,
+    "pattern": "concat(a,b)+c"
+  },
+  {
+    "quest": "Quiz#7324:\n7+6+6 ⇒ 49\n7+2+4 ⇒ 20\n2+3+4 ⇒ 13\n5+4+5 ⇒ 29\n3+2+4 ⇒ ?",
+    "answer": 15,
+    "pattern": "a×b+c+n"
+  },
+  {
+    "quest": "Quiz#7325:\n7+7+7 ⇒ 64\n4+4+7 ⇒ 29\n3+2+7 ⇒ 21\n2+5+5 ⇒ 18\n4+7+2 ⇒ ?",
+    "answer": 30,
+    "pattern": "a²+b+c+n"
+  },
+  {
+    "quest": "Quiz#7326:\n3+6+3 ⇒ 18\n7+5+3 ⇒ 8\n7+7+6 ⇒ 1\n5+3+7 ⇒ 20\n6+2+3 ⇒ ?",
+    "answer": 17,
+    "pattern": "(a-b)²+(b-c)²"
+  },
+  {
+    "quest": "Quiz#7327:\n5+2+7 ⇒ 63\n4+4+6 ⇒ 80\n7+2+6 ⇒ 72\n5+4+3 ⇒ 63\n5+2+2 ⇒ ?",
+    "answer": 28,
+    "pattern": "(a+b)×(b+c)"
+  },
+  {
+    "quest": "Quiz#7328:\n4+2+7 ⇒ 71\n4+5+3 ⇒ 97\n3+2+4 ⇒ 57\n2+7+4 ⇒ 96\n5+2+7 ⇒ ?",
+    "answer": 82,
+    "pattern": "concat(a,c)+concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7329:\n3+3 ⇒ 10\n8+3 ⇒ 20\n6+3 ⇒ 16\n6+7 ⇒ 48\n2+5 ⇒ ?",
+    "answer": 16,
+    "pattern": "(a+2)×(b−1)",
+    "condition": "b>=1"
+  },
+  {
+    "quest": "Quiz#7330:\n3+5+3 ⇒ 32\n3+6+3 ⇒ 33\n2+4+5 ⇒ 19\n6+4+5 ⇒ 59\n6+2+3 ⇒ ?",
+    "answer": 59,
+    "pattern": "concat(a,b)-c"
+  },
+  {
+    "quest": "Quiz#7331:\n6+5 ⇒ 16\n2+6 ⇒ 14\n2+5 ⇒ 12\n7+3 ⇒ 13\n4+3 ⇒ ?",
+    "answer": 10,
+    "pattern": "a+b*2"
+  },
+  {
+    "quest": "Quiz#7332:\n5+4 ⇒ 36\n2+8 ⇒ 66\n7+3 ⇒ 51\n6+7 ⇒ 79\n7+6 ⇒ ?",
+    "answer": 78,
+    "pattern": "a²+b²−a"
+  },
+  {
+    "quest": "Quiz#7333:\n3+5+3 ⇒ 17\n7+4+6 ⇒ 31\n2+4+2 ⇒ 12\n6+3+7 ⇒ 28\n6+6+4 ⇒ ?",
+    "answer": 28,
+    "pattern": "a×3+b+c"
+  },
+  {
+    "quest": "Quiz#7334:\n7+3 ⇒ 16\n4+2 ⇒ 4\n6+2 ⇒ 16\n7+7 ⇒ 1\n4+4 ⇒ ?",
+    "answer": 1,
+    "pattern": "2^(a−b)",
+    "condition": "a>=b"
+  },
+  {
+    "quest": "Quiz#7335:\n4+2+5 ⇒ 47\n2+5+6 ⇒ 67\n6+7+2 ⇒ 91\n4+2+3 ⇒ 31\n3+6+5 ⇒ ?",
+    "answer": 72,
+    "pattern": "a²+b²+c²+2"
+  },
+  {
+    "quest": "Quiz#7336:\n3+3 ⇒ 16\n4+3 ⇒ 24\n5+4 ⇒ 48\n2+4 ⇒ 20\n2+5 ⇒ ?",
+    "answer": 36,
+    "pattern": "2^a+2^b",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#7337:\n4+7 ⇒ 44\n2+3 ⇒ 10\n4+3 ⇒ 28\n3+5 ⇒ 24\n2+4 ⇒ ?",
+    "answer": 12,
+    "pattern": "a²+a×b"
+  },
+  {
+    "quest": "Quiz#7338:\n5+8 ⇒ 71\n5+2 ⇒ 59\n5+3 ⇒ 61\n7+5 ⇒ 87\n4+3 ⇒ ?",
+    "answer": 50,
+    "pattern": "concat(a,b)+a+b"
+  },
+  {
+    "quest": "Quiz#7339:\n6+4+5 ⇒ 10\n7+6+4 ⇒ 30\n3+3+3 ⇒ 0\n5+4+5 ⇒ 0\n4+6+2 ⇒ ?",
+    "answer": 20,
+    "pattern": "concat(a,b)-concat(c,b)"
+  },
+  {
+    "quest": "Quiz#7340:\n2+7+2 ⇒ 33\n7+7+3 ⇒ 47\n5+7+4 ⇒ 47\n3+7+5 ⇒ 47\n3+7+7 ⇒ ?",
+    "answer": 55,
+    "pattern": "2a+3b+4c"
+  },
+  {
+    "quest": "Quiz#7341:\n4+2+3 ⇒ 27\n5+2+3 ⇒ 28\n4+6+7 ⇒ 71\n7+4+2 ⇒ 49\n3+4+2 ⇒ ?",
+    "answer": 45,
+    "pattern": "concat(b,c)+a"
+  },
+  {
+    "quest": "Quiz#7342:\n4+7+4 ⇒ 30\n4+4+5 ⇒ 0\n6+7+6 ⇒ 10\n2+6+5 ⇒ 40\n3+6+2 ⇒ ?",
+    "answer": 30,
+    "pattern": "concat(b,c)-concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7343:\n5+5 ⇒ 1\n6+7 ⇒ 2\n2+7 ⇒ 32\n3+4 ⇒ 2\n4+6 ⇒ ?",
+    "answer": 4,
+    "pattern": "2^(b−a)",
+    "condition": "b>=a"
+  },
+  {
+    "quest": "Quiz#7344:\n7+2 ⇒ 10\n8+7 ⇒ 2\n6+6 ⇒ 0\n7+7 ⇒ 0\n4+3 ⇒ ?",
+    "answer": 2,
+    "pattern": "(a−b)×2"
+  },
+  {
+    "quest": "Quiz#7345:\n4+3+6 ⇒ 80\n3+3+3 ⇒ 66\n2+2+7 ⇒ 49\n2+6+5 ⇒ 87\n2+7+4 ⇒ ?",
+    "answer": 96,
+    "pattern": "concat(a,c)+concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7346:\n3+4+6 ⇒ 40\n4+3+7 ⇒ 50\n3+6+4 ⇒ 40\n5+6+4 ⇒ 60\n2+4+5 ⇒ ?",
+    "answer": 29,
+    "pattern": "concat(a,b)+c"
+  },
+  {
+    "quest": "Quiz#7347:\n6+6 ⇒ 18\n5+6 ⇒ 16\n3+7 ⇒ 13\n8+6 ⇒ 22\n5+2 ⇒ ?",
+    "answer": 12,
+    "pattern": "a*2+b"
+  },
+  {
+    "quest": "Quiz#7348:\n5+5+3 ⇒ 79\n2+5+6 ⇒ 64\n3+2+6 ⇒ 40\n3+7+3 ⇒ 67\n4+3+6 ⇒ ?",
+    "answer": 76,
+    "pattern": "a×b×c+4"
+  },
+  {
+    "quest": "Quiz#7349:\n2+5 ⇒ 27\n5+3 ⇒ 58\n6+3 ⇒ 69\n2+4 ⇒ 26\n2+3 ⇒ ?",
+    "answer": 25,
+    "pattern": "concat(a,a+b)",
+    "condition": "a+b≤9"
+  },
+  {
+    "quest": "Quiz#7350:\n6+2+5 ⇒ 27\n4+4+7 ⇒ 27\n5+2+2 ⇒ 21\n5+6+3 ⇒ 30\n6+5+2 ⇒ ?",
+    "answer": 30,
+    "pattern": "3a+2b+c"
+  },
+  {
+    "quest": "Quiz#7351:\n5+5+7 ⇒ 62\n4+7+6 ⇒ 53\n4+7+3 ⇒ 50\n6+4+5 ⇒ 69\n7+5+4 ⇒ ?",
+    "answer": 79,
+    "pattern": "b+concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7352:\n7+6+5 ⇒ 19\n7+7+4 ⇒ 20\n3+2+3 ⇒ 11\n4+3+2 ⇒ 13\n2+7+6 ⇒ ?",
+    "answer": 20,
+    "pattern": "a+b+c+n"
+  },
+  {
+    "quest": "Quiz#7353:\n7+5+4 ⇒ 3\n4+2+3 ⇒ 2\n3+3+4 ⇒ 1\n4+6+7 ⇒ 3\n3+7+4 ⇒ ?",
+    "answer": 4,
+    "pattern": "max(a,b,c)-min(a,b,c)"
+  },
+  {
+    "quest": "Quiz#7354:\n4+8 ⇒ 12\n2+7 ⇒ 12\n3+6 ⇒ 9\n3+4 ⇒ 5\n5+4 ⇒ ?",
+    "answer": 3,
+    "pattern": "b*2-a"
+  },
+  {
+    "quest": "Quiz#7355:\n6+4+7 ⇒ 51\n5+3+5 ⇒ 39\n5+5+6 ⇒ 48\n3+7+6 ⇒ 48\n7+6+4 ⇒ ?",
+    "answer": 51,
+    "pattern": "(a+b+c)×3"
+  },
+  {
+    "quest": "Quiz#7356:\n8+4 ⇒ 32\n2+6 ⇒ 58\n3+5 ⇒ 47\n8+8 ⇒ 72\n3+4 ⇒ ?",
+    "answer": 37,
+    "pattern": "concat(b,a)-2a"
+  },
+  {
+    "quest": "Quiz#7357:\n2+5+5 ⇒ 15\n6+4+3 ⇒ 45\n6+7+2 ⇒ 48\n2+3+5 ⇒ 16\n5+7+4 ⇒ ?",
+    "answer": 41,
+    "pattern": "a²+b+c+n"
+  },
+  {
+    "quest": "Quiz#7358:\n4+6+7 ⇒ 29\n5+2+7 ⇒ 41\n5+2+4 ⇒ 38\n2+2+6 ⇒ 12\n3+7+3 ⇒ ?",
+    "answer": 18,
+    "pattern": "2^a+b+c",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7359:\n7+4+7 ⇒ 30\n6+2+3 ⇒ 13\n3+2+2 ⇒ 9\n5+5+4 ⇒ 41\n5+3+4 ⇒ ?",
+    "answer": 17,
+    "pattern": "a+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7360:\n3+4+4 ⇒ 24\n2+3+5 ⇒ 16\n2+6+6 ⇒ 24\n3+5+3 ⇒ 24\n7+6+5 ⇒ ?",
+    "answer": 77,
+    "pattern": "a×(b+c)"
+  },
+  {
+    "quest": "Quiz#7361:\n3+2+6 ⇒ 38\n4+5+7 ⇒ 52\n5+4+5 ⇒ 59\n4+2+5 ⇒ 47\n7+5+4 ⇒ ?",
+    "answer": 79,
+    "pattern": "c+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7362:\n4+2+6 ⇒ 44\n3+4+7 ⇒ 61\n2+2+2 ⇒ 8\n2+7+7 ⇒ 63\n4+6+2 ⇒ ?",
+    "answer": 28,
+    "pattern": "a×b+c²"
+  },
+  {
+    "quest": "Quiz#7363:\n7+4+3 ⇒ 19\n4+4+5 ⇒ 24\n4+3+5 ⇒ 19\n5+2+3 ⇒ 11\n4+3+6 ⇒ ?",
+    "answer": 22,
+    "pattern": "a+b×c"
+  },
+  {
+    "quest": "Quiz#7364:\n3+8 ⇒ 19\n5+7 ⇒ 33\n4+4 ⇒ 16\n2+8 ⇒ 10\n3+5 ⇒ ?",
+    "answer": 13,
+    "pattern": "(a−b)+(a×b)"
+  },
+  {
+    "quest": "Quiz#7365:\n4+3 ⇒ 32\n2+3 ⇒ 16\n8+3 ⇒ 64\n2+4 ⇒ 32\n3+3 ⇒ ?",
+    "answer": 24,
+    "pattern": "2^b*a",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7366:\n8+5 ⇒ 9\n6+3 ⇒ 6\n2+6 ⇒ 7\n6+8 ⇒ 11\n6+6 ⇒ ?",
+    "answer": 9,
+    "pattern": "a÷2+b",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#7367:\n7+2 ⇒ 13\n3+4 ⇒ 4\n4+4 ⇒ 6\n6+8 ⇒ 8\n7+4 ⇒ ?",
+    "answer": 12,
+    "pattern": "2×a−b÷2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#7368:\n7+8 ⇒ 77\n8+7 ⇒ 85\n3+3 ⇒ 30\n7+2 ⇒ 68\n3+5 ⇒ ?",
+    "answer": 30,
+    "pattern": "concat(a,b)-n"
+  },
+  {
+    "quest": "Quiz#7369:\n4+3 ⇒ 10\n2+3 ⇒ 8\n7+2 ⇒ 11\n5+6 ⇒ 17\n7+6 ⇒ ?",
+    "answer": 19,
+    "pattern": "(a+b)×2−a"
+  },
+  {
+    "quest": "Quiz#7370:\n3+3+2 ⇒ 35\n4+4+2 ⇒ 46\n6+3+3 ⇒ 66\n4+3+2 ⇒ 45\n6+7+4 ⇒ ?",
+    "answer": 71,
+    "pattern": "concat(a,c)+b"
+  },
+  {
+    "quest": "Quiz#7371:\n4+3+5 ⇒ 26\n5+2+4 ⇒ 23\n5+7+7 ⇒ 43\n3+6+3 ⇒ 28\n4+7+2 ⇒ ?",
+    "answer": 29,
+    "pattern": "a×1+b×2+c×3+n"
+  },
+  {
+    "quest": "Quiz#7372:\n4+7+2 ⇒ 13\n2+4+3 ⇒ 18\n3+6+7 ⇒ 48\n4+4+7 ⇒ 60\n6+7+3 ⇒ ?",
+    "answer": 80,
+    "pattern": "(a+b+c)×n"
+  },
+  {
+    "quest": "Quiz#7373:\n6+7+5 ⇒ 68\n6+3+6 ⇒ 75\n5+5+6 ⇒ 66\n4+2+4 ⇒ 34\n4+3+4 ⇒ ?",
+    "answer": 35,
+    "pattern": "a²+b+c²"
+  },
+  {
+    "quest": "Quiz#7374:\n5+2 ⇒ 64\n4+3 ⇒ 48\n2+3 ⇒ 12\n3+3 ⇒ 24\n3+8 ⇒ ?",
+    "answer": 64,
+    "pattern": "2^a*b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7375:\n5+6+2 ⇒ 52\n3+4+6 ⇒ 54\n4+3+2 ⇒ 26\n2+5+2 ⇒ 24\n7+6+2 ⇒ ?",
+    "answer": 68,
+    "pattern": "a×b+b×c+c×a"
+  },
+  {
+    "quest": "Quiz#7376:\n5+2+7 ⇒ 79\n5+4+2 ⇒ 96\n3+5+3 ⇒ 88\n2+5+4 ⇒ 79\n5+4+3 ⇒ ?",
+    "answer": 97,
+    "pattern": "concat(b,c)+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7377:\n3+5+2 ⇒ 71\n2+4+4 ⇒ 74\n5+4+2 ⇒ 89\n2+2+4 ⇒ 44\n3+2+5 ⇒ ?",
+    "answer": 71,
+    "pattern": "(a+1)×(b+1)×(c+1)-1"
+  },
+  {
+    "quest": "Quiz#7378:\n8+6 ⇒ 45\n7+4 ⇒ 25\n4+3 ⇒ 9\n6+8 ⇒ 45\n6+7 ⇒ ?",
+    "answer": 39,
+    "pattern": "a×b−3"
+  },
+  {
+    "quest": "Quiz#7379:\n4+8 ⇒ 0\n4+6 ⇒ 1\n4+4 ⇒ 2\n8+6 ⇒ 5\n6+4 ⇒ ?",
+    "answer": 4,
+    "pattern": "a-b/2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#7380:\n4+6+7 ⇒ 32\n7+6+6 ⇒ 50\n6+2+5 ⇒ 20\n2+4+5 ⇒ 17\n5+7+3 ⇒ ?",
+    "answer": 43,
+    "pattern": "a×b+c+n"
+  },
+  {
+    "quest": "Quiz#7381:\n4+5 ⇒ 61\n5+3 ⇒ 78\n2+4 ⇒ 28\n6+3 ⇒ 99\n5+4 ⇒ ?",
+    "answer": 79,
+    "pattern": "concat(a,b)+(a^2)"
+  },
+  {
+    "quest": "Quiz#7382:\n2+8 ⇒ 50\n4+4 ⇒ 16\n7+7 ⇒ 28\n4+8 ⇒ 36\n4+6 ⇒ ?",
+    "answer": 25,
+    "pattern": "(a+b)²÷a",
+    "condition": "a≠0dana|(a+b)²"
+  },
+  {
+    "quest": "Quiz#7383:\n6+2 ⇒ 16\n4+7 ⇒ 77\n7+7 ⇒ 98\n3+3 ⇒ 18\n3+2 ⇒ ?",
+    "answer": 10,
+    "pattern": "b²+a×b"
+  },
+  {
+    "quest": "Quiz#7384:\n4+7 ⇒ 30\n7+3 ⇒ 16\n7+4 ⇒ 24\n8+6 ⇒ 45\n7+6 ⇒ ?",
+    "answer": 40,
+    "pattern": "(a+1)×(b−1)",
+    "condition": "b>=1"
+  },
+  {
+    "quest": "Quiz#7385:\n3+3 ⇒ 4\n8+3 ⇒ 15\n2+6 ⇒ 1\n2+4 ⇒ 4\n3+8 ⇒ ?",
+    "answer": 3,
+    "pattern": "2a-b+n"
+  },
+  {
+    "quest": "Quiz#7386:\n6+6+3 ⇒ 36\n3+2+6 ⇒ 30\n5+4+5 ⇒ 45\n5+5+6 ⇒ 60\n5+3+5 ⇒ ?",
+    "answer": 40,
+    "pattern": "(a+b)×c"
+  },
+  {
+    "quest": "Quiz#7387:\n3+5+4 ⇒ 24\n5+7+5 ⇒ 44\n3+6+2 ⇒ 13\n3+4+3 ⇒ 15\n4+3+4 ⇒ ?",
+    "answer": 23,
+    "pattern": "a+b+2^c",
+    "condition": "c<=5"
+  },
+  {
+    "quest": "Quiz#7388:\n5+2+5 ⇒ 34\n7+5+5 ⇒ 86\n5+4+6 ⇒ 47\n5+4+3 ⇒ 44\n6+3+2 ⇒ ?",
+    "answer": 46,
+    "pattern": "a²+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7389:\n5+7 ⇒ 58\n2+3 ⇒ 27\n2+4 ⇒ 33\n4+8 ⇒ 64\n6+7 ⇒ ?",
+    "answer": 92,
+    "pattern": "concat(a,b)+n²"
+  },
+  {
+    "quest": "Quiz#7390:\n3+7+6 ⇒ 15\n2+7+5 ⇒ 9\n5+3+5 ⇒ 10\n5+5+3 ⇒ 22\n4+7+5 ⇒ ?",
+    "answer": 23,
+    "pattern": "a×b-c"
+  },
+  {
+    "quest": "Quiz#7391:\n5+2+2 ⇒ 81\n2+3+2 ⇒ 49\n3+2+3 ⇒ 64\n2+5+2 ⇒ 81\n2+2+2 ⇒ ?",
+    "answer": 36,
+    "pattern": "(a+b+c)²"
+  },
+  {
+    "quest": "Quiz#7392:\n6+4 ⇒ 22\n7+5 ⇒ 39\n5+4 ⇒ 21\n7+3 ⇒ 15\n6+5 ⇒ ?",
+    "answer": 38,
+    "pattern": "a+2^b",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7393:\n4+4 ⇒ 5\n8+4 ⇒ 10\n2+2 ⇒ 3\n6+2 ⇒ 9\n6+3 ⇒ ?",
+    "answer": 8,
+    "pattern": "a+(a/b)",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#7394:\n2+6+3 ⇒ 25\n3+7+7 ⇒ 16\n6+2+3 ⇒ 17\n4+7+2 ⇒ 34\n2+2+2 ⇒ ?",
+    "answer": 0,
+    "pattern": "(a-b)²+(b-c)²"
+  },
+  {
+    "quest": "Quiz#7395:\n7+4 ⇒ 33\n5+2 ⇒ 21\n8+4 ⇒ 48\n8+2 ⇒ 60\n8+6 ⇒ ?",
+    "answer": 28,
+    "pattern": "(a+b)×(a−b)"
+  },
+  {
+    "quest": "Quiz#7396:\n4+2+6 ⇒ 48\n2+7+5 ⇒ 70\n3+5+2 ⇒ 30\n3+3+3 ⇒ 27\n5+3+5 ⇒ ?",
+    "answer": 75,
+    "pattern": "a×b×c"
+  },
+  {
+    "quest": "Quiz#7397:\n3+5 ⇒ 33\n2+3 ⇒ 14\n3+7 ⇒ 59\n4+6 ⇒ 46\n2+7 ⇒ ?",
+    "answer": 58,
+    "pattern": "(a+b)+b²"
+  },
+  {
+    "quest": "Quiz#7398:\n6+2 ⇒ 8\n5+4 ⇒ 2\n7+7 ⇒ 0\n6+4 ⇒ 4\n5+3 ⇒ ?",
+    "answer": 4,
+    "pattern": "2×a−2×b"
+  },
+  {
+    "quest": "Quiz#7399:\n7+4 ⇒ 9\n3+2 ⇒ 1\n2+3 ⇒ 6\n2+4 ⇒ 14\n3+5 ⇒ ?",
+    "answer": 29,
+    "pattern": "2^b-a",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7400:\n3+2+6 ⇒ 36\n2+4+3 ⇒ 26\n7+2+6 ⇒ 68\n4+2+4 ⇒ 32\n4+7+5 ⇒ ?",
+    "answer": 83,
+    "pattern": "a×(b+c)+b×c"
+  },
+  {
+    "quest": "Quiz#7401:\n6+7 ⇒ 44\n7+5 ⇒ 37\n5+3 ⇒ 17\n4+8 ⇒ 34\n2+4 ⇒ ?",
+    "answer": 10,
+    "pattern": "a*b+2"
+  },
+  {
+    "quest": "Quiz#7402:\n6+5+3 ⇒ 14\n7+7+4 ⇒ 32\n7+6+4 ⇒ 49\n2+2+5 ⇒ 58\n3+4+3 ⇒ ?",
+    "answer": 68,
+    "pattern": "prev+(a+b+c)",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7403:\n6+7 ⇒ 20\n6+3 ⇒ 17\n6+2 ⇒ 17\n7+3 ⇒ 21\n8+2 ⇒ ?",
+    "answer": 23,
+    "pattern": "2a+b+n"
+  },
+  {
+    "quest": "Quiz#7404:\n5+5 ⇒ 27\n4+2 ⇒ 14\n3+4 ⇒ 4\n3+5 ⇒ 3\n4+4 ⇒ ?",
+    "answer": 12,
+    "pattern": "2^a-b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7405:\n6+5 ⇒ 4\n8+8 ⇒ 8\n5+5 ⇒ 5\n8+6 ⇒ 4\n5+4 ⇒ ?",
+    "answer": 3,
+    "pattern": "b*2-a"
+  },
+  {
+    "quest": "Quiz#7406:\n4+2+4 ⇒ 4\n7+2+4 ⇒ 7\n5+2+5 ⇒ 6\n3+2+6 ⇒ 5\n4+2+2 ⇒ ?",
+    "answer": 2,
+    "pattern": "|a-b|+|b-c|"
+  },
+  {
+    "quest": "Quiz#7407:\n4+2+3 ⇒ 13\n6+6+6 ⇒ 30\n7+2+3 ⇒ 16\n4+7+4 ⇒ 29\n2+7+5 ⇒ ?",
+    "answer": 28,
+    "pattern": "a+b×3+c"
+  },
+  {
+    "quest": "Quiz#7408:\n2+6+3 ⇒ 17\n2+7+5 ⇒ 18\n5+6+2 ⇒ 46\n2+7+4 ⇒ 17\n3+4+4 ⇒ ?",
+    "answer": 30,
+    "pattern": "concat(a,c)-b"
+  },
+  {
+    "quest": "Quiz#7409:\n3+2+4 ⇒ 16\n4+2+6 ⇒ 22\n2+5+3 ⇒ 53\n3+3+6 ⇒ 33\n6+4+3 ⇒ ?",
+    "answer": 99,
+    "pattern": "a×b²+c"
+  },
+  {
+    "quest": "Quiz#7410:\n2+6 ⇒ 25\n4+2 ⇒ 34\n3+5 ⇒ 43\n2+8 ⇒ 36\n3+8 ⇒ ?",
+    "answer": 69,
+    "pattern": "2^a*b+n",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7411:\n3+4+3 ⇒ 34\n4+2+6 ⇒ 56\n6+6+2 ⇒ 76\n2+4+7 ⇒ 69\n3+5+7 ⇒ ?",
+    "answer": 83,
+    "pattern": "a²+b²+c²"
+  },
+  {
+    "quest": "Quiz#7412:\n3+6+5 ⇒ 30\n3+4+2 ⇒ 17\n2+4+5 ⇒ 25\n4+4+7 ⇒ 33\n2+5+6 ⇒ ?",
+    "answer": 30,
+    "pattern": "a×1+b×2+c×3"
+  },
+  {
+    "quest": "Quiz#7413:\n6+5 ⇒ 44\n2+2 ⇒ 18\n4+5 ⇒ 46\n4+6 ⇒ 56\n8+5 ⇒ ?",
+    "answer": 42,
+    "pattern": "concat(b,a)-2a"
+  },
+  {
+    "quest": "Quiz#7414:\n2+6+3 ⇒ 11\n4+6+4 ⇒ 15\n3+2+2 ⇒ 18\n3+2+6 ⇒ 21\n4+3+7 ⇒ ?",
+    "answer": 25,
+    "pattern": "prev+a",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7415:\n3+6 ⇒ 18\n3+5 ⇒ 21\n6+6 ⇒ 66\n7+7 ⇒ 77\n6+8 ⇒ ?",
+    "answer": 51,
+    "pattern": "concat(a,b)×a/b",
+    "condition": "b≠0,hasilbulat"
+  },
+  {
+    "quest": "Quiz#7416:\n4+3 ⇒ 34\n5+6 ⇒ 65\n2+7 ⇒ 72\n6+2 ⇒ 26\n7+5 ⇒ ?",
+    "answer": 57,
+    "pattern": "concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7417:\n4+2+7 ⇒ 23\n3+3+3 ⇒ 0\n6+4+2 ⇒ 16\n5+5+5 ⇒ 0\n5+3+6 ⇒ ?",
+    "answer": 21,
+    "pattern": "concat(a,c)-concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7418:\n2+4 ⇒ 4\n6+2 ⇒ 10\n5+6 ⇒ 24\n5+3 ⇒ 12\n3+5 ⇒ ?",
+    "answer": 10,
+    "pattern": "(a−1)×b",
+    "condition": "a>=1"
+  },
+  {
+    "quest": "Quiz#7419:\n8+3 ⇒ 19\n6+8 ⇒ 20\n5+7 ⇒ 17\n8+6 ⇒ 22\n7+7 ⇒ ?",
+    "answer": 21,
+    "pattern": "2×a+b"
+  },
+  {
+    "quest": "Quiz#7420:\n4+7 ⇒ 71\n7+3 ⇒ 41\n3+8 ⇒ 78\n4+5 ⇒ 53\n7+7 ⇒ ?",
+    "answer": 77,
+    "pattern": "concat(b,a)+a-b"
+  },
+  {
+    "quest": "Quiz#7421:\n5+6 ⇒ 4\n5+8 ⇒ 2\n8+8 ⇒ 8\n6+3 ⇒ 9\n7+8 ⇒ ?",
+    "answer": 6,
+    "pattern": "a*2-b"
+  },
+  {
+    "quest": "Quiz#7422:\n2+5+5 ⇒ 52\n7+7+6 ⇒ 92\n4+6+6 ⇒ 76\n3+3+3 ⇒ 21\n7+4+6 ⇒ ?",
+    "answer": 59,
+    "pattern": "a+b²+c²"
+  },
+  {
+    "quest": "Quiz#7423:\n4+2 ⇒ 18\n8+6 ⇒ 18\n7+7 ⇒ 0\n4+3 ⇒ 9\n8+4 ⇒ ?",
+    "answer": 36,
+    "pattern": "concat(a,b)-reverse"
+  },
+  {
+    "quest": "Quiz#7424:\n5+6+4 ⇒ 15\n5+6+5 ⇒ 16\n5+7+2 ⇒ 14\n7+4+5 ⇒ 16\n5+7+7 ⇒ ?",
+    "answer": 19,
+    "pattern": "a+b+c×1"
+  },
+  {
+    "quest": "Quiz#7425:\n5+3+5 ⇒ 20\n7+7+3 ⇒ 52\n6+7+3 ⇒ 45\n7+2+4 ⇒ 18\n3+2+3 ⇒ ?",
+    "answer": 9,
+    "pattern": "a×b+c"
+  },
+  {
+    "quest": "Quiz#7426:\n2+6+5 ⇒ 29\n4+2+2 ⇒ 34\n2+3+4 ⇒ 16\n4+4+3 ⇒ 67\n2+2+5 ⇒ ?",
+    "answer": 13,
+    "pattern": "a²×b+c"
+  },
+  {
+    "quest": "Quiz#7427:\n2+5+2 ⇒ 38\n5+4+5 ⇒ 53\n3+5+6 ⇒ 46\n5+4+4 ⇒ 52\n3+5+5 ⇒ ?",
+    "answer": 45,
+    "pattern": "2^a+2^b+c",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#7428:\n5+2+4 ⇒ 19\n2+6+6 ⇒ 64\n2+4+2 ⇒ 40\n6+6+4 ⇒ 58\n4+3+2 ⇒ ?",
+    "answer": 28,
+    "pattern": "concat(b,c)-a"
+  },
+  {
+    "quest": "Quiz#7429:\n5+3+7 ⇒ 42\n4+3+5 ⇒ 39\n3+2+4 ⇒ 27\n6+2+6 ⇒ 32\n6+4+4 ⇒ ?",
+    "answer": 50,
+    "pattern": "a+concat(b,c)"
+  },
+  {
+    "quest": "Quiz#7430:\n4+5+4 ⇒ 90\n3+4+4 ⇒ 99\n5+6+2 ⇒ 63\n3+3+6 ⇒ 27\n3+4+3 ⇒ ?",
+    "answer": 90,
+    "pattern": "concat(b,c,a)-concat(a,b,c)"
+  },
+  {
+    "quest": "Quiz#7431:\n6+2+4 ⇒ 68\n7+2+2 ⇒ 57\n4+2+5 ⇒ 66\n5+2+5 ⇒ 75\n6+7+3 ⇒ ?",
+    "answer": 99,
+    "pattern": "a²+b×c²"
+  },
+  {
+    "quest": "Quiz#7432:\n7+6+6 ⇒ 91\n5+2+5 ⇒ 34\n4+5+6 ⇒ 47\n3+4+7 ⇒ 32\n4+4+6 ⇒ ?",
+    "answer": 38,
+    "pattern": "a²+b²+c"
+  },
+  {
+    "quest": "Quiz#7433:\n2+2+5 ⇒ 18\n3+6+5 ⇒ 31\n5+6+2 ⇒ 27\n7+4+2 ⇒ 23\n4+5+2 ⇒ ?",
+    "answer": 23,
+    "pattern": "a×1+b×3+c×2"
+  },
+  {
+    "quest": "Quiz#7434:\n4+3 ⇒ 21\n3+4 ⇒ 22\n5+5 ⇒ 45\n8+3 ⇒ 65\n8+5 ⇒ ?",
+    "answer": 81,
+    "pattern": "a²+b²−a"
+  },
+  {
+    "quest": "Quiz#7435:\n4+5+6 ⇒ 28\n5+3+4 ⇒ 25\n3+6+7 ⇒ 28\n2+7+3 ⇒ 23\n4+6+7 ⇒ ?",
+    "answer": 31,
+    "pattern": "a×3+b×2+c×1"
+  },
+  {
+    "quest": "Quiz#7436:\n8+8 ⇒ 19\n3+3 ⇒ 14\n3+6 ⇒ 18\n2+6 ⇒ 19\n5+5 ⇒ ?",
+    "answer": 16,
+    "pattern": "concat(a,b)/a+b",
+    "condition": "a≠0,a|concat"
+  },
+  {
+    "quest": "Quiz#7437:\n7+6 ⇒ 91\n2+7 ⇒ 18\n6+3 ⇒ 54\n7+3 ⇒ 70\n3+7 ⇒ ?",
+    "answer": 30,
+    "pattern": "a²+a×b"
+  },
+  {
+    "quest": "Quiz#7438:\n3+4+5 ⇒ 88\n7+3+2 ⇒ 96\n3+7+2 ⇒ 64\n4+3+2 ⇒ 66\n2+5+2 ⇒ ?",
+    "answer": 50,
+    "pattern": "concat(a,b)+concat(c,b)"
+  },
+  {
+    "quest": "Quiz#7439:\n2+7+3 ⇒ 90\n4+5+2 ⇒ 63\n4+2+7 ⇒ 54\n6+3+3 ⇒ 54\n3+4+3 ⇒ ?",
+    "answer": 49,
+    "pattern": "(a+b)×(b+c)"
+  },
+  {
+    "quest": "Quiz#7440:\n2+4+7 ⇒ 69\n6+7+2 ⇒ 89\n3+7+2 ⇒ 62\n2+2+2 ⇒ 12\n4+5+3 ⇒ ?",
+    "answer": 50,
+    "pattern": "a²+b²+c²"
+  },
+  {
+    "quest": "Quiz#7441:\n4+7+2 ⇒ 50\n5+5+7 ⇒ 95\n5+5+2 ⇒ 45\n3+7+4 ⇒ 61\n2+4+6 ⇒ ?",
+    "answer": 44,
+    "pattern": "a×b+b×c+c×a"
+  },
+  {
+    "quest": "Quiz#7442:\n3+6+2 ⇒ 19\n3+7+5 ⇒ 35\n7+3+3 ⇒ 25\n5+6+6 ⇒ 41\n6+7+7 ⇒ ?",
+    "answer": 48,
+    "pattern": "a+b+c×5"
+  },
+  {
+    "quest": "Quiz#7443:\n6+3 ⇒ 12\n8+2 ⇒ 32\n4+4 ⇒ 4\n5+5 ⇒ 5\n8+4 ⇒ ?",
+    "answer": 16,
+    "pattern": "a²÷b",
+    "condition": "b|a²"
+  },
+  {
+    "quest": "Quiz#7444:\n2+5 ⇒ 15\n3+3 ⇒ 27\n5+8 ⇒ 42\n6+6 ⇒ 54\n5+5 ⇒ ?",
+    "answer": 45,
+    "pattern": "concat(a,b)-2*b"
+  },
+  {
+    "quest": "Quiz#7445:\n4+8 ⇒ 23\n2+6 ⇒ 9\n5+3 ⇒ 34\n5+6 ⇒ 37\n5+2 ⇒ ?",
+    "answer": 33,
+    "pattern": "2^a+b−1",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7446:\n3+3 ⇒ 0\n2+2 ⇒ 0\n3+6 ⇒ 27\n2+4 ⇒ 12\n5+6 ⇒ ?",
+    "answer": 11,
+    "pattern": "b²−a²"
+  },
+  {
+    "quest": "Quiz#7447:\n7+8 ⇒ 63\n6+2 ⇒ 54\n4+3 ⇒ 36\n6+5 ⇒ 54\n7+5 ⇒ ?",
+    "answer": 63,
+    "pattern": "concat(a,b)-(a+b)"
+  },
+  {
+    "quest": "Quiz#7448:\n6+5 ⇒ 37\n5+3 ⇒ 19\n3+7 ⇒ 11\n7+3 ⇒ 67\n3+3 ⇒ ?",
+    "answer": 7,
+    "pattern": "b+2^(a−1)",
+    "condition": "a>=1"
+  },
+  {
+    "quest": "Quiz#7449:\n4+2+5 ⇒ 40\n4+6+2 ⇒ 48\n6+2+5 ⇒ 60\n3+3+2 ⇒ 18\n3+6+4 ⇒ ?",
+    "answer": 72,
+    "pattern": "a×b×c"
+  },
+  {
+    "quest": "Quiz#7450:\n2+3 ⇒ 29\n2+5 ⇒ 35\n2+7 ⇒ 41\n2+2 ⇒ 26\n8+2 ⇒ ?",
+    "answer": 98,
+    "pattern": "concat(a,b)+(a×b)"
+  },
+  {
+    "quest": "Quiz#7451:\n3+3+3 ⇒ 30\n5+2+2 ⇒ 52\n5+2+7 ⇒ 57\n2+6+4 ⇒ 28\n5+2+3 ⇒ ?",
+    "answer": 53,
+    "pattern": "a²×b+c"
+  },
+  {
+    "quest": "Quiz#7452:\n7+6 ⇒ 3\n3+3 ⇒ 0\n5+2 ⇒ 9\n5+4 ⇒ 3\n7+2 ⇒ ?",
+    "answer": 15,
+    "pattern": "(a−b)×3"
+  },
+  {
+    "quest": "Quiz#7453:\n2+7+3 ⇒ 44\n4+2+7 ⇒ 58\n3+3+5 ⇒ 47\n7+2+2 ⇒ 30\n3+3+3 ⇒ ?",
+    "answer": 29,
+    "pattern": "a×b×c+2"
+  },
+  {
+    "quest": "Quiz#7454:\n2+6+4 ⇒ 72\n2+3+4 ⇒ 66\n4+6+4 ⇒ 92\n5+4+4 ⇒ 98\n3+2+5 ⇒ ?",
+    "answer": 84,
+    "pattern": "concat(a,b)+concat(c,b)"
+  },
+  {
+    "quest": "Quiz#7455:\n4+5+3 ⇒ 81\n3+3+7 ⇒ 36\n6+7+3 ⇒ 63\n5+6+2 ⇒ 63\n3+4+3 ⇒ ?",
+    "answer": 90,
+    "pattern": "concat(b,c,a)-concat(a,b,c)"
+  },
+  {
+    "quest": "Quiz#7456:\n7+5 ⇒ 33\n3+2 ⇒ 4\n7+2 ⇒ 12\n6+2 ⇒ 10\n5+7 ⇒ ?",
+    "answer": 33,
+    "pattern": "a*b-2"
+  },
+  {
+    "quest": "Quiz#7457:\n4+2 ⇒ 10\n2+5 ⇒ 15\n4+6 ⇒ 30\n6+4 ⇒ 28\n3+2 ⇒ ?",
+    "answer": 8,
+    "pattern": "b×(a+1)"
+  },
+  {
+    "quest": "Quiz#7458:\n6+3+6 ⇒ 30\n7+6+4 ⇒ 7\n5+5+7 ⇒ 2\n6+2+3 ⇒ 37\n6+3+4 ⇒ ?",
+    "answer": 28,
+    "pattern": "concat(a,c)-concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7459:\n3+6 ⇒ 42\n3+5 ⇒ 41\n3+2 ⇒ 38\n8+3 ⇒ 99\n3+4 ⇒ ?",
+    "answer": 40,
+    "pattern": "concat(a,b)+2a"
+  },
+  {
+    "quest": "Quiz#7460:\n6+7 ⇒ 10\n4+5 ⇒ 7\n2+7 ⇒ 8\n6+8 ⇒ 11\n2+5 ⇒ ?",
+    "answer": 6,
+    "pattern": "a/2+b",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#7461:\n7+3+2 ⇒ 23\n2+3+7 ⇒ 13\n5+5+7 ⇒ 32\n5+6+7 ⇒ 37\n6+4+5 ⇒ ?",
+    "answer": 29,
+    "pattern": "a×b+c"
+  },
+  {
+    "quest": "Quiz#7462:\n6+4+5 ⇒ 26\n7+2+2 ⇒ 11\n7+7+4 ⇒ 35\n6+2+2 ⇒ 10\n4+7+5 ⇒ ?",
+    "answer": 39,
+    "pattern": "a+b×c"
+  },
+  {
+    "quest": "Quiz#7463:\n5+3 ⇒ 4\n4+4 ⇒ 0\n6+4 ⇒ 4\n8+8 ⇒ 0\n5+2 ⇒ ?",
+    "answer": 6,
+    "pattern": "(a−b)×2"
+  },
+  {
+    "quest": "Quiz#7464:\n3+7 ⇒ 17\n4+8 ⇒ 20\n2+3 ⇒ 8\n8+5 ⇒ 18\n7+7 ⇒ ?",
+    "answer": 21,
+    "pattern": "a+2×b"
+  },
+  {
+    "quest": "Quiz#7465:\n4+3+5 ⇒ 79\n3+2+2 ⇒ 55\n4+5+5 ⇒ 99\n3+6+4 ⇒ 97\n2+5+5 ⇒ ?",
+    "answer": 77,
+    "pattern": "concat(a,c)+concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7466:\n4+6+3 ⇒ 67\n6+4+6 ⇒ 52\n4+5+2 ⇒ 56\n5+6+3 ⇒ 68\n7+2+5 ⇒ ?",
+    "answer": 32,
+    "pattern": "concat(b,c)+a"
+  },
+  {
+    "quest": "Quiz#7467:\n4+3+6 ⇒ 30\n2+2+3 ⇒ 11\n2+5+7 ⇒ 43\n2+5+6 ⇒ 42\n3+3+2 ⇒ ?",
+    "answer": 18,
+    "pattern": "2^a+2^b+c",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#7468:\n5+6+6 ⇒ 17\n6+7+6 ⇒ 38\n4+3+6 ⇒ 39\n5+4+6 ⇒ 60\n2+6+2 ⇒ ?",
+    "answer": 50,
+    "pattern": "(a+b+c)×n"
+  },
+  {
+    "quest": "Quiz#7469:\n7+4 ⇒ 31\n8+5 ⇒ 43\n8+6 ⇒ 50\n5+5 ⇒ 25\n2+5 ⇒ ?",
+    "answer": 7,
+    "pattern": "(a×b)+(a−b)"
+  },
+  {
+    "quest": "Quiz#7470:\n4+3 ⇒ 21\n7+4 ⇒ 37\n2+7 ⇒ 55\n3+2 ⇒ 13\n8+6 ⇒ ?",
+    "answer": 60,
+    "pattern": "a×3+b²"
+  },
+  {
+    "quest": "Quiz#7471:\n8+8 ⇒ 87\n2+4 ⇒ 22\n5+7 ⇒ 54\n7+6 ⇒ 72\n3+3 ⇒ ?",
+    "answer": 28,
+    "pattern": "concat(a,b)-n"
+  },
+  {
+    "quest": "Quiz#7472:\n5+8 ⇒ 48\n3+5 ⇒ 20\n7+5 ⇒ 40\n4+3 ⇒ 15\n7+6 ⇒ ?",
+    "answer": 48,
+    "pattern": "a×b+b"
+  },
+  {
+    "quest": "Quiz#7473:\n4+4+7 ⇒ 27\n4+3+5 ⇒ 23\n7+2+5 ⇒ 30\n4+4+3 ⇒ 23\n4+3+6 ⇒ ?",
+    "answer": 24,
+    "pattern": "3a+2b+c"
+  },
+  {
+    "quest": "Quiz#7474:\n2+2+7 ⇒ 60\n3+5+2 ⇒ 41\n2+3+2 ⇒ 20\n2+5+2 ⇒ 36\n7+3+2 ⇒ ?",
+    "answer": 65,
+    "pattern": "a²+b²+c²+3"
+  },
+  {
+    "quest": "Quiz#7475:\n5+5 ⇒ 20\n2+2 ⇒ 2\n7+2 ⇒ 7\n4+2 ⇒ 4\n2+6 ⇒ ?",
+    "answer": 26,
+    "pattern": "b²−2×b+a"
+  },
+  {
+    "quest": "Quiz#7476:\n3+6+2 ⇒ 38\n6+5+2 ⇒ 67\n3+4+5 ⇒ 39\n3+2+3 ⇒ 35\n6+2+5 ⇒ ?",
+    "answer": 67,
+    "pattern": "c+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7477:\n3+6+2 ⇒ 98\n3+4+2 ⇒ 76\n3+3+5 ⇒ 68\n2+2+5 ⇒ 47\n5+4+4 ⇒ ?",
+    "answer": 98,
+    "pattern": "concat(b,c)+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7478:\n2+6 ⇒ 16\n2+4 ⇒ 4\n6+8 ⇒ 4\n8+8 ⇒ 1\n2+5 ⇒ ?",
+    "answer": 8,
+    "pattern": "2^(b−a)",
+    "condition": "b>=a"
+  },
+  {
+    "quest": "Quiz#7479:\n7+4+3 ⇒ 50\n2+4+7 ⇒ 49\n3+6+5 ⇒ 68\n4+5+2 ⇒ 56\n2+6+4 ⇒ ?",
+    "answer": 66,
+    "pattern": "a+concat(b,c)"
+  },
+  {
+    "quest": "Quiz#7480:\n4+5 ⇒ 86\n3+7 ⇒ 71\n4+7 ⇒ 90\n2+3 ⇒ 44\n4+8 ⇒ ?",
+    "answer": 92,
+    "pattern": "concat(a,b)×2-a"
+  },
+  {
+    "quest": "Quiz#7481:\n2+3+2 ⇒ 15\n6+5+5 ⇒ 66\n6+4+2 ⇒ 54\n4+5+2 ⇒ 43\n2+2+4 ⇒ ?",
+    "answer": 12,
+    "pattern": "a²+b²+c"
+  },
+  {
+    "quest": "Quiz#7482:\n7+7+7 ⇒ 98\n5+3+3 ⇒ 30\n3+2+4 ⇒ 18\n6+5+5 ⇒ 60\n6+4+6 ⇒ ?",
+    "answer": 60,
+    "pattern": "a×(b+c)"
+  },
+  {
+    "quest": "Quiz#7483:\n3+2+6 ⇒ 36\n3+3+2 ⇒ 21\n4+3+4 ⇒ 40\n7+3+7 ⇒ 91\n4+4+5 ⇒ ?",
+    "answer": 56,
+    "pattern": "a×(b+c)+b×c"
+  },
+  {
+    "quest": "Quiz#7484:\n7+3+7 ⇒ 0\n4+3+2 ⇒ 20\n7+4+3 ⇒ 40\n3+2+3 ⇒ 0\n5+2+5 ⇒ ?",
+    "answer": 0,
+    "pattern": "concat(a,b)-concat(c,b)"
+  },
+  {
+    "quest": "Quiz#7485:\n4+7 ⇒ 15\n6+3 ⇒ 15\n2+6 ⇒ 10\n8+7 ⇒ 23\n4+2 ⇒ ?",
+    "answer": 10,
+    "pattern": "a*2+b"
+  },
+  {
+    "quest": "Quiz#7486:\n2+4+2 ⇒ 20\n6+6+5 ⇒ 0\n3+5+7 ⇒ 20\n2+7+6 ⇒ 50\n2+5+3 ⇒ ?",
+    "answer": 30,
+    "pattern": "concat(b,c)-concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7487:\n4+3+6 ⇒ 13\n6+5+5 ⇒ 19\n6+7+6 ⇒ 25\n7+3+5 ⇒ 32\n5+5+2 ⇒ ?",
+    "answer": 37,
+    "pattern": "prev+a",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7488:\n7+5+5 ⇒ 4\n3+7+5 ⇒ 20\n3+7+6 ⇒ 17\n5+7+5 ⇒ 8\n5+3+5 ⇒ ?",
+    "answer": 8,
+    "pattern": "(a-b)²+(b-c)²"
+  },
+  {
+    "quest": "Quiz#7489:\n7+5+3 ⇒ 58\n6+4+5 ⇒ 47\n3+5+4 ⇒ 21\n2+4+4 ⇒ 16\n2+2+3 ⇒ ?",
+    "answer": 14,
+    "pattern": "a²+b+c+n"
+  },
+  {
+    "quest": "Quiz#7490:\n2+6+3 ⇒ 47\n7+6+6 ⇒ 79\n7+3+3 ⇒ 25\n4+6+2 ⇒ 44\n5+4+3 ⇒ ?",
+    "answer": 30,
+    "pattern": "a+b²+c²"
+  },
+  {
+    "quest": "Quiz#7491:\n5+2+4 ⇒ 24\n3+2+6 ⇒ 18\n3+4+5 ⇒ 53\n2+3+3 ⇒ 21\n3+3+4 ⇒ ?",
+    "answer": 31,
+    "pattern": "a×b²+c"
+  },
+  {
+    "quest": "Quiz#7492:\n5+4 ⇒ 16\n4+3 ⇒ 8\n3+2 ⇒ 4\n5+5 ⇒ 0\n5+2 ⇒ ?",
+    "answer": 28,
+    "pattern": "2^a-2^b",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#7493:\n8+6 ⇒ 66\n4+5 ⇒ 55\n2+6 ⇒ 66\n4+4 ⇒ 44\n2+3 ⇒ ?",
+    "answer": 33,
+    "pattern": "concat(b,a)-a+b"
+  },
+  {
+    "quest": "Quiz#7494:\n7+6 ⇒ 89\n5+4 ⇒ 63\n4+6 ⇒ 56\n3+3 ⇒ 39\n4+5 ⇒ ?",
+    "answer": 54,
+    "pattern": "concat(a,b)+a+b"
+  },
+  {
+    "quest": "Quiz#7495:\n4+6+6 ⇒ 30\n4+2+4 ⇒ 20\n3+2+5 ⇒ 18\n2+3+4 ⇒ 16\n4+7+7 ⇒ ?",
+    "answer": 33,
+    "pattern": "a×3+b×2+c×1"
+  },
+  {
+    "quest": "Quiz#7496:\n7+3+4 ⇒ 15\n4+4+5 ⇒ 15\n2+4+5 ⇒ 14\n3+7+5 ⇒ 19\n7+7+5 ⇒ ?",
+    "answer": 24,
+    "pattern": "a+b+c+n"
+  },
+  {
+    "quest": "Quiz#7497:\n6+4 ⇒ 30\n7+5 ⇒ 42\n7+3 ⇒ 28\n8+7 ⇒ 64\n2+2 ⇒ ?",
+    "answer": 6,
+    "pattern": "a×(b+1)"
+  },
+  {
+    "quest": "Quiz#7498:\n2+2+7 ⇒ 19\n4+4+6 ⇒ 30\n7+4+7 ⇒ 46\n6+6+7 ⇒ 43\n2+3+3 ⇒ ?",
+    "answer": 16,
+    "pattern": "a×5+b+c"
+  },
+  {
+    "quest": "Quiz#7499:\n7+2+3 ⇒ 21\n7+3+6 ⇒ 33\n2+6+2 ⇒ 23\n6+6+6 ⇒ 40\n5+5+4 ⇒ ?",
+    "answer": 32,
+    "pattern": "a×1+b×2+c×3+n"
+  },
+  {
+    "quest": "Quiz#7500:\n5+6+4 ⇒ 75\n6+4+5 ⇒ 75\n4+7+6 ⇒ 85\n7+3+5 ⇒ 75\n7+2+5 ⇒ ?",
+    "answer": 70,
+    "pattern": "(a+b+c)×5"
+  },
+  {
+    "quest": "Quiz#7501:\n4+4+5 ⇒ 27\n4+2+4 ⇒ 20\n3+5+7 ⇒ 34\n7+3+7 ⇒ 34\n7+5+2 ⇒ ?",
+    "answer": 23,
+    "pattern": "a×1+b×2+c×3"
+  },
+  {
+    "quest": "Quiz#7502:\n4+4 ⇒ 0\n5+2 ⇒ 9\n7+5 ⇒ 6\n7+7 ⇒ 0\n6+3 ⇒ ?",
+    "answer": 9,
+    "pattern": "3×(a−b)"
+  },
+  {
+    "quest": "Quiz#7503:\n3+2 ⇒ 9\n7+4 ⇒ 27\n6+4 ⇒ 18\n2+2 ⇒ 0\n6+3 ⇒ ?",
+    "answer": 27,
+    "pattern": "concat(a,b)-concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7504:\n7+3 ⇒ 51\n4+2 ⇒ 32\n2+5 ⇒ 56\n7+5 ⇒ 71\n2+6 ⇒ ?",
+    "answer": 66,
+    "pattern": "concat(b,a)+2a"
+  },
+  {
+    "quest": "Quiz#7505:\n6+2 ⇒ 14\n6+3 ⇒ 20\n2+3 ⇒ 8\n2+7 ⇒ 16\n5+6 ⇒ ?",
+    "answer": 32,
+    "pattern": "a×b+2"
+  },
+  {
+    "quest": "Quiz#7506:\n3+3 ⇒ 9\n5+7 ⇒ 33\n6+8 ⇒ 46\n8+7 ⇒ 57\n6+4 ⇒ ?",
+    "answer": 26,
+    "pattern": "(a−b)+(a×b)"
+  },
+  {
+    "quest": "Quiz#7507:\n4+5 ⇒ 25\n4+4 ⇒ 24\n7+7 ⇒ 63\n3+8 ⇒ 20\n2+2 ⇒ ?",
+    "answer": 8,
+    "pattern": "(a+b)+a²"
+  },
+  {
+    "quest": "Quiz#7508:\n3+3+2 ⇒ 21\n7+4+3 ⇒ 85\n2+2+5 ⇒ 54\n6+3+3 ⇒ 63\n4+3+5 ⇒ ?",
+    "answer": 91,
+    "pattern": "a²+b×c²"
+  },
+  {
+    "quest": "Quiz#7509:\n4+3+3 ⇒ 79\n2+5+3 ⇒ 71\n3+2+2 ⇒ 35\n3+4+4 ⇒ 99\n2+4+3 ⇒ ?",
+    "answer": 59,
+    "pattern": "(a+1)×(b+1)×(c+1)-1"
+  },
+  {
+    "quest": "Quiz#7510:\n7+7+4 ⇒ 45\n4+3+5 ⇒ 7\n4+2+3 ⇒ 5\n5+2+5 ⇒ 5\n6+4+3 ⇒ ?",
+    "answer": 21,
+    "pattern": "a×b-c"
+  },
+  {
+    "quest": "Quiz#7511:\n2+4+3 ⇒ 20\n2+6+3 ⇒ 26\n6+3+6 ⇒ 27\n4+7+3 ⇒ 31\n4+6+2 ⇒ ?",
+    "answer": 26,
+    "pattern": "a×1+b×3+c×2"
+  },
+  {
+    "quest": "Quiz#7512:\n3+2 ⇒ 5\n4+4 ⇒ 0\n8+8 ⇒ 0\n8+6 ⇒ 28\n8+4 ⇒ ?",
+    "answer": 48,
+    "pattern": "a²−b²"
+  },
+  {
+    "quest": "Quiz#7513:\n5+5 ⇒ 24\n8+2 ⇒ 12\n3+3 ⇒ 8\n4+2 ⇒ 6\n8+8 ⇒ ?",
+    "answer": 63,
+    "pattern": "(a×b)−(a÷b)",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#7514:\n6+2+7 ⇒ 55\n2+5+6 ⇒ 19\n5+4+4 ⇒ 50\n4+2+7 ⇒ 35\n4+7+6 ⇒ ?",
+    "answer": 41,
+    "pattern": "concat(a,b)-c"
+  },
+  {
+    "quest": "Quiz#7515:\n4+2 ⇒ 6\n5+7 ⇒ 19\n8+7 ⇒ 29\n6+8 ⇒ 38\n6+5 ⇒ ?",
+    "answer": 31,
+    "pattern": "a+b*n"
+  },
+  {
+    "quest": "Quiz#7516:\n5+3 ⇒ 31\n3+3 ⇒ 15\n6+4 ⇒ 48\n4+7 ⇒ 58\n2+2 ⇒ ?",
+    "answer": 6,
+    "pattern": "a²+b²−b"
+  },
+  {
+    "quest": "Quiz#7517:\n4+2 ⇒ 4\n7+7 ⇒ 8\n3+3 ⇒ 4\n5+5 ⇒ 6\n8+4 ⇒ ?",
+    "answer": 6,
+    "pattern": "(a÷b)+b",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#7518:\n7+7+3 ⇒ 22\n3+4+3 ⇒ 15\n4+6+5 ⇒ 42\n5+6+2 ⇒ 15\n3+2+4 ⇒ ?",
+    "answer": 21,
+    "pattern": "a+b+2^c",
+    "condition": "c<=5"
+  },
+  {
+    "quest": "Quiz#7519:\n4+6+4 ⇒ 38\n6+6+3 ⇒ 51\n6+4+5 ⇒ 65\n6+5+2 ⇒ 45\n4+5+5 ⇒ ?",
+    "answer": 46,
+    "pattern": "a²+b+c²"
+  },
+  {
+    "quest": "Quiz#7520:\n7+2+6 ⇒ 19\n7+2+5 ⇒ 18\n5+7+7 ⇒ 72\n3+7+2 ⇒ 69\n6+5+4 ⇒ ?",
+    "answer": 48,
+    "pattern": "concat(b,c)-a"
+  },
+  {
+    "quest": "Quiz#7521:\n7+7+7 ⇒ 84\n3+5+3 ⇒ 38\n2+3+7 ⇒ 30\n4+4+2 ⇒ 46\n7+5+6 ⇒ ?",
+    "answer": 81,
+    "pattern": "concat(a,c)+b"
+  },
+  {
+    "quest": "Quiz#7522:\n2+7 ⇒ 24\n4+3 ⇒ 12\n3+8 ⇒ 35\n2+2 ⇒ 4\n2+4 ⇒ ?",
+    "answer": 12,
+    "pattern": "(a+2)×(b−1)",
+    "condition": "b>=1"
+  },
+  {
+    "quest": "Quiz#7523:\n5+3+3 ⇒ 19\n7+3+2 ⇒ 25\n2+2+7 ⇒ 14\n4+7+3 ⇒ 35\n2+2+2 ⇒ ?",
+    "answer": 11,
+    "pattern": "a×b+c+n"
+  },
+  {
+    "quest": "Quiz#7524:\n4+6 ⇒ 52\n7+6 ⇒ 55\n8+3 ⇒ 32\n4+8 ⇒ 68\n5+4 ⇒ ?",
+    "answer": 37,
+    "pattern": "concat(b,a)-2b"
+  },
+  {
+    "quest": "Quiz#7525:\n3+7+6 ⇒ 5\n5+4+5 ⇒ 2\n7+6+6 ⇒ 1\n6+4+6 ⇒ 4\n4+4+6 ⇒ ?",
+    "answer": 2,
+    "pattern": "|a-b|+|b-c|"
+  },
+  {
+    "quest": "Quiz#7526:\n6+7+4 ⇒ 17\n4+4+5 ⇒ 30\n7+6+7 ⇒ 50\n6+2+4 ⇒ 62\n4+5+7 ⇒ ?",
+    "answer": 78,
+    "pattern": "prev+(a+b+c)",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7527:\n2+2 ⇒ 22\n7+7 ⇒ 77\n5+6 ⇒ 57\n2+6 ⇒ 30\n4+4 ⇒ ?",
+    "answer": 44,
+    "pattern": "concat(a,b)-(a-b)"
+  },
+  {
+    "quest": "Quiz#7528:\n2+2 ⇒ 4\n8+4 ⇒ 24\n4+2 ⇒ 8\n5+6 ⇒ 20\n2+4 ⇒ ?",
+    "answer": 6,
+    "pattern": "a+(a×b÷2)",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#7529:\n4+7+4 ⇒ 44\n6+2+3 ⇒ 24\n7+2+7 ⇒ 63\n6+3+7 ⇒ 63\n5+4+7 ⇒ ?",
+    "answer": 63,
+    "pattern": "(a+b)×c"
+  },
+  {
+    "quest": "Quiz#7530:\n4+5 ⇒ 11\n8+6 ⇒ 18\n2+5 ⇒ 8\n6+7 ⇒ 16\n6+2 ⇒ ?",
+    "answer": 11,
+    "pattern": "3a/2+b",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#7531:\n8+3 ⇒ 7\n8+8 ⇒ 12\n6+6 ⇒ 9\n8+5 ⇒ 9\n4+5 ⇒ ?",
+    "answer": 7,
+    "pattern": "a÷2+b",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#7532:\n2+4+4 ⇒ 10\n7+2+3 ⇒ 12\n7+4+5 ⇒ 16\n5+3+5 ⇒ 13\n3+2+7 ⇒ ?",
+    "answer": 12,
+    "pattern": "a+b×1+c"
+  },
+  {
+    "quest": "Quiz#7533:\n2+5+6 ⇒ 15\n3+4+7 ⇒ 19\n4+5+2 ⇒ 23\n3+3+4 ⇒ 15\n5+3+3 ⇒ ?",
+    "answer": 38,
+    "pattern": "2^a+b+c",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7534:\n3+7 ⇒ 15\n5+3 ⇒ 35\n3+5 ⇒ 13\n5+7 ⇒ 39\n5+2 ⇒ ?",
+    "answer": 34,
+    "pattern": "b+2^a",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7535:\n2+5+3 ⇒ 31\n6+4+5 ⇒ 44\n7+5+6 ⇒ 53\n2+3+6 ⇒ 37\n6+5+3 ⇒ ?",
+    "answer": 39,
+    "pattern": "2a+3b+4c"
+  },
+  {
+    "quest": "Quiz#7536:\n4+3+2 ⇒ 45\n6+4+2 ⇒ 66\n5+2+3 ⇒ 55\n6+2+6 ⇒ 68\n5+4+5 ⇒ ?",
+    "answer": 59,
+    "pattern": "b+concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7537:\n2+2+4 ⇒ 12\n4+3+5 ⇒ 29\n6+3+2 ⇒ 46\n5+2+2 ⇒ 31\n2+4+3 ⇒ ?",
+    "answer": 23,
+    "pattern": "a²+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7538:\n4+8 ⇒ 24\n3+5 ⇒ 13\n5+3 ⇒ 35\n5+7 ⇒ 39\n3+6 ⇒ ?",
+    "answer": 14,
+    "pattern": "2^a+b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7539:\n5+2 ⇒ 8\n4+6 ⇒ 13\n8+2 ⇒ 11\n5+6 ⇒ 14\n7+8 ⇒ ?",
+    "answer": 19,
+    "pattern": "a+3b/2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#7540:\n2+7 ⇒ 35\n5+8 ⇒ 24\n2+3 ⇒ 3\n2+4 ⇒ 8\n4+4 ⇒ ?",
+    "answer": 0,
+    "pattern": "b×(b−a)",
+    "condition": "b>=a"
+  },
+  {
+    "quest": "Quiz#7541:\n4+4+6 ⇒ 80\n4+2+2 ⇒ 24\n5+2+6 ⇒ 56\n7+2+5 ⇒ 63\n3+6+5 ⇒ ?",
+    "answer": 99,
+    "pattern": "(a+b)×(b+c)"
+  },
+  {
+    "quest": "Quiz#7542:\n5+4+5 ⇒ 1\n4+5+3 ⇒ 2\n2+3+3 ⇒ 1\n3+5+6 ⇒ 3\n2+3+4 ⇒ ?",
+    "answer": 2,
+    "pattern": "max(a,b,c)-min(a,b,c)"
+  },
+  {
+    "quest": "Quiz#7543:\n4+8 ⇒ 20\n6+3 ⇒ 21\n7+6 ⇒ 27\n6+2 ⇒ 20\n8+2 ⇒ ?",
+    "answer": 26,
+    "pattern": "3a+b"
+  },
+  {
+    "quest": "Quiz#7544:\n8+6 ⇒ 98\n4+4 ⇒ 52\n2+2 ⇒ 26\n7+2 ⇒ 76\n7+3 ⇒ ?",
+    "answer": 79,
+    "pattern": "concat(a,b)+2b"
+  },
+  {
+    "quest": "Quiz#7545:\n4+6+7 ⇒ 73\n2+4+7 ⇒ 57\n7+7+5 ⇒ 74\n2+2+6 ⇒ 40\n2+3+2 ⇒ ?",
+    "answer": 10,
+    "pattern": "a×b+c²"
+  },
+  {
+    "quest": "Quiz#7546:\n7+7 ⇒ 8\n4+4 ⇒ 5\n3+3 ⇒ 4\n6+6 ⇒ 7\n4+8 ⇒ ?",
+    "answer": 6,
+    "pattern": "a+(b/a)",
+    "condition": "a|b"
+  },
+  {
+    "quest": "Quiz#7547:\n3+4+3 ⇒ 37\n7+3+7 ⇒ 80\n7+2+4 ⇒ 76\n2+2+2 ⇒ 24\n6+5+7 ⇒ ?",
+    "answer": 72,
+    "pattern": "concat(a,b)+c"
+  },
+  {
+    "quest": "Quiz#7548:\n7+2+7 ⇒ 75\n3+4+2 ⇒ 28\n6+3+7 ⇒ 64\n3+7+6 ⇒ 29\n6+3+3 ⇒ ?",
+    "answer": 60,
+    "pattern": "concat(a,c)-b"
+  },
+  {
+    "quest": "Quiz#7549:\n6+2+6 ⇒ 16\n6+5+7 ⇒ 45\n7+5+2 ⇒ 41\n2+4+3 ⇒ 21\n5+4+5 ⇒ ?",
+    "answer": 26,
+    "pattern": "a+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7550:\n6+4+7 ⇒ 57\n5+7+7 ⇒ 50\n5+4+4 ⇒ 50\n7+7+3 ⇒ 74\n7+7+5 ⇒ ?",
+    "answer": 72,
+    "pattern": "concat(a,b)-c"
+  },
+  {
+    "quest": "Quiz#7551:\n4+4+4 ⇒ 24\n4+2+3 ⇒ 21\n2+7+5 ⇒ 16\n5+6+3 ⇒ 41\n4+2+7 ⇒ ?",
+    "answer": 25,
+    "pattern": "2^a+b+c",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7552:\n4+2 ⇒ 38\n5+4 ⇒ 44\n7+6 ⇒ 55\n3+8 ⇒ 26\n8+2 ⇒ ?",
+    "answer": 42,
+    "pattern": "concat(a,b)-a*n"
+  },
+  {
+    "quest": "Quiz#7553:\n5+6+4 ⇒ 47\n3+6+6 ⇒ 51\n7+6+3 ⇒ 64\n6+6+3 ⇒ 51\n4+7+5 ⇒ ?",
+    "answer": 48,
+    "pattern": "a²+b+c²"
+  },
+  {
+    "quest": "Quiz#7554:\n8+3 ⇒ 14\n5+5 ⇒ 25\n8+4 ⇒ 20\n5+7 ⇒ 47\n7+4 ⇒ ?",
+    "answer": 19,
+    "pattern": "a+b²−b"
+  },
+  {
+    "quest": "Quiz#7555:\n3+7+3 ⇒ 26\n3+4+7 ⇒ 32\n2+2+3 ⇒ 15\n3+2+4 ⇒ 19\n5+7+5 ⇒ ?",
+    "answer": 34,
+    "pattern": "a×1+b×2+c×3"
+  },
+  {
+    "quest": "Quiz#7556:\n6+7 ⇒ 43\n2+5 ⇒ 12\n4+7 ⇒ 31\n5+6 ⇒ 34\n4+8 ⇒ ?",
+    "answer": 37,
+    "pattern": "a*b+n"
+  },
+  {
+    "quest": "Quiz#7557:\n2+7+3 ⇒ 95\n5+2+3 ⇒ 78\n5+2+5 ⇒ 80\n5+4+3 ⇒ 98\n5+3+3 ⇒ ?",
+    "answer": 88,
+    "pattern": "concat(a,c)+concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7558:\n8+8 ⇒ 88\n6+2 ⇒ 66\n2+4 ⇒ 22\n3+5 ⇒ 33\n4+4 ⇒ ?",
+    "answer": 44,
+    "pattern": "concat(a,b)+(a-b)"
+  },
+  {
+    "quest": "Quiz#7559:\n3+2+5 ⇒ 28\n4+3+7 ⇒ 41\n7+2+7 ⇒ 34\n3+2+2 ⇒ 25\n4+6+3 ⇒ ?",
+    "answer": 67,
+    "pattern": "concat(b,c)+a"
+  },
+  {
+    "quest": "Quiz#7560:\n6+6+2 ⇒ 14\n2+7+2 ⇒ 22\n2+4+6 ⇒ 36\n6+4+2 ⇒ 48\n6+2+7 ⇒ ?",
+    "answer": 75,
+    "pattern": "(a+b+c)×n"
+  },
+  {
+    "quest": "Quiz#7561:\n3+4+2 ⇒ 76\n7+2+7 ⇒ 99\n6+2+7 ⇒ 89\n7+2+2 ⇒ 94\n3+2+4 ⇒ ?",
+    "answer": 56,
+    "pattern": "concat(b,c)+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7562:\n5+6 ⇒ 37\n5+5 ⇒ 21\n4+5 ⇒ 20\n7+4 ⇒ 15\n4+6 ⇒ ?",
+    "answer": 36,
+    "pattern": "a+2^(b−1)",
+    "condition": "b>=1"
+  },
+  {
+    "quest": "Quiz#7563:\n7+3 ⇒ 16\n8+6 ⇒ 26\n5+7 ⇒ 26\n8+2 ⇒ 14\n6+3 ⇒ ?",
+    "answer": 15,
+    "pattern": "a+3b"
+  },
+  {
+    "quest": "Quiz#7564:\n6+4+6 ⇒ 60\n2+4+4 ⇒ 24\n7+2+4 ⇒ 30\n5+2+5 ⇒ 35\n6+7+6 ⇒ ?",
+    "answer": 78,
+    "pattern": "a×b+c²"
+  },
+  {
+    "quest": "Quiz#7565:\n7+3 ⇒ 63\n3+6 ⇒ 27\n8+3 ⇒ 72\n5+6 ⇒ 45\n6+6 ⇒ ?",
+    "answer": 54,
+    "pattern": "concat(a,b)-a-b"
+  },
+  {
+    "quest": "Quiz#7566:\n3+2 ⇒ 35\n2+5 ⇒ 27\n6+3 ⇒ 69\n4+2 ⇒ 46\n6+2 ⇒ ?",
+    "answer": 68,
+    "pattern": "concat(a,a+b)",
+    "condition": "a+b≤9"
+  },
+  {
+    "quest": "Quiz#7567:\n5+7+5 ⇒ 8\n2+5+4 ⇒ 10\n7+3+2 ⇒ 17\n6+5+7 ⇒ 5\n6+3+5 ⇒ ?",
+    "answer": 13,
+    "pattern": "(a-b)²+(b-c)²"
+  },
+  {
+    "quest": "Quiz#7568:\n5+4+3 ⇒ 60\n2+4+7 ⇒ 56\n2+4+2 ⇒ 16\n6+2+3 ⇒ 36\n7+2+3 ⇒ ?",
+    "answer": 42,
+    "pattern": "a×b×c"
+  },
+  {
+    "quest": "Quiz#7569:\n2+2 ⇒ 6\n6+3 ⇒ 12\n6+6 ⇒ 18\n5+7 ⇒ 19\n7+3 ⇒ ?",
+    "answer": 13,
+    "pattern": "(a+b)×2−a"
+  },
+  {
+    "quest": "Quiz#7570:\n2+2 ⇒ 44\n2+7 ⇒ 99\n6+2 ⇒ 88\n2+4 ⇒ 66\n3+4 ⇒ ?",
+    "answer": 77,
+    "pattern": "concat(a,b)+reverse"
+  },
+  {
+    "quest": "Quiz#7571:\n8+4 ⇒ 34\n4+4 ⇒ 17\n6+2 ⇒ 15\n6+3 ⇒ 20\n4+2 ⇒ ?",
+    "answer": 10,
+    "pattern": "(a×b)+(a÷b)",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#7572:\n6+5+4 ⇒ 69\n7+5+7 ⇒ 82\n2+2+4 ⇒ 26\n2+4+6 ⇒ 30\n3+5+4 ⇒ ?",
+    "answer": 39,
+    "pattern": "b+concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7573:\n6+4+4 ⇒ 40\n7+7+6 ⇒ 59\n6+6+5 ⇒ 50\n3+4+4 ⇒ 34\n7+6+2 ⇒ ?",
+    "answer": 40,
+    "pattern": "2a+3b+4c"
+  },
+  {
+    "quest": "Quiz#7574:\n2+8 ⇒ 0\n3+4 ⇒ 3\n2+5 ⇒ 0\n3+6 ⇒ 3\n7+4 ⇒ ?",
+    "answer": 35,
+    "pattern": "a²−2×a"
+  },
+  {
+    "quest": "Quiz#7575:\n6+3+3 ⇒ 39\n3+7+6 ⇒ 79\n6+3+6 ⇒ 42\n7+3+7 ⇒ 44\n5+6+6 ⇒ ?",
+    "answer": 71,
+    "pattern": "a+concat(b,c)"
+  },
+  {
+    "quest": "Quiz#7576:\n7+2 ⇒ 23\n5+7 ⇒ 47\n4+8 ⇒ 44\n8+4 ⇒ 44\n3+3 ⇒ ?",
+    "answer": 15,
+    "pattern": "(a+b)+(a×b)"
+  },
+  {
+    "quest": "Quiz#7577:\n7+7 ⇒ 42\n7+8 ⇒ 49\n2+6 ⇒ 10\n4+8 ⇒ 28\n2+4 ⇒ ?",
+    "answer": 6,
+    "pattern": "a×b−a"
+  },
+  {
+    "quest": "Quiz#7578:\n3+4 ⇒ 10\n2+6 ⇒ 7\n3+3 ⇒ 8\n3+8 ⇒ 18\n4+5 ⇒ ?",
+    "answer": 18,
+    "pattern": "(a−1)×(b+1)",
+    "condition": "a>=1"
+  },
+  {
+    "quest": "Quiz#7579:\n4+7+3 ⇒ 68\n2+5+4 ⇒ 33\n3+4+7 ⇒ 32\n5+4+6 ⇒ 47\n3+5+6 ⇒ ?",
+    "answer": 40,
+    "pattern": "a²+b²+c"
+  },
+  {
+    "quest": "Quiz#7580:\n4+3+7 ⇒ 44\n6+6+6 ⇒ 60\n7+3+5 ⇒ 72\n6+7+7 ⇒ 60\n5+2+6 ⇒ ?",
+    "answer": 54,
+    "pattern": "concat(a,c)-b"
+  },
+  {
+    "quest": "Quiz#7581:\n2+2+3 ⇒ 35\n2+5+2 ⇒ 53\n2+2+7 ⇒ 71\n3+4+3 ⇒ 79\n2+6+2 ⇒ ?",
+    "answer": 62,
+    "pattern": "(a+1)×(b+1)×(c+1)-1"
+  },
+  {
+    "quest": "Quiz#7582:\n2+3+3 ⇒ 64\n2+2+3 ⇒ 49\n2+2+4 ⇒ 64\n2+2+2 ⇒ 36\n3+4+2 ⇒ ?",
+    "answer": 81,
+    "pattern": "(a+b+c)²"
+  },
+  {
+    "quest": "Quiz#7583:\n7+6 ⇒ 55\n3+4 ⇒ 13\n6+6 ⇒ 42\n2+5 ⇒ 9\n5+2 ⇒ ?",
+    "answer": 27,
+    "pattern": "a²+b"
+  },
+  {
+    "quest": "Quiz#7584:\n5+2+6 ⇒ 21\n4+7+5 ⇒ 44\n2+5+2 ⇒ 29\n7+7+6 ⇒ 48\n3+6+3 ⇒ ?",
+    "answer": 36,
+    "pattern": "a+b×5+c"
+  },
+  {
+    "quest": "Quiz#7585:\n3+2 ⇒ 12\n2+3 ⇒ 16\n7+3 ⇒ 56\n6+3 ⇒ 48\n8+3 ⇒ ?",
+    "answer": 64,
+    "pattern": "2^b*a",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7586:\n3+3+4 ⇒ 37\n3+2+2 ⇒ 34\n5+5+5 ⇒ 60\n6+3+4 ⇒ 67\n4+3+7 ⇒ ?",
+    "answer": 50,
+    "pattern": "concat(a,b)+c"
+  },
+  {
+    "quest": "Quiz#7587:\n7+7+4 ⇒ 18\n4+2+5 ⇒ 11\n6+3+4 ⇒ 13\n5+6+3 ⇒ 14\n2+3+2 ⇒ ?",
+    "answer": 7,
+    "pattern": "a×1+b+c"
+  },
+  {
+    "quest": "Quiz#7588:\n2+3 ⇒ 5\n4+2 ⇒ 10\n2+4 ⇒ 6\n8+2 ⇒ 34\n8+4 ⇒ ?",
+    "answer": 36,
+    "pattern": "a²÷2+b",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#7589:\n6+4+4 ⇒ 64\n6+4+2 ⇒ 44\n5+6+4 ⇒ 74\n3+3+6 ⇒ 45\n4+6+6 ⇒ ?",
+    "answer": 84,
+    "pattern": "a×b+b×c+c×a"
+  },
+  {
+    "quest": "Quiz#7590:\n7+8 ⇒ 17\n5+8 ⇒ 11\n4+8 ⇒ 8\n3+2 ⇒ 11\n7+6 ⇒ ?",
+    "answer": 19,
+    "pattern": "a*3-b+4"
+  },
+  {
+    "quest": "Quiz#7591:\n4+7 ⇒ 50\n2+3 ⇒ 24\n3+5 ⇒ 37\n2+7 ⇒ 32\n8+4 ⇒ ?",
+    "answer": 80,
+    "pattern": "concat(a,b)-a+b"
+  },
+  {
+    "quest": "Quiz#7592:\n2+2+7 ⇒ 45\n3+4+3 ⇒ 90\n3+3+5 ⇒ 18\n3+3+3 ⇒ 0\n6+7+2 ⇒ ?",
+    "answer": 54,
+    "pattern": "concat(b,c,a)-concat(a,b,c)"
+  },
+  {
+    "quest": "Quiz#7593:\n3+3 ⇒ 19\n4+2 ⇒ 27\n3+2 ⇒ 11\n3+4 ⇒ 27\n2+2 ⇒ ?",
+    "answer": 3,
+    "pattern": "2^a*b-5",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7594:\n3+2+3 ⇒ 64\n3+3+5 ⇒ 86\n2+7+6 ⇒ 94\n3+4+4 ⇒ 78\n2+5+2 ⇒ ?",
+    "answer": 50,
+    "pattern": "concat(a,b)+concat(c,b)"
+  },
+  {
+    "quest": "Quiz#7595:\n2+3 ⇒ 22\n4+4 ⇒ 44\n5+7 ⇒ 55\n6+4 ⇒ 66\n4+7 ⇒ ?",
+    "answer": 44,
+    "pattern": "concat(a,b)+a-b"
+  },
+  {
+    "quest": "Quiz#7596:\n8+8 ⇒ 81\n5+5 ⇒ 51\n8+4 ⇒ 82\n4+4 ⇒ 41\n3+3 ⇒ ?",
+    "answer": 31,
+    "pattern": "concat(a,a/b)",
+    "condition": "b|a,a//b≤9"
+  },
+  {
+    "quest": "Quiz#7597:\n4+5+5 ⇒ 14\n7+3+3 ⇒ 27\n6+3+3 ⇒ 39\n4+2+4 ⇒ 49\n6+4+7 ⇒ ?",
+    "answer": 66,
+    "pattern": "prev+(a+b+c)",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7598:\n2+6 ⇒ 16\n8+5 ⇒ 37\n2+4 ⇒ 10\n6+2 ⇒ 8\n2+7 ⇒ ?",
+    "answer": 19,
+    "pattern": "(a×b)−(a−b)"
+  },
+  {
+    "quest": "Quiz#7599:\n6+3+4 ⇒ 58\n2+3+7 ⇒ 25\n4+4+6 ⇒ 70\n2+6+7 ⇒ 79\n3+3+2 ⇒ ?",
+    "answer": 29,
+    "pattern": "a×b²+c"
+  },
+  {
+    "quest": "Quiz#7600:\n7+5 ⇒ 12\n3+8 ⇒ 22\n8+2 ⇒ 30\n3+2 ⇒ 20\n8+3 ⇒ ?",
+    "answer": 55,
+    "pattern": "(a+b)*n"
+  },
+  {
+    "quest": "Quiz#7601:\n3+6+7 ⇒ 94\n5+4+5 ⇒ 66\n3+3+2 ⇒ 22\n5+6+4 ⇒ 77\n4+2+6 ⇒ ?",
+    "answer": 56,
+    "pattern": "a²+b²+c²"
+  },
+  {
+    "quest": "Quiz#7602:\n7+5 ⇒ 42\n7+4 ⇒ 35\n4+3 ⇒ 16\n4+6 ⇒ 28\n7+2 ⇒ ?",
+    "answer": 21,
+    "pattern": "a×b+a"
+  },
+  {
+    "quest": "Quiz#7603:\n6+6+3 ⇒ 40\n3+4+4 ⇒ 18\n5+5+6 ⇒ 34\n6+2+5 ⇒ 21\n2+4+3 ⇒ ?",
+    "answer": 16,
+    "pattern": "a×b+c+n"
+  },
+  {
+    "quest": "Quiz#7604:\n7+6 ⇒ 36\n8+3 ⇒ 10\n3+7 ⇒ 25\n8+4 ⇒ 20\n6+8 ⇒ ?",
+    "answer": 48,
+    "pattern": "(a+2)×(b−2)",
+    "condition": "b>=2"
+  },
+  {
+    "quest": "Quiz#7605:\n3+6+6 ⇒ 60\n4+2+4 ⇒ 36\n4+3+5 ⇒ 53\n5+3+4 ⇒ 79\n3+2+2 ⇒ ?",
+    "answer": 20,
+    "pattern": "a²×b+c"
+  },
+  {
+    "quest": "Quiz#7606:\n2+3 ⇒ 17\n8+7 ⇒ 31\n2+8 ⇒ 12\n6+6 ⇒ 30\n5+2 ⇒ ?",
+    "answer": 42,
+    "pattern": "concat(a,b)-(a×b)"
+  },
+  {
+    "quest": "Quiz#7607:\n7+3+5 ⇒ 56\n5+3+7 ⇒ 50\n6+6+4 ⇒ 60\n3+7+4 ⇒ 33\n2+2+4 ⇒ ?",
+    "answer": 12,
+    "pattern": "a×(b+c)"
+  },
+  {
+    "quest": "Quiz#7608:\n2+3+4 ⇒ 2\n4+2+3 ⇒ 3\n6+4+2 ⇒ 4\n7+3+3 ⇒ 4\n6+7+2 ⇒ ?",
+    "answer": 6,
+    "pattern": "|a-b|+|b-c|"
+  },
+  {
+    "quest": "Quiz#7609:\n6+3 ⇒ 18\n3+2 ⇒ 3\n5+3 ⇒ 10\n5+4 ⇒ 5\n7+5 ⇒ ?",
+    "answer": 14,
+    "pattern": "a×(a−b)"
+  },
+  {
+    "quest": "Quiz#7610:\n4+3+3 ⇒ 38\n4+3+7 ⇒ 86\n6+5+3 ⇒ 92\n4+5+2 ⇒ 42\n4+4+5 ⇒ ?",
+    "answer": 82,
+    "pattern": "a×b×c+2"
+  },
+  {
+    "quest": "Quiz#7611:\n7+2 ⇒ 25\n3+6 ⇒ 21\n5+7 ⇒ 29\n3+4 ⇒ 17\n7+8 ⇒ ?",
+    "answer": 37,
+    "pattern": "3a+2b"
+  },
+  {
+    "quest": "Quiz#7612:\n6+2+6 ⇒ 28\n4+5+6 ⇒ 28\n4+7+2 ⇒ 28\n3+3+3 ⇒ 18\n6+5+5 ⇒ ?",
+    "answer": 33,
+    "pattern": "a×3+b×2+c×1"
+  },
+  {
+    "quest": "Quiz#7613:\n4+4+4 ⇒ 64\n3+2+2 ⇒ 20\n2+4+7 ⇒ 66\n7+3+5 ⇒ 80\n6+5+4 ⇒ ?",
+    "answer": 99,
+    "pattern": "(a+b)×(b+c)"
+  },
+  {
+    "quest": "Quiz#7614:\n4+4 ⇒ 32\n4+5 ⇒ 48\n2+5 ⇒ 36\n2+3 ⇒ 12\n2+4 ⇒ ?",
+    "answer": 20,
+    "pattern": "2^a+2^b",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#7615:\n5+5+5 ⇒ 15\n5+6+2 ⇒ 20\n4+7+3 ⇒ 24\n3+5+4 ⇒ 27\n6+2+2 ⇒ ?",
+    "answer": 33,
+    "pattern": "prev+a",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7616:\n7+2+5 ⇒ 20\n7+5+4 ⇒ 30\n2+3+2 ⇒ 0\n5+4+5 ⇒ 0\n4+5+3 ⇒ ?",
+    "answer": 10,
+    "pattern": "concat(a,b)-concat(c,b)"
+  },
+  {
+    "quest": "Quiz#7617:\n3+6+7 ⇒ 81\n2+7+7 ⇒ 77\n3+2+5 ⇒ 31\n3+6+2 ⇒ 36\n2+5+3 ⇒ ?",
+    "answer": 31,
+    "pattern": "a×(b+c)+b×c"
+  },
+  {
+    "quest": "Quiz#7618:\n6+3+3 ⇒ 63\n2+5+2 ⇒ 24\n5+4+4 ⇒ 89\n3+3+2 ⇒ 21\n7+7+2 ⇒ ?",
+    "answer": 77,
+    "pattern": "a²+b×c²"
+  },
+  {
+    "quest": "Quiz#7619:\n7+4+4 ⇒ 19\n7+2+5 ⇒ 19\n6+4+2 ⇒ 14\n3+4+5 ⇒ 17\n4+3+4 ⇒ ?",
+    "answer": 15,
+    "pattern": "a+b+c×2"
+  },
+  {
+    "quest": "Quiz#7620:\n6+2+7 ⇒ 69\n3+7+4 ⇒ 41\n4+3+4 ⇒ 47\n2+5+6 ⇒ 31\n3+2+3 ⇒ ?",
+    "answer": 35,
+    "pattern": "concat(a,c)+b"
+  },
+  {
+    "quest": "Quiz#7621:\n3+5+3 ⇒ 24\n7+3+3 ⇒ 30\n4+5+3 ⇒ 27\n6+4+4 ⇒ 40\n3+7+3 ⇒ ?",
+    "answer": 30,
+    "pattern": "(a+b)×c"
+  },
+  {
+    "quest": "Quiz#7622:\n3+4+4 ⇒ 38\n3+2+4 ⇒ 36\n5+6+6 ⇒ 62\n4+4+7 ⇒ 51\n5+2+7 ⇒ ?",
+    "answer": 59,
+    "pattern": "c+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7623:\n4+8 ⇒ 32\n3+3 ⇒ 15\n2+6 ⇒ 22\n3+8 ⇒ 30\n8+7 ⇒ ?",
+    "answer": 37,
+    "pattern": "2a+3b"
+  },
+  {
+    "quest": "Quiz#7624:\n3+5+5 ⇒ 46\n7+4+2 ⇒ 67\n6+2+4 ⇒ 44\n2+5+5 ⇒ 41\n2+3+4 ⇒ ?",
+    "answer": 16,
+    "pattern": "a²+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7625:\n2+5 ⇒ 0\n7+5 ⇒ 35\n3+2 ⇒ 4\n3+6 ⇒ 8\n5+7 ⇒ ?",
+    "answer": 27,
+    "pattern": "(a−2)×(b+2)",
+    "condition": "a>=2"
+  },
+  {
+    "quest": "Quiz#7626:\n7+4+7 ⇒ 21\n5+5+4 ⇒ 21\n7+4+6 ⇒ 22\n5+6+2 ⇒ 28\n6+7+7 ⇒ ?",
+    "answer": 35,
+    "pattern": "a×b-c"
+  },
+  {
+    "quest": "Quiz#7627:\n7+5+5 ⇒ 32\n2+5+7 ⇒ 31\n3+7+2 ⇒ 28\n2+4+7 ⇒ 28\n6+3+2 ⇒ ?",
+    "answer": 19,
+    "pattern": "a×1+b×3+c×2"
+  },
+  {
+    "quest": "Quiz#7628:\n3+3+4 ⇒ 15\n5+2+3 ⇒ 11\n3+4+3 ⇒ 15\n3+3+3 ⇒ 12\n6+6+3 ⇒ ?",
+    "answer": 24,
+    "pattern": "a+b×c"
+  },
+  {
+    "quest": "Quiz#7629:\n6+6+7 ⇒ 43\n4+3+3 ⇒ 15\n2+5+2 ⇒ 12\n5+7+6 ⇒ 41\n2+4+6 ⇒ ?",
+    "answer": 14,
+    "pattern": "a×b+c"
+  },
+  {
+    "quest": "Quiz#7630:\n5+6 ⇒ 0\n6+8 ⇒ 0\n7+2 ⇒ 8\n4+4 ⇒ 4\n4+2 ⇒ ?",
+    "answer": 7,
+    "pattern": "a-b+n"
+  },
+  {
+    "quest": "Quiz#7631:\n6+2+6 ⇒ 40\n7+3+7 ⇒ 40\n5+4+6 ⇒ 11\n7+2+2 ⇒ 45\n6+2+5 ⇒ ?",
+    "answer": 39,
+    "pattern": "concat(a,c)-concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7632:\n3+2 ⇒ 7\n8+2 ⇒ 12\n2+5 ⇒ 34\n4+5 ⇒ 36\n5+5 ⇒ ?",
+    "answer": 37,
+    "pattern": "2^b+a",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7633:\n8+6 ⇒ 26\n4+8 ⇒ 36\n8+4 ⇒ 16\n2+8 ⇒ 34\n6+2 ⇒ ?",
+    "answer": 8,
+    "pattern": "b²÷2+a",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#7634:\n4+7+6 ⇒ 89\n5+6+2 ⇒ 45\n7+3+2 ⇒ 20\n7+2+5 ⇒ 36\n4+3+4 ⇒ ?",
+    "answer": 29,
+    "pattern": "a+b²+c²"
+  },
+  {
+    "quest": "Quiz#7635:\n2+6 ⇒ 24\n6+8 ⇒ 62\n6+7 ⇒ 61\n4+6 ⇒ 42\n4+7 ⇒ ?",
+    "answer": 43,
+    "pattern": "concat(a,b-a)",
+    "condition": "b>a"
+  },
+  {
+    "quest": "Quiz#7636:\n4+2 ⇒ 8\n8+2 ⇒ 12\n4+4 ⇒ 20\n4+7 ⇒ 53\n8+4 ⇒ ?",
+    "answer": 24,
+    "pattern": "a+b²"
+  },
+  {
+    "quest": "Quiz#7637:\n8+5 ⇒ 8\n7+6 ⇒ 2\n6+2 ⇒ 16\n3+2 ⇒ 2\n8+3 ⇒ ?",
+    "answer": 32,
+    "pattern": "2^(a−b)",
+    "condition": "a>=b"
+  },
+  {
+    "quest": "Quiz#7638:\n4+5+3 ⇒ 24\n3+5+4 ⇒ 27\n3+5+7 ⇒ 37\n3+6+5 ⇒ 34\n4+2+4 ⇒ ?",
+    "answer": 25,
+    "pattern": "a×1+b×2+c×3+n"
+  },
+  {
+    "quest": "Quiz#7639:\n7+2+7 ⇒ 59\n7+7+6 ⇒ 64\n4+3+3 ⇒ 25\n6+2+5 ⇒ 47\n3+5+4 ⇒ ?",
+    "answer": 23,
+    "pattern": "a²+b+c+n"
+  },
+  {
+    "quest": "Quiz#7640:\n3+8 ⇒ 27\n2+6 ⇒ 19\n7+8 ⇒ 47\n8+2 ⇒ 43\n5+8 ⇒ ?",
+    "answer": 37,
+    "pattern": "concat(a,b)/2+b",
+    "condition": "concatgenap"
+  },
+  {
+    "quest": "Quiz#7641:\n4+4+3 ⇒ 23\n2+5+7 ⇒ 23\n7+7+6 ⇒ 41\n5+6+3 ⇒ 30\n2+3+4 ⇒ ?",
+    "answer": 16,
+    "pattern": "3a+2b+c"
+  },
+  {
+    "quest": "Quiz#7642:\n3+3 ⇒ 42\n8+6 ⇒ 86\n6+5 ⇒ 71\n4+4 ⇒ 56\n3+4 ⇒ ?",
+    "answer": 55,
+    "pattern": "concat(b,a)+3b"
+  },
+  {
+    "quest": "Quiz#7643:\n5+4+3 ⇒ 51\n3+3+5 ⇒ 21\n4+3+3 ⇒ 27\n5+3+3 ⇒ 43\n4+3+6 ⇒ ?",
+    "answer": 30,
+    "pattern": "2^a+2^b+c",
+    "condition": "a,b<=5"
+  },
+  {
+    "quest": "Quiz#7644:\n6+2+5 ⇒ 40\n6+2+4 ⇒ 24\n3+6+4 ⇒ 25\n5+7+3 ⇒ 20\n2+7+4 ⇒ ?",
+    "answer": 25,
+    "pattern": "a+b+2^c",
+    "condition": "c<=5"
+  },
+  {
+    "quest": "Quiz#7645:\n5+3+4 ⇒ 29\n3+7+5 ⇒ 72\n7+6+3 ⇒ 56\n5+6+7 ⇒ 62\n4+2+2 ⇒ ?",
+    "answer": 18,
+    "pattern": "concat(b,c)-a"
+  },
+  {
+    "quest": "Quiz#7646:\n7+4+4 ⇒ 27\n5+2+3 ⇒ 12\n3+4+2 ⇒ 21\n2+2+2 ⇒ 8\n2+2+7 ⇒ ?",
+    "answer": 13,
+    "pattern": "a+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7647:\n5+5 ⇒ 6\n6+6 ⇒ 7\n8+2 ⇒ 12\n2+2 ⇒ 3\n4+4 ⇒ ?",
+    "answer": 5,
+    "pattern": "(a÷b)+a",
+    "condition": "b|a"
+  },
+  {
+    "quest": "Quiz#7648:\n2+3+6 ⇒ 12\n7+3+3 ⇒ 15\n4+3+3 ⇒ 13\n5+3+2 ⇒ 14\n5+6+6 ⇒ ?",
+    "answer": 22,
+    "pattern": "a+b+c+n"
+  },
+  {
+    "quest": "Quiz#7649:\n3+5+5 ⇒ 20\n2+6+5 ⇒ 40\n4+6+4 ⇒ 20\n4+7+6 ⇒ 30\n6+7+5 ⇒ ?",
+    "answer": 10,
+    "pattern": "concat(b,c)-concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7650:\n3+7 ⇒ 36\n2+3 ⇒ 9\n5+5 ⇒ 0\n5+7 ⇒ 18\n2+7 ⇒ ?",
+    "answer": 45,
+    "pattern": "concat(b,a)-concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7651:\n7+5+2 ⇒ 80\n7+5+4 ⇒ 92\n3+2+7 ⇒ 64\n2+3+5 ⇒ 40\n2+3+7 ⇒ ?",
+    "answer": 64,
+    "pattern": "a²+b²+c²+2"
+  },
+  {
+    "quest": "Quiz#7652:\n3+5+2 ⇒ 29\n5+5+3 ⇒ 70\n6+3+2 ⇒ 48\n5+4+3 ⇒ 61\n3+2+3 ⇒ ?",
+    "answer": 27,
+    "pattern": "a²+b×c²"
+  },
+  {
+    "quest": "Quiz#7653:\n2+5+3 ⇒ 75\n3+3+5 ⇒ 68\n5+2+6 ⇒ 81\n5+4+3 ⇒ 98\n2+6+6 ⇒ ?",
+    "answer": 88,
+    "pattern": "concat(a,c)+concat(b,a)"
+  },
+  {
+    "quest": "Quiz#7654:\n4+2+5 ⇒ 38\n5+3+2 ⇒ 31\n4+3+6 ⇒ 54\n3+4+7 ⇒ 61\n2+4+2 ⇒ ?",
+    "answer": 20,
+    "pattern": "a×(b+c)+b×c"
+  },
+  {
+    "quest": "Quiz#7655:\n2+3 ⇒ 24\n4+5 ⇒ 47\n3+7 ⇒ 40\n2+2 ⇒ 26\n6+8 ⇒ ?",
+    "answer": 73,
+    "pattern": "concat(a,b)+n"
+  },
+  {
+    "quest": "Quiz#7656:\n2+6+3 ⇒ 47\n3+7+4 ⇒ 68\n3+7+5 ⇒ 77\n2+7+4 ⇒ 67\n4+3+2 ⇒ ?",
+    "answer": 17,
+    "pattern": "a+b²+c²"
+  },
+  {
+    "quest": "Quiz#7657:\n4+2+4 ⇒ 4\n2+6+6 ⇒ 6\n6+5+3 ⇒ 27\n7+7+5 ⇒ 44\n4+5+4 ⇒ ?",
+    "answer": 16,
+    "pattern": "a×b-c"
+  },
+  {
+    "quest": "Quiz#7658:\n3+2+6 ⇒ 19\n5+7+5 ⇒ 79\n2+6+5 ⇒ 45\n3+5+4 ⇒ 38\n6+5+5 ⇒ ?",
+    "answer": 66,
+    "pattern": "a²+b²+c"
+  },
+  {
+    "quest": "Quiz#7659:\n5+7+6 ⇒ 38\n3+2+7 ⇒ 30\n7+4+2 ⇒ 24\n4+3+5 ⇒ 29\n4+2+7 ⇒ ?",
+    "answer": 34,
+    "pattern": "a×1+b×2+c×3+n"
+  },
+  {
+    "quest": "Quiz#7660:\n8+4 ⇒ 24\n5+3 ⇒ 9\n6+2 ⇒ 8\n5+8 ⇒ 24\n3+8 ⇒ ?",
+    "answer": 8,
+    "pattern": "a×b−2×b"
+  },
+  {
+    "quest": "Quiz#7661:\n7+3+7 ⇒ 80\n2+4+5 ⇒ 29\n5+2+7 ⇒ 59\n6+7+5 ⇒ 72\n6+4+2 ⇒ ?",
+    "answer": 66,
+    "pattern": "concat(a,b)+c"
+  },
+  {
+    "quest": "Quiz#7662:\n3+6+5 ⇒ 59\n2+4+7 ⇒ 23\n3+7+5 ⇒ 68\n4+2+4 ⇒ 36\n3+6+6 ⇒ ?",
+    "answer": 60,
+    "pattern": "a²×b+c"
+  },
+  {
+    "quest": "Quiz#7663:\n2+6 ⇒ 8\n5+4 ⇒ 14\n6+5 ⇒ 23\n2+8 ⇒ 16\n5+5 ⇒ ?",
+    "answer": 30,
+    "pattern": "a*n+b"
+  },
+  {
+    "quest": "Quiz#7664:\n7+4+5 ⇒ 43\n3+5+2 ⇒ 12\n3+5+4 ⇒ 24\n2+6+4 ⇒ 24\n4+7+2 ⇒ ?",
+    "answer": 15,
+    "pattern": "a+b+2^c",
+    "condition": "c<=5"
+  },
+  {
+    "quest": "Quiz#7665:\n4+5+3 ⇒ 24\n2+4+2 ⇒ 10\n3+4+5 ⇒ 17\n3+5+6 ⇒ 19\n4+2+4 ⇒ ?",
+    "answer": 22,
+    "pattern": "2^a+b+c",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7666:\n2+4+2 ⇒ 64\n2+3+4 ⇒ 81\n4+2+2 ⇒ 64\n2+2+5 ⇒ 81\n2+2+3 ⇒ ?",
+    "answer": 49,
+    "pattern": "(a+b+c)²"
+  },
+  {
+    "quest": "Quiz#7667:\n3+5 ⇒ 29\n3+2 ⇒ 1\n2+2 ⇒ 2\n8+5 ⇒ 24\n3+4 ⇒ ?",
+    "answer": 13,
+    "pattern": "2^b−a",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7668:\n5+5 ⇒ 30\n3+4 ⇒ 18\n5+7 ⇒ 8\n5+6 ⇒ 20\n2+2 ⇒ ?",
+    "answer": 18,
+    "pattern": "concat(a,b)-b^2"
+  },
+  {
+    "quest": "Quiz#7669:\n3+8 ⇒ 94\n5+7 ⇒ 87\n2+4 ⇒ 48\n3+7 ⇒ 83\n4+8 ⇒ ?",
+    "answer": 96,
+    "pattern": "concat(b,a)+a+b"
+  },
+  {
+    "quest": "Quiz#7670:\n2+2+5 ⇒ 27\n2+7+4 ⇒ 76\n6+6+3 ⇒ 69\n4+4+7 ⇒ 51\n7+3+6 ⇒ ?",
+    "answer": 43,
+    "pattern": "concat(b,c)+a"
+  },
+  {
+    "quest": "Quiz#7671:\n7+7+3 ⇒ 0\n3+7+2 ⇒ 40\n3+5+4 ⇒ 20\n6+7+6 ⇒ 10\n3+3+5 ⇒ ?",
+    "answer": 0,
+    "pattern": "concat(b,c)-concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7672:\n4+6+6 ⇒ 40\n5+3+2 ⇒ 49\n7+3+6 ⇒ 73\n3+2+6 ⇒ 34\n7+6+7 ⇒ ?",
+    "answer": 71,
+    "pattern": "concat(a,c)-b"
+  },
+  {
+    "quest": "Quiz#7673:\n5+6 ⇒ 26\n4+5 ⇒ 11\n3+5 ⇒ 3\n2+3 ⇒ 1\n4+2 ⇒ ?",
+    "answer": 14,
+    "pattern": "2^a−b",
+    "condition": "a<=5"
+  },
+  {
+    "quest": "Quiz#7674:\n6+7 ⇒ 55\n6+2 ⇒ 50\n8+2 ⇒ 82\n6+3 ⇒ 51\n5+3 ⇒ ?",
+    "answer": 38,
+    "pattern": "a²+2×a+b"
+  },
+  {
+    "quest": "Quiz#7675:\n3+6+3 ⇒ 39\n5+4+2 ⇒ 56\n2+6+2 ⇒ 28\n6+6+5 ⇒ 71\n5+6+7 ⇒ ?",
+    "answer": 63,
+    "pattern": "b+concat(a,c)"
+  },
+  {
+    "quest": "Quiz#7676:\n2+6+2 ⇒ 14\n6+3+5 ⇒ 24\n7+2+6 ⇒ 27\n2+5+4 ⇒ 19\n7+2+7 ⇒ ?",
+    "answer": 30,
+    "pattern": "a+b+c×3"
+  },
+  {
+    "quest": "Quiz#7677:\n2+2+3 ⇒ 15\n5+2+5 ⇒ 53\n3+2+3 ⇒ 21\n2+7+3 ⇒ 45\n2+3+6 ⇒ ?",
+    "answer": 39,
+    "pattern": "a×b×c+3"
+  },
+  {
+    "quest": "Quiz#7678:\n5+4 ⇒ 8\n8+8 ⇒ 12\n7+6 ⇒ 11\n4+4 ⇒ 6\n5+2 ⇒ ?",
+    "answer": 9,
+    "pattern": "2×a−b÷2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#7679:\n2+2+6 ⇒ 14\n5+4+2 ⇒ 43\n2+4+5 ⇒ 25\n4+4+4 ⇒ 36\n4+3+5 ⇒ ?",
+    "answer": 29,
+    "pattern": "a²+2^b+c",
+    "condition": "b<=5"
+  },
+  {
+    "quest": "Quiz#7680:\n3+4 ⇒ 8\n2+8 ⇒ 12\n3+5 ⇒ 11\n8+8 ⇒ 20\n4+2 ⇒ ?",
+    "answer": 11,
+    "pattern": "a+b+n"
+  },
+  {
+    "quest": "Quiz#7681:\n2+5+7 ⇒ 14\n6+6+7 ⇒ 33\n6+6+2 ⇒ 47\n4+6+4 ⇒ 61\n6+5+2 ⇒ ?",
+    "answer": 74,
+    "pattern": "prev+(a+b+c)",
+    "condition": "n>1"
+  },
+  {
+    "quest": "Quiz#7682:\n8+2 ⇒ 16\n2+8 ⇒ 10\n2+7 ⇒ 9\n2+4 ⇒ 6\n4+4 ⇒ ?",
+    "answer": 12,
+    "pattern": "a+(b×a÷2)",
+    "condition": "agenap"
+  },
+  {
+    "quest": "Quiz#7683:\n2+7+4 ⇒ 18\n3+4+7 ⇒ 19\n6+3+6 ⇒ 24\n6+5+7 ⇒ 37\n5+7+6 ⇒ ?",
+    "answer": 41,
+    "pattern": "a×b+c"
+  },
+  {
+    "quest": "Quiz#7684:\n4+7+3 ⇒ 27\n6+6+6 ⇒ 50\n4+4+5 ⇒ 28\n7+5+4 ⇒ 62\n3+7+2 ⇒ ?",
+    "answer": 23,
+    "pattern": "a²+b+c+n"
+  },
+  {
+    "quest": "Quiz#7685:\n3+2 ⇒ 7\n6+3 ⇒ 14\n6+5 ⇒ 16\n6+6 ⇒ 17\n6+2 ⇒ ?",
+    "answer": 13,
+    "pattern": "2a+b-1"
+  },
+  {
+    "quest": "Quiz#7686:\n8+8 ⇒ 24\n7+3 ⇒ 13\n7+4 ⇒ 15\n3+4 ⇒ 11\n8+7 ⇒ ?",
+    "answer": 22,
+    "pattern": "a+b*2"
+  },
+  {
+    "quest": "Quiz#7687:\n3+3 ⇒ 9\n5+7 ⇒ 17\n6+8 ⇒ 20\n6+2 ⇒ 14\n7+2 ⇒ ?",
+    "answer": 16,
+    "pattern": "(a+b)×2−b"
+  },
+  {
+    "quest": "Quiz#7688:\n6+3+2 ⇒ 0\n7+3+2 ⇒ 1\n7+2+2 ⇒ 3\n5+2+2 ⇒ 1\n4+2+2 ⇒ ?",
+    "answer": 0,
+    "pattern": "a-b×c"
+  },
+  {
+    "quest": "Quiz#7689:\n5+4 ⇒ 7\n6+8 ⇒ 10\n7+2 ⇒ 8\n7+6 ⇒ 10\n7+8 ⇒ ?",
+    "answer": 11,
+    "pattern": "a+b/2",
+    "condition": "bgenap"
+  },
+  {
+    "quest": "Quiz#7690:\n6+2+7 ⇒ 69\n7+6+2 ⇒ 78\n5+5+5 ⇒ 60\n3+4+5 ⇒ 39\n2+7+2 ⇒ ?",
+    "answer": 29,
+    "pattern": "c+concat(a,b)"
+  },
+  {
+    "quest": "Quiz#7691:\n5+4+2 ⇒ 45\n7+3+6 ⇒ 94\n2+5+7 ⇒ 78\n5+7+5 ⇒ 99\n4+2+7 ⇒ ?",
+    "answer": 69,
+    "pattern": "a²+b²+c²"
+  },
+  {
+    "quest": "Quiz#7692:\n6+4+2 ⇒ 40\n6+3+5 ⇒ 10\n4+4+3 ⇒ 10\n7+3+7 ⇒ 0\n5+6+4 ⇒ ?",
+    "answer": 10,
+    "pattern": "concat(a,b)-concat(c,b)"
+  },
+  {
+    "quest": "Quiz#7693:\n4+6+2 ⇒ 16\n6+5+3 ⇒ 21\n4+4+6 ⇒ 28\n3+3+5 ⇒ 18\n7+5+5 ⇒ ?",
+    "answer": 32,
+    "pattern": "a+b×c"
+  },
+  {
+    "quest": "Quiz#7694:\n6+4 ⇒ 12\n3+7 ⇒ 15\n4+3 ⇒ 4\n3+2 ⇒ 0\n5+8 ⇒ ?",
+    "answer": 30,
+    "pattern": "a×(b−2)",
+    "condition": "b>=2"
+  },
+  {
+    "quest": "Quiz#7695:\n6+5+5 ⇒ 36\n3+2+7 ⇒ 15\n6+6+4 ⇒ 43\n5+4+3 ⇒ 27\n6+7+6 ⇒ ?",
+    "answer": 53,
+    "pattern": "a×b+c+n"
+  },
+  {
+    "quest": "Quiz#7696:\n8+7 ⇒ 71\n2+7 ⇒ 23\n4+6 ⇒ 34\n6+6 ⇒ 48\n5+4 ⇒ ?",
+    "answer": 29,
+    "pattern": "a+b+a×b"
+  },
+  {
+    "quest": "Quiz#7697:\n5+5+5 ⇒ 0\n5+7+2 ⇒ 5\n7+3+4 ⇒ 4\n6+7+3 ⇒ 4\n3+3+3 ⇒ ?",
+    "answer": 0,
+    "pattern": "max(a,b,c)-min(a,b,c)"
+  },
+  {
+    "quest": "Quiz#7698:\n5+2+3 ⇒ 28\n7+2+3 ⇒ 32\n2+5+5 ⇒ 39\n7+2+4 ⇒ 36\n3+7+4 ⇒ ?",
+    "answer": 43,
+    "pattern": "2a+3b+4c"
+  },
+  {
+    "quest": "Quiz#7699:\n8+5 ⇒ 41\n7+8 ⇒ 78\n3+3 ⇒ 15\n3+2 ⇒ 10\n6+7 ⇒ ?",
+    "answer": 61,
+    "pattern": "a×2+b²"
+  },
+  {
+    "quest": "Quiz#7700:\n4+3+2 ⇒ 35\n2+5+2 ⇒ 49\n7+3+2 ⇒ 50\n3+5+4 ⇒ 72\n3+5+2 ⇒ ?",
+    "answer": 56,
+    "pattern": "(a+b)×(b+c)"
+  },
+];
+
+    let currentSlide = 0;
+    let autoMode = true;
+    let isRunning = false;
+    let isPaused = false;
+    let progressInterval = null;
+    let phase = null;
+    let elapsedTime = 0;
+    let currentDuration = 0;
+
+    const durationQuestion = 4 * 60 * 1000;
+    const durationAnswer = 20 * 1000;
+    const step = 50;
+
+    const frame = document.getElementById("frame");
+    const pageBody = document.getElementById("pageBody");
+    const progressBar = document.getElementById("progressBar");
+    const countdownDisplay = document.getElementById("countdown");
+    const questHeader = document.getElementById("questHeader");
+    const questBody = document.getElementById("questBody");
+
+    const frameBackgrounds = [
+      { name: "White", style: "background-color: #ffffff;" },
+      { name: "Soft Gray", style: "background-color: #f8f9fa;" },
+      { name: "Pastel Blue", style: "background-color: #e6f0ff;" },
+      { name: "Lavender", style: "background-color: #f3e8ff;" },
+      { name: "Mint", style: "background-color: #e8f5e9;" },
+      { name: "Peach", style: "background-color: #ffedea;" },
+      { name: "Cream", style: "background-color: #fdf6ee;" },
+      { name: "Light Pink", style: "background-color: #fce8f3;" },
+      { name: "Sky Fade", style: "background: linear-gradient(135deg, #e0f7ff, #ffffff);" },
+      { name: "Lavender Mist", style: "background: linear-gradient(135deg, #f5f0ff, #ffffff);" },
+      { name: "Mint Breeze", style: "background: linear-gradient(135deg, #e8f5f0, #ffffff);" },
+      { name: "Warm Sand", style: "background: linear-gradient(135deg, #fdf1e6, #ffffff);" },
+      { name: "Soft Lilac", style: "background: linear-gradient(135deg, #f0e6ff, #f8f4ff);" },
+      { name: "Pale Rose", style: "background: linear-gradient(135deg, #fff0f0, #ffffff);" },
+      { name: "Cloud White", style: "background: linear-gradient(135deg, #ffffff, #f9f9f9);" }
+    ];
+
+    const pageBackgroundColors = [
+      { name: "White", color: "#ffffff" },
+      { name: "Gray", color: "#f3f4f6" },
+      { name: "Blue", color: "#eff6ff" },
+      { name: "Green", color: "#f0fdf4" },
+      { name: "Yellow", color: "#fefce8" },
+      { name: "Purple", color: "#f5f3ff" },
+      { name: "Pink", color: "#fdf2f8" },
+      { name: "Black", color: "#000000" },
+      { name: "Dark Gray", color: "#1f2937" },
+      { name: "Navy", color: "#0f172a" },
+      { name: "Sunrise", color: "linear-gradient(135deg, #ffecd2, #fcb69f)" },
+      { name: "Ocean Breeze", color: "linear-gradient(135deg, #a1c4fd, #c2e9fb)" },
+      { name: "Mint Bliss", color: "linear-gradient(135deg, #cfd9df, #e2ebf0)" },
+      { name: "Lavender Dream", color: "linear-gradient(135deg, #e6e9f0, #d4c1ec)" },
+      { name: "Passion Fruit", color: "linear-gradient(135deg, #ff9a9e, #fecfef)" },
+      { name: "Midnight Violet", color: "linear-gradient(135deg, #2c3e50, #3498db)" },
+      { name: "Emerald Glow", color: "linear-gradient(135deg, #11998e, #38ef7d)" },
+      { name: "Golden Hour", color: "linear-gradient(135deg, #f6d365, #fda085)" },
+      { name: "Berry Smoothie", color: "linear-gradient(135deg, #834d9b, #d04ed6)" },
+      { name: "Royal Twilight", color: "linear-gradient(135deg, #4b6cb7, #182848)" }
+    ];
+
+    // ====== CONTRAST COLOR GENERATOR ======
+    function hexToRgb(hex) {
+      let r = 0, g = 0, b = 0;
+      if (hex.length === 4) {
+        r = parseInt(hex[1] + hex[1], 16);
+        g = parseInt(hex[2] + hex[2], 16);
+        b = parseInt(hex[3] + hex[3], 16);
+      } else if (hex.length === 7) {
+        r = parseInt(hex.slice(1, 3), 16);
+        g = parseInt(hex.slice(3, 5), 16);
+        b = parseInt(hex.slice(5, 7), 16);
+      }
+      return { r, g, b };
+    }
+
+    function getLuminance(r, g, b) {
+      const a = [r, g, b].map(v => {
+        v /= 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+      });
+      return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+    }
+
+    function getContrastColor(bgHex) {
+      const { r, g, b } = hexToRgb(bgHex);
+      const luminance = getLuminance(r, g, b);
+      return luminance > 0.5 ? '#000000' : '#ffffff';
+    }
+
+    // Generate random bright/pastel color
+    function getRandomPastelColor() {
+      const hue = Math.floor(Math.random() * 360);
+      const saturation = 60 + Math.floor(Math.random() * 30); // 60–90%
+      const lightness = 70 + Math.floor(Math.random() * 20); // 70–90%
+      return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    }
+
+    function getRandomDarkHeaderColor() {
+      const darkColors = [
+          "#1a202c", // Dark gray (slate)
+          "#2d3748", // True gray
+          "#171923", // Charcoal
+          "#0f172a", // Navy dark
+          "#1e1b4b", // Deep indigo
+          "#370a45", // Deep plum
+          "#042e2e", // Forest abyss
+          "#2c1d3e", // Royal night
+          "#4a0000", // Crimson shadow
+          "#001f3f", // Ocean depth
+          "#111827", // Very dark blue-gray
+          "#1c1940", // Cosmic purple
+          "#0a2525", // Emerald noir
+          "#3b0a45", // Eggplant
+          "#252f4a"  // Steel twilight
+        ];
+        return darkColors[Math.floor(Math.random() * darkColors.length)];
+      }
+
+    function getRandomHighContrastPair() {
+      // Generate random pastel background
+      const bgHsl = getRandomPastelColor();
+      // Convert to hex for contrast calculation (approximate)
+      const tempDiv = document.createElement('div');
+      tempDiv.style.color = bgHsl;
+      document.body.appendChild(tempDiv);
+      const styles = window.getComputedStyle(tempDiv);
+      const bgColor = styles.color; // rgb(r, g, b)
+      document.body.removeChild(tempDiv);
+
+      // Extract RGB
+      const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+      if (!match) return { bg: '#6a5acd', text: '#ffffff' };
+
+      const r = parseInt(match[1]), g = parseInt(match[2]), b = parseInt(match[3]);
+      const luminance = getLuminance(r, g, b);
+      const textColor = luminance > 0.5 ? '#000000' : '#ffffff';
+
+      // Convert HSL back to hex (simplified: use HSL directly in style)
+      return { bg: bgHsl, text: textColor };
+    }
+
+    // ====== BALLOONS ======
+    function createFloatingBalloons() {
+      const container = document.getElementById("balloonContainer");
+      const colors = ["#FF6B6B", "#4ECDC4", "#FFD166", "#6A0572", "#1A936F", "#FF9F1C", "#118AB2"];
+      const count = 12;
+
+      for (let i = 0; i < count; i++) {
+        const balloon = document.createElement("div");
+        balloon.className = "balloon";
+        const leftPos = Math.random() * 100;
+        balloon.style.left = `${leftPos}vw`;
+        const size = 30 + Math.random() * 30;
+        balloon.style.width = `${size}px`;
+        balloon.style.height = `${size * 1.2}px`;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        balloon.style.setProperty('--balloon-color', color);
+        const delay = Math.random() * 2;
+        const duration = 4 + Math.random() * 3;
+        balloon.style.animationDelay = `${delay}s`;
+        balloon.style.animationDuration = `${duration}s`;
+        container.appendChild(balloon);
+
+        setTimeout(() => {
+          if (balloon.parentNode) balloon.parentNode.removeChild(balloon);
+        }, (duration + delay) * 1000);
+      }
+    }
+
+    // ====== TIMER & UI ======
+    function formatTime(ms) {
+      const totalSeconds = Math.ceil(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function showSlide(index) {
+      resetTimer();
+      const fullQuest = questions[index].quest;
+      const lines = fullQuest.split('\n');
+      const header = lines[0];
+      const body = lines.slice(1).join('\n');
+
+      questHeader.textContent = header;
+      questBody.textContent = body;
+      /*
+      // ✅ Random contrast header colors
+      const { bg, text } = getRandomHighContrastPair();
+      questHeader.style.backgroundColor = bg;
+      questHeader.style.color = text;*/
+
+      const bgColor = getRandomDarkHeaderColor();
+      questHeader.style.backgroundColor = bgColor;
+      questHeader.style.color = "#ffffff"; // selalu putih
+
+      document.getElementById("answer").textContent = "Comment your answer";
+      document.getElementById("openBtn").disabled = false;
+      progressBar.className = "progress-bar";
+      progressBar.style.width = "0%";
+      isPaused = false;
+      document.getElementById("pauseBtn").disabled = true;
+      document.getElementById("startBtn").disabled = false;
+      updateNavButtons();
+      countdownDisplay.textContent = formatTime(durationQuestion);
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prevBtn").disabled = currentSlide === 0;
+      document.getElementById("nextBtn").disabled = currentSlide === questions.length - 1;
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      if (isPaused && elapsedTime < currentDuration) {
+        startProgressBar(currentDuration, phase === 'answer', elapsedTime);
+      } else {
+        phase = 'question';
+        elapsedTime = 0;
+        currentDuration = durationQuestion;
+        startProgressBar(durationQuestion, false);
+      }
+      isRunning = true;
+      isPaused = false;
+      document.getElementById("startBtn").disabled = true;
+      document.getElementById("pauseBtn").disabled = false;
+    }
+
+    function pauseTimer() {
+      clearInterval(progressInterval);
+      isPaused = true;
+      isRunning = false;
+      document.getElementById("startBtn").disabled = false;
+      document.getElementById("pauseBtn").disabled = true;
+    }
+
+    function resetTimer() {
+      clearInterval(progressInterval);
+      isRunning = false;
+      isPaused = false;
+      elapsedTime = 0;
+      document.getElementById("startBtn").disabled = false;
+      document.getElementById("pauseBtn").disabled = true;
+    }
+
+    function startProgressBar(duration, isAnswerPhase, startFrom = 0) {
+      currentDuration = duration;
+      phase = isAnswerPhase ? 'answer' : 'question';
+      let elapsed = startFrom;
+      const total = duration;
+      progressBar.className = "progress-bar" + (isAnswerPhase ? " answer-phase" : "");
+      progressBar.style.width = (elapsed / total) * 100 + "%";
+      countdownDisplay.textContent = formatTime(total - elapsed);
+
+      clearInterval(progressInterval);
+      progressInterval = setInterval(() => {
+        elapsed += step;
+        const remaining = total - elapsed;
+        const percent = (elapsed / total) * 100;
+        progressBar.style.width = percent + "%";
+
+        const prevSec = Math.floor((total - elapsed + step) / 1000);
+        const currSec = Math.floor(remaining / 1000);
+        if (prevSec !== currSec || elapsed === step) {
+          countdownDisplay.textContent = formatTime(remaining);
+        }
+
+        if (elapsed >= total) {
+          clearInterval(progressInterval);
+          countdownDisplay.textContent = "00:00";
+          isRunning = false;
+          elapsedTime = 0;
+          if (!isAnswerPhase) openAnswer();
+          else nextSlide();
+        } else {
+          elapsedTime = elapsed;
+        }
+      }, step);
+    }
+
+    function openAnswer() {
+      const sound = document.getElementById("endSound");
+      sound.currentTime = 0;
+      sound.play().catch(e => console.log("Audio play prevented:", e));
+
+      document.getElementById("answer").textContent = "Ans: " + questions[currentSlide].answer + ", " + questions[currentSlide].pattern;
+      document.getElementById("openBtn").disabled = true;
+      clearInterval(progressInterval);
+      isRunning = false;
+      elapsedTime = 0;
+
+      createFloatingBalloons();
+
+      if (autoMode) {
+        phase = 'answer';
+        startProgressBar(durationAnswer, true);
+      }
+    }
+
+    function nextSlide() {
+      resetTimer();
+      if (currentSlide < questions.length - 1) {
+        currentSlide++;
+        showSlide(currentSlide);
+        if (autoMode) startTimer();
+      } else {
+        document.getElementById("answer").textContent = "Quiz Ended";
+        countdownDisplay.textContent = "00:00";
+      }
+    }
+
+    function prevSlide() {
+      resetTimer();
+      if (currentSlide > 0) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    }
+
+    function toggleAutoMode() {
+      autoMode = !autoMode;
+      document.getElementById("toggleAuto").textContent = autoMode ? "Auto: ON" : "Auto: OFF";
+    }
+
+    function openBgModal() { document.getElementById("bgModal").style.display = "flex"; }
+    function closeBgModal() { document.getElementById("bgModal").style.display = "none"; }
+    document.getElementById("bgModal").onclick = e => { if (e.target === document.getElementById("bgModal")) closeBgModal(); };
+
+    function openPageBgModal() { document.getElementById("pageBgModal").style.display = "flex"; }
+    function closePageBgModal() { document.getElementById("pageBgModal").style.display = "none"; }
+    document.getElementById("pageBgModal").onclick = e => { if (e.target === document.getElementById("pageBgModal")) closePageBgModal(); };
+
+    function loadBackgroundOptions() {
+      const bgOptions = document.getElementById("bgOptions");
+      bgOptions.innerHTML = "";
+      frameBackgrounds.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "bg-option";
+        div.style.cssText = item.style;
+        div.title = item.name;
+        div.onclick = () => {
+          frame.style.backgroundImage = 'none';
+          frame.style.background = item.style.replace('background:', '').replace(';', '');
+          closeBgModal();
+        };
+        bgOptions.appendChild(div);
+      });
+    }
+
+    function loadPageBgOptions() {
+      const pageBgOptions = document.getElementById("pageBgOptions");
+      pageBgOptions.innerHTML = "";
+      pageBackgroundColors.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "color-option";
+        div.style.backgroundColor = item.color;
+        div.title = item.name;
+        div.onclick = () => {
+          pageBody.style.backgroundColor = item.color;
+          closePageBgModal();
+        };
+        pageBgOptions.appendChild(div);
+      });
+    }
+
+
+
+    function init() {
+        loadBackgroundOptions();
+        loadPageBgOptions();
+        showSlide(currentSlide);
+        updateNavButtons();
+
+        // Tambahkan baris ini untuk auto-start
+        setTimeout(() => {
+            startTimer();
+        }, 5*60*1000); // Mulai otomatis setelah 1 detik halaman dimuat
+        }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
